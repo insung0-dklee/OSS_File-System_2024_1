@@ -1,11 +1,13 @@
 import os
 import hashlib
 import time
+import shutil
 
 # 파일 관리 시스템
 # - 중복 파일 탐지 및 삭제: 주어진 디렉토리에서 중복 파일을 찾아내고, 중복된 파일을 삭제합니다.
 # - 파일 이름 변경: 사용자가 지정한 파일의 이름을 변경합니다.
 # - 파일 메타데이터 관리: 파일의 생성 시간, 수정 시간, 파일 크기를 출력합니다.
+# - 파일 복사: 파일을 지정된 위치로 복사합니다.
 
 def getParentDir(path):
     return os.path.dirname(path)
@@ -58,22 +60,35 @@ def manage_metadata(file_path):
     """
     주어진 파일의 메타데이터를 관리합니다.
     """
-    # 파일 생성 및 수정 시간 가져오기
-    created_time = os.path.getctime(file_path)
-    modified_time = os.path.getmtime(file_path)
-    
-    # 생성 및 수정 시간을 사람이 읽기 쉬운 형식으로 변환
-    created_time_readable = time.ctime(created_time)
-    modified_time_readable = time.ctime(modified_time)
-    
-    # 파일 크기 가져오기
-    file_size = os.path.getsize(file_path)
-    
-    # 파일 메타데이터 출력
-    print(f"File: {file_path}")
-    print(f"Created Time: {created_time_readable}")
-    print(f"Modified Time: {modified_time_readable}")
-    print(f"Size: {file_size} bytes")
+    try:
+        # 파일 생성 및 수정 시간 가져오기
+        created_time = os.path.getctime(file_path)
+        modified_time = os.path.getmtime(file_path)
+        
+        # 생성 및 수정 시간을 사람이 읽기 쉬운 형식으로 변환
+        created_time_readable = time.ctime(created_time)
+        modified_time_readable = time.ctime(modified_time)
+        
+        # 파일 크기 가져오기
+        file_size = os.path.getsize(file_path)
+        
+        # 파일 메타데이터 출력
+        print(f"File: {file_path}")
+        print(f"Created Time: {created_time_readable}")
+        print(f"Modified Time: {modified_time_readable}")
+        print(f"Size: {file_size} bytes")
+    except Exception as e:
+        print("메타데이터 관리 중 에러발생", e)
+
+def copyFile(src, dest):
+    """
+    파일 복사 함수
+    """
+    try:
+        shutil.copy(src, dest)
+        print(f"파일이 성공적으로 복사되었습니다: {dest}")
+    except Exception as e:
+        print(f"파일 복사 중 오류가 발생했습니다: {e}")
 
 if __name__ == "__main__":
     while True:
@@ -83,6 +98,7 @@ if __name__ == "__main__":
         print("1. 파일이름 변경")
         print("2. 중복 파일 탐지 및 삭제")
         print("3. 파일 메타데이터 관리")
+        print("4. 파일 복사")
         print("0. 종료")
 
         select = input("입력 (0번 입력시, 종료): ")
@@ -106,6 +122,10 @@ if __name__ == "__main__":
         elif select == '3':
             file_path = input("메타데이터를 확인할 파일의 경로를 입력하세요: ")
             manage_metadata(file_path)
+        elif select == '4':
+            src = input("복사할 파일의 경로를 입력하세요: ")
+            dest = input("복사할 위치를 입력하세요: ")
+            copyFile(src, dest)
         elif select == '0':
             print("종료")
             break
