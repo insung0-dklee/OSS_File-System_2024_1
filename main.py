@@ -1,4 +1,3 @@
-
 import os
 import shutil
 
@@ -12,18 +11,35 @@ def copyFile(src, dest):
     except Exception as e:
         print(f"파일 복사 중 오류가 발생했습니다: {e}")
 
+def addFile(file_path):
+    try:
+        with open(file_path, 'w') as f:
+            f.write("")
+        print(f"파일이 성공적으로 추가되었습니다: {file_path}")
+    except Exception as e:
+        print(f"파일 추가 중 오류가 발생했습니다: {e}")
+
+def deleteFile(file_path):
+    try:
+        os.remove(file_path)
+        print(f"파일이 성공적으로 삭제되었습니다: {file_path}")
+    except Exception as e:
+        print(f"파일 삭제 중 오류가 발생했습니다: {e}")
+
 b_is_exit = False
 
 while not b_is_exit:
     func = input("기능 입력 (? 입력시 도움말) : ")
 
     if func == "1":
-        print("기능 1 실행.")
-        # Add functionality for option 1 here
+        print("실행 -> 파일 추가")
+        file_path = input("추가할 파일의 경로를 입력하세요: ")
+        addFile(file_path)
 
     elif func == "2":
-        print("기능 2 실행.")
-        # Add functionality for option 2 here
+        print("실행 -> 파일 삭제")
+        file_path = input("삭제할 파일의 경로를 입력하세요: ")
+        deleteFile(file_path)
 
     elif func == "3":
         print("기능 3 실행.")
@@ -35,7 +51,7 @@ while not b_is_exit:
         copyFile(src, dest)
 
     elif func == "?":
-        print("도움말: 1, 2, 3을 입력하여 기능을 선택하거나 '복사'를 입력하여 파일을 복사하거나 '종료'를 입력하여 종료합니다.")
+        print("도움말: 1, 2, 3을 입력하여 기능을 선택하거나 '복사' 입력하여 파일 복사, '종료' 입력하여 종료합니다.")
 
     elif func.lower() == "종료":
         b_is_exit = True
