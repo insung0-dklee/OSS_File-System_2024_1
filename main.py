@@ -1,9 +1,10 @@
 import os
 
-def getParentDir(path):
+def getParentDir(path):          
     return os.path.dirname(path)
 
-def add_to_favorites(file_name):
+def add_to_favorites(file_name):               #file_name: 즐겨찾기에 추가할 파일의 이름을 입력받습니다. 
+                                               #파일 이름을 FAVORITES_FILE에 추가합니다. 이미 즐겨찾기에 추가된 파일이라도 중복 저장되지 않도록 할 수 있습니다.
     try:
         with open(FAVORITES_FILE, 'a') as f:
             f.write(file_name + '\n')
