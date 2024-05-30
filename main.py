@@ -12,16 +12,6 @@ def copyFile(src, dest):
     except Exception as e:
         print(f"파일 복사 중 오류가 발생했습니다: {e}")
 
-# 현재 디렉토리의 파일 및 폴더 목록을 출력하는 함수
-def listFilesFolders(path="."):
-    try:
-        files_folders = os.listdir(path)  
-        print(f"{path} 디렉토리의 파일/폴더 목록:")
-        for item in files_folders: 
-            print(item)
-    except Exception as e:  # 예외 발생 시 에러 메시지 출력
-        print(f"목록을 가져오는 중 오류가 발생했습니다: {e}")
-
 b_is_exit = False
 
 while not b_is_exit:
@@ -44,12 +34,8 @@ while not b_is_exit:
         dest = input("복사할 위치를 입력하세요: ")
         copyFile(src, dest)
 
-# 리스트 함수를 호출
-    elif func == "리스트":
-        listFilesFolders()  
-
     elif func == "?":
-        print("도움말: 1, 2, 3 - 각각의 기능 선택, '복사' - 파일 복사, '리스트' - 파일 및 폴더 목록 출력, '종료' - 프로그램 종료")
+        print("도움말: 1, 2, 3을 입력하여 기능을 선택하거나 '복사'를 입력하여 파일을 복사하거나 '종료'를 입력하여 종료합니다.")
 
     elif func.lower() == "종료":
         b_is_exit = True
