@@ -118,6 +118,17 @@ while not b_is_exit:
         content = input("작성할 내용을 입력하세요: ")
         FileManagement.writeToFile(file_path, content)
 
+    # 이름 변경 시, 생성되어 있는 파일/디렉토리 이름과 동일하게 입력할 경우 에러 발생
+    elif func == "8":
+        print("기능 8 실행.")
+        old_path = input("이름을 변경할 파일 또는 디렉토리의 경로를 입력하세요: ")
+        new_name = input("새로운 이름을 입력하세요: ")
+        try:
+            os.rename(old_path, new_name)
+            print(f"파일 또는 디렉토리 이름이 성공적으로 변경되었습니다.")
+        except Exception as e:
+            print(f"이름 변경 중 오류가 발생했습니다: {e}")
+
     elif func == "복사":
         src = input("복사할 파일의 경로를 입력하세요: ")
         dest = input("복사할 위치를 입력하세요: ")
