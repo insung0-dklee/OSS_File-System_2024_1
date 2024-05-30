@@ -26,6 +26,20 @@ def deleteFile(file_path):
     except Exception as e:
         print(f"파일 삭제 중 오류가 발생했습니다: {e}")
 
+def createDirectory(dir_path):
+    try:
+        os.makedirs(dir_path, exist_ok=True)
+        print(f"디렉토리가 성공적으로 생성되었습니다: {dir_path}")
+    except Exception as e:
+        print(f"디렉토리 생성 중 오류가 발생했습니다: {e}")
+
+def deleteDirectory(dir_path):
+    try:
+        shutil.rmtree(dir_path)
+        print(f"디렉토리가 성공적으로 삭제되었습니다: {dir_path}")
+    except Exception as e:
+        print(f"디렉토리 삭제 중 오류가 발생했습니다: {e}")
+
 b_is_exit = False
 
 while not b_is_exit:
@@ -43,7 +57,13 @@ while not b_is_exit:
 
     elif func == "3":
         print("기능 3 실행.")
-        # Add functionality for option 3 here
+        dir_path = input("생성할 디렉토리의 경로를 입력하세요: ")
+        createDirectory(dir_path)
+
+    elif func == "4":
+        print("기능 4 실행.")
+        dir_path = input("삭제할 디렉토리의 경로를 입력하세요: ")
+        deleteDirectory(dir_path)
 
     elif func == "복사":
         src = input("복사할 파일의 경로를 입력하세요: ")
