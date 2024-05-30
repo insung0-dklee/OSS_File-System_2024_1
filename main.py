@@ -61,6 +61,14 @@ def renameFile():
     except Exception as e:
         print("파일이름 변경 중 에러발생", e)
 
+def deleteFile():
+    try:
+        filepath = input("삭제할 파일의 경로 입력: ")
+        os.remove(filepath)
+        print(f"파일이 성공적으로 삭제되었습니다: {filepath}")
+    except Exception as e:
+        print(f"파일 삭제 중 오류가 발생했습니다: {e}")
+
 if __name__ == "__main__":
     b_is_exit = False
 
@@ -79,6 +87,10 @@ if __name__ == "__main__":
             print("기능 3 실행.")
             # Add functionality for option 3 here
 
+         if func == "4":
+            print("기능 4 실행: 파일 삭제")
+            deleteFile()
+
         elif func == "복사":
             src = input("복사할 파일의 경로를 입력하세요: ")
             dest = input("복사할 위치를 입력하세요: ")
@@ -90,7 +102,7 @@ if __name__ == "__main__":
             print(f"파일 유형은 {filetype}입니다.")
         
         elif func == "?":
-            print("도움말: 1, 2, 3을 입력하여 기능을 선택하거나 '복사'를 입력하여 파일을 복사하거나 '문서확인'을 입력하여 파일 유형을 확인하거나 '종료'를 입력하여 종료합니다.")
+            print("도움말: 1, 2, 3, 4을 입력하여 기능을 선택하거나 '복사'를 입력하여 파일을 복사하거나 '문서확인'을 입력하여 파일 유형을 확인하거나 '종료'를 입력하여 종료합니다.")
 
         elif func.lower() == "종료":
             b_is_exit = True
