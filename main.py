@@ -14,6 +14,22 @@ def copyFile(src, dest):
 
 b_is_exit = False
 
+def list_files(directory, show_extensions=True):
+    """
+    디렉토리와 확장자 표시 여부를 입력 받은 후 해당 경로의 파일을 나열
+
+    :매개변수 directory: 파일을 나열할 디렉토리
+    :매개변수 show_extensions: True일 때 파일 확장자 표시
+    """
+    try:
+        files = os.listdir(directory)
+        for file in files:
+            if not show_extensions:
+                file = os.path.splitext(file)[0]
+            print(file)
+    except Exception as e:
+        print(f"파일 목록을 가져오는 중 오류가 발생했습니다: {e}")
+
 while not b_is_exit:
     func = input("기능 입력 (? 입력시 도움말) : ")
 
@@ -34,8 +50,13 @@ while not b_is_exit:
         dest = input("복사할 위치를 입력하세요: ")
         copyFile(src, dest)
 
+    elif func == "확장자 확인":
+        directory = input("파일을 나열할 디렉토리 경로를 입력하세요: ")
+        show_extensions = input("파일 확장자를 표시하시겠습니까? (y/n): ").lower() == 'y'
+        list_files(directory, show_extensions)
+
     elif func == "?":
-        print("도움말: 1, 2, 3을 입력하여 기능을 선택하거나 '복사'를 입력하여 파일을 복사하거나 '종료'를 입력하여 종료합니다.")
+        print("도움말: 1, 2, 3을 입력하여 기능을 선택하거나 '복사'를 입력하여 파일을 복사하거나 '확장자 확인'을 입력하여 선택한 디렉토리에 있는 파일들의 확장자를 확인하거나 '종료'를 입력하여 종료합니다.")
 
     elif func.lower() == "종료":
         b_is_exit = True
