@@ -1,6 +1,10 @@
 
 import os
 import shutil
+import tkinter as tk
+from tkinter import filedialog
+from tkinter import messagebox
+import zipfile
 
 def getParentDir(path):
     return os.path.dirname(path)
@@ -43,3 +47,35 @@ while not b_is_exit:
 
     else:
         print("알 수 없는 입력입니다. 다시 시도해주세요.")
+       
+def select_file():
+    file_path = filedialog.askopenfilename()
+    if file_path:
+        file_label.config(text=f"Selected file: {file_path}")
+        selected_file.set(file_path)
+
+def compress_file():
+    file_path = selected_file.get()
+    if file_path:
+        zip_path = file_path + ".zip"
+        with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+            zipf.write(file_path, os.path.basename(file_path))
+        messagebox.showinfo("Success", f"File compressed to: {zip_path}")
+    else:
+        messagebox.showwarning("Warning", "No file selected")
+
+root = tk.Tk()
+root.title("파일 압축기")
+
+selected_file = tk.StringVar()
+
+select_button = tk.Button(root, text="파일 선택", command=select_file)
+select_button.pack(pady=10)
+
+file_label = tk.Label(root, text="파일을 선택하세요")
+file_label.pack(pady=10)
+
+compress_button = tk.Button(root, text="파일 압축", command=compress_file)
+compress_button.pack(pady=10)
+
+root.mainloop()
