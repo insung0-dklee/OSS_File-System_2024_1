@@ -7,10 +7,20 @@ cut_file 함수는 잘라낼 파일의 경로와 붙여넣을 경로를 매개�
 이때 붙여넣을 경로에 입력이 잘못됐을 경우 에러를 발생시킴
 b_is_exit 변수를 0으로 초기화하고
 1을 입력하였을때 잘라내기 기능이 구현되도록 함수를 작성하였음
+파일 시스템의 일부 기능을 gui로 변경함.   from tkinter import * 시용됨
+현재 gui로 구현된 기능: 복사하기, 잘라내기, 도움말, 종료
+구현된 기능에 한하여 결과가 팝업창으로 표시됨.  from tkinter import messagebox 사용
+추후 기능 추가시 gui 통합에 필요한 정보가 작성됨.
+cut_mode(): 복사 버튼을 위한 함수
+copy_mode(): 잘라내기 버튼을 위한 함수
+help_info(): 도움말 버튼을 위한 함수
 favorites : 즐겨찾기 목록
 addFavorite() : 원하는 파일을 즐겨찾기에 추가하는 함수
 showFavorites() : 즐겨찾기 안의 파일 목록을 순서대로 출력하는 함수
 """
+
+from tkinter import * 
+from tkinter import messagebox
 
 import os
 import shutil
@@ -196,19 +206,64 @@ Gets the parent directory of the specified path.
 def getParentDir(path):
     return os.path.dirname(path)
 
-def copyFile(src, dest):
-    try:
-        shutil.copy(src, dest)
-        print(f"파일이 성공적으로 복사되었습니다: {dest}")
-    except Exception as e:
-        print(f"파일 복사 중 오류가 발생했습니다: {e}")
+"""
+functions GUI option
+"""
 
-def cut_file(source, destination):
-    try:
-        shutil.move(source, destination)
-        print(f"{source} 파일이 {destination}으로 잘라내기 되었습니다.")
-    except Exception as e:
-        print(f"파일을 이동하는 중 오류가 발생했습니다: {e}")
+def help_info(): #도움말 보기
+    info = "잘라내기: 원하는 파일 주소와 목표 위치를 입력합니다.\n복사하기: 원하는 파일 주소와 목표 위치를 입력합니다.\n 기능2: \n 기능3"
+    messagebox.showinfo("도움말",info)
+
+def copy_mode(): # 복사 버튼
+    
+    def Copyfile(): 
+        src = ent1.get() # .get()으로 입력받은 내용을 문자열로 반환
+        dest = ent2.get()
+        try:
+            shutil.copy(src,dest)
+            messagebox.showinfo("결과",f"파일이 성공적으로 복사되었습니다: {dest}") # 실행 결과를 팝업창으로 표시
+
+        except Exception as e:
+            messagebox.showinfo("결과",f"파일 복사 중 오류가 발생했습니다: {e}")
+        cpwin.destroy() #복사 창 종료
+
+    cpwin = Tk() # 복사 창
+    cpwin.geometry("200x100+100+100")
+    cpwin.title("복사하기")
+    cpwin.resizable(False,False)
+
+    label_src = Label(cpwin,text = "복사 대상 입력").pack()
+    ent1 = Entry(cpwin)# 복사 대상의 주소를 입력 받는 창
+    ent1.pack()
+    label_dest = Label(cpwin,text = "붙여넣을 위치 입력").pack()
+    ent2 = Entry(cpwin) # 복사 목적지의 주소를 입력받는 창
+    ent2.pack()
+    OK= Button(cpwin,text="OK",command= Copyfile).pack() # OK 버튼을 누르면 Copyfile 함수 실행
+    
+def cut_mode(): # 잘라내기 버튼
+    
+    def Cutfile():
+        src = ent1.get() 
+        dest = ent2.get()
+        try:
+            shutil.move(src,dest)
+            messagebox.showinfo("결과",f"{src} 파일이 {dest}으로 잘라내기 되었습니다.")
+        except Exception as e:
+            messagebox.showinfo("결과",f"파일을 이동하는 중 오류가 발생했습니다: {e}")
+        cutwin.destroy() 
+
+    cutwin = Tk() 
+    cutwin.geometry("200x100+100+100")
+    cutwin.title("잘라내기")
+    cutwin.resizable(False,False)
+
+    label_src = Label(cutwin,text = "잘라낼 대상 입력").pack()
+    ent1 = Entry(cutwin)
+    ent1.pack()
+    label_dest = Label(cutwin,text = "붙여넣을 위치 입력").pack()
+    ent2 = Entry(cutwin)
+    ent2.pack()
+    OK= Button(cutwin,text="OK",command= Cutfile).pack() # OK 버튼을 누르면 Copyfile 함수 실행
 
 def read_file(file_path):
     with open(file_path, 'r') as file:
@@ -234,36 +289,21 @@ def showFavorites():
             print(f"{i}. {favorite}")
 
 
-b_is_exit = False
+window = Tk() #파일 관리 시스템 메인 GUI
+window.title("파일시스템")
+window.geometry("640x400+100+100")
+window.resizable(True,True)
 
-while not b_is_exit:
-    func = input("기능 입력 (? 입력시 도움말) : ")
+label0=Label(window, text="옵션", width=640, height=1, fg="black", relief="solid")
+label0.pack(side="top")
+label1=Label(window, width=640, height=2, relief="solid") #옵션 버튼을 정리하기 위한 라벨
+label1.pack(side="top")
 
-    if func == "1":
-        source = input("잘라낼 파일의 경로를 입력하세요: ")
-        destination = input("붙여넣을 경로를 입력하세요: ")
-        cut_file(source, destination)
-        print("잘라내기 완료")
-
-    elif func == "2":
-        print("기능 2 실행.")
-        # Add functionality for option 2 here
-
-    elif func == "3":
-        print("기능 3 실행.")
-        # Add functionality for option 3 here
-
-    elif func == "복사":
-        src = input("복사할 파일의 경로를 입력하세요: ")
-        dest = input("복사할 위치를 입력하세요: ")
-        copyFile(src, dest)
-
-    elif func == "?":
-        print("도움말: 1을 입력하여 잘라내기(이동)하거나 2, 3을 입력하여 기능을 선택하거나 '복사'를 입력하여 파일을 복사하거나 '종료'를 입력하여 종료합니다.")
-
-    elif func.lower() == "종료":
-        b_is_exit = True
-        print("프로그램을 종료합니다.")
-
-    else:
-        print("알 수 없는 입력입니다. 다시 시도해주세요.")
+# 아래의 버튼들은 전부 label1을 기준으로 배치가 됨. 
+option1 = Button(label1,text="잘라내기",command=cut_mode).pack(side = "left") # "command = 함수"로 기능 추가/ 주의: 함수(매개변수)로 입력하면 작동 안함. 
+option2 = Button(label1,text="기능2").pack(side = "left") # 함수에 매개 변수를 넣으려면 "command = lambda: 함수(매개변수)로 작성.
+option3 = Button(label1,text="기능3").pack(side = "left")
+copy = Button(label1,text="복사하기",command=copy_mode).pack(side = "left")# 복사 기능을 수행 하는 창을 생성하는 함수를 실행.
+help = Button(label1,text= "?",command=help_info).pack(side = "left") # 추후에 추가될 기능에 대한 설명을 보여주는 방향 
+exit = Button(label1,text= "종료",bg="red",command = window.destroy).pack(side = "left") #종료 버튼
+window.mainloop()
