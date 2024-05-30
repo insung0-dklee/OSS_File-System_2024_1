@@ -48,7 +48,7 @@ def identify_office_file(filepath):
             except zipfile.BadZipFile:
                 pass
 
-    return "MS Office 파일이 아닌 UNKNOWN."
+    return "MS Office 파일이 아닌 UNKNOWN"
 
 def renameFile():
     try:
