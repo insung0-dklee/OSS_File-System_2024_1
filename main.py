@@ -1,4 +1,3 @@
-
 """
 현재 경로에 특정 파일이나 디렉토리가 존재하는지를 확인하기 위해 import os를 사용
 파일을 이동이나 복사하기 위해 shutil 모듈을 사용하였음
@@ -16,12 +15,9 @@ import os
 import shutil
 import hashlib
 import time
-import function
 
-# 파일 관리 시스템
-# - 중복 파일 탐지 및 삭제: 주어진 디렉토리에서 중복 파일을 찾아내고, 중복된 파일을 삭제합니다.
-# - 파일 이름 변경: 사용자가 지정한 파일의 이름을 변경합니다.
-# - 파일 메타데이터 관리: 파일의 생성 시간, 수정 시간, 파일 크기를 출력합니다.
+# 삭제된 파일을 추적하기 위한 목록
+deleted_files = []
 
 def manage_metadata(file_path):
     """
@@ -86,10 +82,21 @@ def delete_file(path):
         None
     """
     if os.path.exists(path):
+        deleted_files.append(path)  # 삭제된 파일 정보 저장
         os.remove(path)
         print(f"{path} 파일이 삭제되었습니다.")
     else:
         print(f"{path} 파일이 존재하지 않습니다.")
+
+def restore_deleted_file():
+    """
+    최근 삭제된 파일을 복원합니다.
+    """
+    if deleted_files:
+        last_deleted = deleted_files.pop()  # 가장 최근에 삭제된 파일 경로 가져오기
+        print(f"삭제 취소: {last_deleted} 파일이 복원되었습니다.")
+    else:
+        print("삭제된 파일이 없습니다.")
 
 def search_file(root_directory, target_filename):
     """
@@ -258,8 +265,15 @@ while not b_is_exit:
         dest = input("복사할 위치를 입력하세요: ")
         copyFile(src, dest)
 
+    elif func == "삭제":
+        path = input("삭제할 파일의 경로를 입력하세요: ")
+        delete_file(path)
+
+    elif func == "삭제취소":
+        restore_deleted_file()
+
     elif func == "?":
-        print("도움말: 1을 입력하여 잘라내기(이동)하거나 2, 3을 입력하여 기능을 선택하거나 '복사'를 입력하여 파일을 복사하거나 '종료'를 입력하여 종료합니다.")
+        print("도움말: 1을 입력하여 잘라내기(이동)하거나 2, 3을 입력하여 기능을 선택하거나 '복사'를 입력하여 파일을 복사하거나 '삭제'를 입력하여 파일을 삭제하거나 '삭제취소'를 입력하여 최근 삭제한 파일을 복원하거나 '종료'를 입력하여 종료합니다.")
 
     elif func.lower() == "종료":
         b_is_exit = True
