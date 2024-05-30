@@ -5,6 +5,7 @@ import shutil
 def getParentDir(path):
     return os.path.dirname(path)
 
+
 def copyFile(src, dest):
     try:
         shutil.copy(src, dest)
@@ -73,3 +74,4 @@ while not b_is_exit:
 
     else:
         print("알 수 없는 입력입니다. 다시 시도해주세요.")
+
