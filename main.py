@@ -47,6 +47,16 @@ def moveFile(src, dest):
     except Exception as e:
         print(f"파일 이동 중 오류가 발생했습니다: {e}")
 
+class FileManagement:
+    @staticmethod
+    def findFileInCurrentDirectory():
+        """
+        현재 작업 디렉토리에 있는 모든 파일을 찾습니다.
+        """
+        current_directory = os.getcwd()
+        files_in_current_directory = os.listdir(current_directory)
+        return files_in_current_directory
+
 b_is_exit = False
 
 while not b_is_exit:
@@ -77,6 +87,17 @@ while not b_is_exit:
         src = input("이동할 파일의 경로를 입력하세요: ")
         dest = input("이동할 위치의 디렉토리 경로를 입력하세요: ")
         moveFile(src, dest)
+
+    elif func == "6":
+        print("기능 6 실행.")
+        print("현재 디렉토리에 있는 모든 파일 찾기.")
+        files  = FileManagement.findFileInCurrentDirectory()
+        if files:
+            print("현재 디렉토리에 있는 모든 파일:")
+            for file in files:
+                print(file)
+        else:
+            print("현재 디렉토리에 파일이 없습니다.")
 
     elif func == "복사":
         src = input("복사할 파일의 경로를 입력하세요: ")
