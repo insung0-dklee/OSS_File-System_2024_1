@@ -5,6 +5,18 @@ import shutil
 def getParentDir(path):
     return os.path.dirname(path)
 
+def sortedfilesbyname(directory):
+    try:
+        files = os.listdir(directory)
+        #Returns to the list of files inside a directory
+        files.sort() #Sort by name
+        print("정렬이 끝났습니다.")
+        return files
+    except Exception as e: 
+        print(f"정렬에 실패 했습니다 : {e}") 
+        #Output message and cause when an error occurs
+        return []
+
 def copyFile(src, dest):
     try:
         shutil.copy(src, dest)
