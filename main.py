@@ -1,6 +1,6 @@
-
 import os
 import shutil
+import function
 
 def getParentDir(path):
     return os.path.dirname(path)
@@ -34,8 +34,17 @@ while not b_is_exit:
         dest = input("복사할 위치를 입력하세요: ")
         copyFile(src, dest)
 
+    elif func == "일괄 변경":
+        function.fileNamer()
+
     elif func == "?":
-        print("도움말: 1, 2, 3을 입력하여 기능을 선택하거나 '복사'를 입력하여 파일을 복사하거나 '종료'를 입력하여 종료합니다.")
+        print("""
+"1"\t: 기능을 입력
+"2"\t: 기능을 입력
+"3"\t: 기능을 입력
+'복사'\t: 파일 복사
+'일괄 변경'\t: 여러 개의 파일명을 일괄 변경
+'종료'\t: 종료""")
 
     elif func.lower() == "종료":
         b_is_exit = True
