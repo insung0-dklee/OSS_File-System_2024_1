@@ -272,6 +272,21 @@ def extract_zip(zip_path):
     except Exception as e:
         print(f"파일 해제 중 오류가 발생했습니다: {e}")
 
+def list_file_creation_times(directory):
+    """
+    사용자가 입력한 디렉토리 내부의 모든 파일들의 생성 시간을 출력합니다.
+    
+    매개변수 directory: 파일 생성 시간을 출력할 디렉토리의 경로
+    """
+    try:
+        for filename in os.listdir(directory):
+            file_path = os.path.join(directory, filename)
+            if os.path.isfile(file_path):
+                created_time = os.path.getctime(file_path)
+                created_time_readable = time.ctime(created_time)
+                print(f"{filename}: 생성 시간 - {created_time_readable}")
+    except Exception as e:
+        print(f"파일 생성 시간 출력 중 오류가 발생했습니다: {e}")
 
 
 
@@ -307,6 +322,10 @@ while not b_is_exit:
     elif func == "압축해제":
         zip_path = input("해제할 zip 파일의 경로를 입력하세요: ")
         extract_zip(zip_path)
+
+    elif func == "생성시간":
+        directory = input("생성 시간을 확인할 디렉토리 경로를 입력하세요: ")
+        list_file_creation_times(directory)
 
     elif func == "?":
         print("도움말: 1을 입력하여 잘라내기(이동)하거나 2, 3을 입력하여 기능을 선택하거나 '복사'를 입력하여 파일을 복사하거나 '종료'를 입력하여 종료합니다.")
