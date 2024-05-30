@@ -17,6 +17,7 @@ import shutil
 import hashlib
 import time
 import function
+import zipfile
 
 # 파일 관리 시스템
 # - 중복 파일 탐지 및 삭제: 주어진 디렉토리에서 중복 파일을 찾아내고, 중복된 파일을 삭제합니다.
@@ -234,6 +235,30 @@ def showFavorites():
             print(f"{i}. {favorite}")
 
 
+
+def compress_file(file_path):
+    """
+    사용자가 파일경로를 입력하면 해당파일을 zip으로 압축합니다.
+    
+    매개변수 file_path (str): 압축할 파일의 경로
+
+    """
+    try:
+        # 압축할 파일의 디렉토리와 파일 이름 추출
+        file_dir = os.path.dirname(file_path)
+        file_name = os.path.basename(file_path)
+        # 출력 zip 파일 경로 설정
+        output_zip = os.path.join(file_dir, f"{file_name}.zip")
+        
+        with zipfile.ZipFile(output_zip, 'w') as zipf:
+            zipf.write(file_path, file_name)
+        print(f"파일이 성공적으로 압축되었습니다: {output_zip}")
+    except Exception as e:
+        print(f"파일 압축 중 오류가 발생했습니다: {e}")
+
+
+
+
 b_is_exit = False
 
 while not b_is_exit:
@@ -257,6 +282,10 @@ while not b_is_exit:
         src = input("복사할 파일의 경로를 입력하세요: ")
         dest = input("복사할 위치를 입력하세요: ")
         copyFile(src, dest)
+
+    elif func == "파일압축":
+        file_path = input("압축할 파일의 경로를 입력하세요: ")
+        compress_file(file_path)
 
     elif func == "?":
         print("도움말: 1을 입력하여 잘라내기(이동)하거나 2, 3을 입력하여 기능을 선택하거나 '복사'를 입력하여 파일을 복사하거나 '종료'를 입력하여 종료합니다.")
