@@ -26,7 +26,20 @@ while not b_is_exit:
         # Add functionality for option 2 here
 
     elif func == "3":
-        print("기능 3 실행.")
+        '''
+        기능 3에 구현했습니다.
+        파일이나 폴더를 다른 곳으로 이동시키는 기능입니다.
+        place, new_place라는 변수로 각각의 경로를 받아서 new_place에 저장된
+        경로로 이동시킵니다. 그러나 new_place로 받을 때 \\로 끝나지 않으면 
+        옮기는 파일 또는 폴더명이 바뀌는 건 고칠 수 없었습니다.
+        '''
+        print("기능 3 파일 또는 폴더 이동 실행.")
+        place = input("이동시킬 파일 또는 폴더 이름까지 포함해서 경로 입력: ")
+        new_place = input("이동할 경로를 입력(경로 마지막에는 \\으로 끝내야 함.): ")
+        if os.path.exists(place):
+            shutil.move(place, new_place)
+        else:
+            print("파일이 존재하지 않아 이동시킬 수 없습니다.")
         # Add functionality for option 3 here
 
     elif func == "복사":
