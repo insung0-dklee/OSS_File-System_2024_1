@@ -43,3 +43,22 @@ while not b_is_exit:
 
     else:
         print("알 수 없는 입력입니다. 다시 시도해주세요.")
+
+def search_file(root_directory, target_filename):
+    """
+    특정 파일을 파일 시스템에서 검색하는 함수입니다.
+
+    :param root_directory: 검색을 시작할 루트 디렉토리
+    :param target_filename: 검색할 파일의 이름
+    :return: 파일의 경로 리스트 (파일이 여러 개일 경우)
+    """
+    matched_files = []
+
+    for dirpath, dirnames, filenames in os.walk(root_directory):
+        for filename in filenames:
+            if filename == target_filename:
+                matched_files.append(os.path.join(dirpath, filename))
+
+    return matched_files
+
+       
