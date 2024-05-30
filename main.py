@@ -1,3 +1,23 @@
+from glob import glob
+import os
+#경로를 통해 파일을 찾아내는 glob 사용
+path = "file/path/"  # 변경하고싶은 파일이 들어있는 경로를 복사해서 붙여넣기
+files = glob(os.path.join(path, '*'))
+
+for i, f in enumerate(files):
+    #인덱스와 요소를 차례로 반복하게 해주는 함수인 enumerate()를 이용해 파일에 접근
+
+    new_f = os.path.join(path,
+                         f'img_{i}{os.path.splitext(f)[1]}')  #파일 이름을 한번에 바꿈
+
+    if not os.path.exists(new_f):  # 새 파일명이 이미 존재하지 않는 경우에만 변경
+        try:
+            os.rename(f, new_f)
+            print("{f} -> {new_f}")
+        except Exception:
+            print("에러가 존재합니다. 파일명을 고치세요.")
+    else:
+        print("File {new_f}이 이미 존재합니다.")
 
 import os
 import shutil
