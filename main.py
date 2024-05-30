@@ -71,17 +71,12 @@ while not b_is_exit:
         src = input("복사할 파일의 경로를 입력하세요: ")
         dest = input("복사할 위치를 입력하세요: ")
         copyFile(src, dest)
-    """
-    Check the type of an office file and print the result.
 
-    Prompts the user to input the file path of the office file to be checked,
-    identifies the file type, and prints the result.
-    """
     elif func == "문서확인":
         filepath = input("확인할 파일의 경로를 입력하세요: ")
         filetype = identify_office_file(filepath)
         print(f"파일 유형은 {filetype}입니다.")
-
+    
     elif func == "?":
         print("도움말: 1, 2, 3을 입력하여 기능을 선택하거나 '복사'를 입력하여 파일을 복사하거나 '문서확인'을 입력하여 파일 유형을 확인하거나 '종료'를 입력하여 종료합니다.")
 
