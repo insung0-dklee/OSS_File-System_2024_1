@@ -56,6 +56,18 @@ class FileManagement:
         current_directory = os.getcwd()
         files_in_current_directory = os.listdir(current_directory)
         return files_in_current_directory
+    
+    @staticmethod
+    def writeToFile(file_path, content):
+        """
+        파일에 내용을 추가합니다.
+        """
+        try:
+            with open(file_path, 'a') as f:
+                f.write(content)
+            print(f"파일에 내용이 성공적으로 추가되었습니다: {file_path}")
+        except Exception as e:
+            print(f"파일에 내용 추가 중 오류가 발생했습니다: {e}")
 
 b_is_exit = False
 
@@ -98,6 +110,13 @@ while not b_is_exit:
                 print(file)
         else:
             print("현재 디렉토리에 파일이 없습니다.")
+
+    elif func == "7":
+        print("기능 7 실행.")
+        print("파일에 내용 작성.")
+        file_path = input("내용을 작성할 파일의 경로를 입력하세요: ")
+        content = input("작성할 내용을 입력하세요: ")
+        FileManagement.writeToFile(file_path, content)
 
     elif func == "복사":
         src = input("복사할 파일의 경로를 입력하세요: ")
