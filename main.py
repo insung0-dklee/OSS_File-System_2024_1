@@ -240,7 +240,7 @@ def compress_file(file_path):
     """
     사용자가 파일경로를 입력하면 해당파일을 zip으로 압축합니다.
     
-    매개변수 file_path (str): 압축할 파일의 경로
+    매개변수 file_path: 압축할 파일의 경로
 
     """
     try:
@@ -255,6 +255,23 @@ def compress_file(file_path):
         print(f"파일이 성공적으로 압축되었습니다: {output_zip}")
     except Exception as e:
         print(f"파일 압축 중 오류가 발생했습니다: {e}")
+
+def extract_zip(zip_path):
+    """
+    사용자가 입력한 경로의 zip 파일을 압축해제합니다.
+    
+    매개변수 zip_path: 해제할 zip 파일의 경로
+    """
+    try:
+        # zip 파일이 있는 디렉토리 추출
+        extract_to = os.path.dirname(zip_path)
+        
+        with zipfile.ZipFile(zip_path, 'r') as zipf:
+            zipf.extractall(extract_to)
+        print(f"파일이 성공적으로 해제되었습니다: {extract_to}")
+    except Exception as e:
+        print(f"파일 해제 중 오류가 발생했습니다: {e}")
+
 
 
 
@@ -286,6 +303,10 @@ while not b_is_exit:
     elif func == "파일압축":
         file_path = input("압축할 파일의 경로를 입력하세요: ")
         compress_file(file_path)
+
+    elif func == "압축해제":
+        zip_path = input("해제할 zip 파일의 경로를 입력하세요: ")
+        extract_zip(zip_path)
 
     elif func == "?":
         print("도움말: 1을 입력하여 잘라내기(이동)하거나 2, 3을 입력하여 기능을 선택하거나 '복사'를 입력하여 파일을 복사하거나 '종료'를 입력하여 종료합니다.")
