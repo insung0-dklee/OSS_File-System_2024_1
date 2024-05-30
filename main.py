@@ -1,9 +1,10 @@
-
 import os
 import shutil
 
+
 def getParentDir(path):
     return os.path.dirname(path)
+
 
 def copyFile(src, dest):
     try:
@@ -11,6 +12,21 @@ def copyFile(src, dest):
         print(f"파일이 성공적으로 복사되었습니다: {dest}")
     except Exception as e:
         print(f"파일 복사 중 오류가 발생했습니다: {e}")
+
+def moveFile(src, dest): #파일 이동 함수
+    try:
+        shutil.move(src, dest) #파일 이동
+        print(f"파일이 성공적으로 이동되었습니다: {dest}")
+    except Exception as e:
+        print(f"파일 이동 중 오류가 발생했습니다: {e}")
+
+def createFolder(folder_path):
+    try:
+        os.makedirs(folder_path, exist_ok=True)  #폴더 생성# exist_ok=True: 폴더가 이미 존재하면 에러를 발생시키지 않음
+        print(f"폴더가 생성되었습니다: {folder_path}")
+    except Exception as e:
+        print(f"폴더 생성 중 오류가 발생했습니다: {e}")
+
 
 b_is_exit = False
 
@@ -34,8 +50,19 @@ while not b_is_exit:
         dest = input("복사할 위치를 입력하세요: ")
         copyFile(src, dest)
 
+    elif func == "이동":
+        src = input("이동할 파일의 경로를 입력하세요: ")
+        dest = input("이동할 위치를 입력하세요: ")
+        moveFile(src, dest)
+
+    elif func == "폴더":
+        folder_path = input("생성할 폴더의 경로를 입력하세요: ")
+        createFolder(folder_path)
+
     elif func == "?":
-        print("도움말: 1, 2, 3을 입력하여 기능을 선택하거나 '복사'를 입력하여 파일을 복사하거나 '종료'를 입력하여 종료합니다.")
+        print(
+            "도움말: 1, 2, 3을 입력하여 기능을 선택하거나 '복사'를 입력하여 파일을 복사하거나 '종료'를 입력하여 종료합니다."
+        )
 
     elif func.lower() == "종료":
         b_is_exit = True
