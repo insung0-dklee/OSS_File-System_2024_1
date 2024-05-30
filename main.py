@@ -39,6 +39,13 @@ def deleteDirectory(dir_path):
         print(f"디렉토리가 성공적으로 삭제되었습니다: {dir_path}")
     except Exception as e:
         print(f"디렉토리 삭제 중 오류가 발생했습니다: {e}")
+    
+def moveFile(src, dest):
+    try:
+        shutil.move(src, dest)
+        print(f"파일이 성공적으로 이동되었습니다: {dest}")
+    except Exception as e:
+        print(f"파일 이동 중 오류가 발생했습니다: {e}")
 
 b_is_exit = False
 
@@ -64,6 +71,12 @@ while not b_is_exit:
         print("기능 4 실행.")
         dir_path = input("삭제할 디렉토리의 경로를 입력하세요: ")
         deleteDirectory(dir_path)
+    
+    elif func == "5":
+        print("기능 5 실행.")
+        src = input("이동할 파일의 경로를 입력하세요: ")
+        dest = input("이동할 위치의 디렉토리 경로를 입력하세요: ")
+        moveFile(src, dest)
 
     elif func == "복사":
         src = input("복사할 파일의 경로를 입력하세요: ")
@@ -71,7 +84,7 @@ while not b_is_exit:
         copyFile(src, dest)
 
     elif func == "?":
-        print("도움말: 1, 2, 3을 입력하여 기능을 선택하거나 '복사' 입력하여 파일 복사, '종료' 입력하여 종료합니다.")
+        print("도움말: 1, 2, 3, 4, 5을 입력하여 기능을 선택하거나 '복사' 입력하여 파일 복사, '종료' 입력하여 종료합니다.")
 
     elif func.lower() == "종료":
         b_is_exit = True
