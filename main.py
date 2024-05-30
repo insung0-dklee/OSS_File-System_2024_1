@@ -1,4 +1,3 @@
-
 import os
 import shutil
 
@@ -11,6 +10,17 @@ def copyFile(src, dest):
         print(f"파일이 성공적으로 복사되었습니다: {dest}")
     except Exception as e:
         print(f"파일 복사 중 오류가 발생했습니다: {e}")
+
+def readTxtFile(file_path):
+    try:
+        if not os.path.isfile(file_path):
+            print(f"파일이 존재하지 않습니다: {file_path}")
+            return
+        with open(file_path, 'r', encoding='utf-8') as file:
+            content = file.read()
+            print(f"파일 내용:\n{content}")
+    except Exception as e:
+        print(f"파일 읽기 중 오류가 발생했습니다: {e}")
 
 b_is_exit = False
 
@@ -34,8 +44,12 @@ while not b_is_exit:
         dest = input("복사할 위치를 입력하세요: ")
         copyFile(src, dest)
 
+    elif func == "읽기 txt":
+        file_path = input("읽을 txt 파일의 경로를 입력하세요: ")
+        readTxtFile(file_path)
+
     elif func == "?":
-        print("도움말: 1, 2, 3을 입력하여 기능을 선택하거나 '복사'를 입력하여 파일을 복사하거나 '종료'를 입력하여 종료합니다.")
+        print("도움말: 1, 2, 3을 입력하여 기능을 선택하거나 '복사'를 입력하여 파일을 복사하거나 '읽기 txt'를 입력하여 텍스트 파일을 읽거나 '종료'를 입력하여 종료합니다.")
 
     elif func.lower() == "종료":
         b_is_exit = True
