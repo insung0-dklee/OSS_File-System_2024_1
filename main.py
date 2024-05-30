@@ -1,37 +1,45 @@
+
 import os
-from create_directory import create_directory
-from list_directory_contents import list_directory_contents
-from delete_file_or_directory import delete_file_or_directory
+import shutil
 
-def display_menu():
-    print("1. 디렉토리 생성")
-    print("2. 디렉토리 내용물 확인")
-    print("3. 파일 또는 디렉토리 삭제")
-    print("4. 종료")
+def getParentDir(path):
+    return os.path.dirname(path)
 
-def main():
-    while True:
-        display_menu()
-        choice = input("선택할 기능을 입력하세요: ")
+def copyFile(src, dest):
+    try:
+        shutil.copy(src, dest)
+        print(f"파일이 성공적으로 복사되었습니다: {dest}")
+    except Exception as e:
+        print(f"파일 복사 중 오류가 발생했습니다: {e}")
 
-        if choice == "1":
-            dir_name = input("생성할 디렉토리 이름을 입력하세요: ")
-            create_directory(dir_name)
+b_is_exit = False
 
-        elif choice == "2":
-            dir_path = input("내용물을 확인할 디렉토리 경로를 입력하세요 (비워두면 현재 디렉토리): ")
-            list_directory_contents(dir_path)
+while not b_is_exit:
+    func = input("기능 입력 (? 입력시 도움말) : ")
 
-        elif choice == "3":
-            path = input("삭제할 파일 또는 디렉토리 경로를 입력하세요: ")
-            delete_file_or_directory(path)
+    if func == "1":
+        print("기능 1 실행.")
+        # Add functionality for option 1 here
 
-        elif choice == "4":
-            print("프로그램을 종료합니다.")
-            break
+    elif func == "2":
+        print("기능 2 실행.")
+        # Add functionality for option 2 here
 
-        else:
-            print("잘못된 입력입니다. 다시 시도해주세요.")
+    elif func == "3":
+        print("기능 3 실행.")
+        # Add functionality for option 3 here
 
-if __name__ == "__main__":
-    main()
+    elif func == "복사":
+        src = input("복사할 파일의 경로를 입력하세요: ")
+        dest = input("복사할 위치를 입력하세요: ")
+        copyFile(src, dest)
+
+    elif func == "?":
+        print("도움말: 1, 2, 3을 입력하여 기능을 선택하거나 '복사'를 입력하여 파일을 복사하거나 '종료'를 입력하여 종료합니다.")
+
+    elif func.lower() == "종료":
+        b_is_exit = True
+        print("프로그램을 종료합니다.")
+
+    else:
+        print("알 수 없는 입력입니다. 다시 시도해주세요.")
