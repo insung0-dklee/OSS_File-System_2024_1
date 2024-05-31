@@ -267,3 +267,47 @@ while not b_is_exit:
 
     else:
         print("알 수 없는 입력입니다. 다시 시도해주세요.")
+
+
+def compare_and_display_file_metadata(file1_path, file2_path):
+    """
+    Compares and displays metadata of two files, including creation time, modification time, and size.
+    
+    @Param
+        file1_path : The path of the file 1.
+        file2_path : The path of the file 2.
+
+    @Return
+        None
+
+    @Raises
+        Prints an error message if the operation fails.
+    """
+    try:
+        metadata1 = {
+            'created_time': os.path.getctime(file1_path),
+            'modified_time': os.path.getmtime(file1_path),
+            'size': os.path.getsize(file1_path)
+        }
+        metadata2 = {
+            'created_time': os.path.getctime(file2_path),
+            'modified_time': os.path.getmtime(file2_path),
+            'size': os.path.getsize(file2_path)
+        }
+
+        for key, value in metadata1.items():
+            readable_value1 = value
+            readable_value2 = metadata2[key]
+
+            if key in ['created_time', 'modified_time']:
+                readable_value1 = time.ctime(value)
+                readable_value2 = time.ctime(metadata2[key])
+
+            elif key == 'size':
+                readable_value1 = get_human_readable_size(value)
+                readable_value2 = get_human_readable_size(metadata2[key])
+
+            print(f"{key.replace('_', ' ').title()}: 파일1 -> {readable_value1}, 파일2 -> {readable_value2}")
+
+    except Exception as e:
+        print(f"Error: {e}")
