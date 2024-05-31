@@ -17,6 +17,7 @@ import shutil
 import hashlib
 import time
 import function
+import hashlib
 
 # 파일 관리 시스템
 # - 중복 파일 탐지 및 삭제: 주어진 디렉토리에서 중복 파일을 찾아내고, 중복된 파일을 삭제합니다.
@@ -234,6 +235,53 @@ def showFavorites():
             print(f"{i}. {favorite}")
 
 
+def save_hash(file_path):
+    """
+    경로의 파일의 해시 값을 계산하는 함수
+    
+    @Param
+        file_path : 해시 값을 계산할 파일의 경로
+        
+    @Return
+        생성된 해시 값
+        
+    @Raises
+        FileNotFoundError : 파일 경로가 존재 하지 않을때 발생
+        IOError : 파일 읽기에 실패시 발생
+    """
+    hasher = hashlib.sha256()
+    with open(file_path, 'rb') as f:
+        buf = f.read(4096)
+        while buf:
+            hasher.update(buf)
+            buf = f.read(4096)
+    return hasher.hexdigest()
+
+
+def check_integrity(origin_hash, file_path):
+    """
+    경로상 파일의 저장된 원본 해시값과 현재 해시값을 비교해 무결성을 검사하는 함수
+    
+    @Param
+        origin_hash: 비교할 원본 해시 값
+        file_path: 무결성을 확인할 파일의 경로
+        
+    @Return
+        없음
+        
+    @Raises
+        FileNotFoundError : 파일 경로가 존재 하지 않을때 발생
+        IOError : 파일 읽기에 실패시 발생
+    """
+    current_hash = save_hash(file_path)
+    if current_hash == origin_hash:
+        print(f"{file_path}의 무결성 : 정상")
+    else:
+        print(f"{file_path}의 무결성 : 손상\nCurrent Hash: {current_hash}\nOrigin Hash: {origin_hash}")
+
+
+
+origin_hash = "" #해시값 저장을 위한 변수
 b_is_exit = False
 
 while not b_is_exit:
@@ -260,6 +308,18 @@ while not b_is_exit:
 
     elif func == "?":
         print("도움말: 1을 입력하여 잘라내기(이동)하거나 2, 3을 입력하여 기능을 선택하거나 '복사'를 입력하여 파일을 복사하거나 '종료'를 입력하여 종료합니다.")
+
+
+    elif func == "해시 저장":
+        file_path = input("파일 경로를 입력하세요 : ")
+        origin_hash = origin_hash = save_hash(file_path)
+        print(f"원본 해시: {origin_hash}")
+
+
+    elif func == "무결성 검사":
+        file_path = input("파일 경로를 입력하세요 : ")
+        check_integrity(origin_hash,file_path)
+
 
     elif func.lower() == "종료":
         b_is_exit = True
