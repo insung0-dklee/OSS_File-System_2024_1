@@ -9,7 +9,7 @@ b_is_exit 변수를 0으로 초기화하고
 1을 입력하였을때 잘라내기 기능이 구현되도록 함수를 작성하였음
 favorites : 즐겨찾기 목록
 addFavorite() : 원하는 파일을 즐겨찾기에 추가하는 함수
-showFavorites() : 즐겨찾기 안의 파일 목록을 순서대로 출력하는 함수
+showFavorites() : 즐겨찾기 안의 파일 목록을 순서대로 출력하는 함수 
 """
 
 import os
@@ -232,6 +232,26 @@ def showFavorites():
         print("즐겨찾기 목록:")
         for i, favorite in enumerate(favorites, 1):
             print(f"{i}. {favorite}")
+
+def removeFavorite():
+    """
+    즐겨찾기 목록에 파일이 존재한다면 파일 번호를 포함한 즐겨찾기 목록을 출력
+    제거할 파일의 번호를 입력받은 후, 해당 파일을 제거
+    """
+
+    if not favorites:
+        print("현재 즐겨찾기 목록이 비어있습니다.")
+    else:
+        print("즐겨찾기 목록:")
+        for i, favorite in enumerate(favorites, 1):
+            print(f"{i}. {favorite}")
+
+        index = int(input("제거할 파일의 번호를 입력하세요: "))
+        if 1 <= index <= len(favorites):
+            removed_favorite = favorites.pop(index - 1)
+            print(f"{removed_favorite} 가 즐겨찾기에서 제거되었습니다.")
+        else:
+            print("해당 번호의 파일이 존재하지 않습니다. 제거할 파일의 번호를 다시 입력해주세요.")
 
 
 b_is_exit = False
