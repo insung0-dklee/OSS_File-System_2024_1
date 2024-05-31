@@ -258,8 +258,14 @@ while not b_is_exit:
         dest = input("복사할 위치를 입력하세요: ")
         copyFile(src, dest)
 
+    elif func.lower() == "다중 복사":
+        file_paths = input("복사할 파일들의 경로를 입력하세요 (여러 개의 파일 경로를 공백으로 구분하여 입력): ").split()
+        dest = input("복사할 위치를 입력하세요: ")
+        for src in file_paths:
+            copyFile(src, dest)    
+
     elif func == "?":
-        print("도움말: 1을 입력하여 잘라내기(이동)하거나 2, 3을 입력하여 기능을 선택하거나 '복사'를 입력하여 파일을 복사하거나 '종료'를 입력하여 종료합니다.")
+        print("도움말: 1을 입력하여 잘라내기(이동)하거나 2, 3을 입력하여 기능을 선택하거나 '복사 or 다중복사'를 입력하여 파일을 복사하거나 '종료'를 입력하여 종료합니다.")
 
     elif func.lower() == "종료":
         b_is_exit = True
