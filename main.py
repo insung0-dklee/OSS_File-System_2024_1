@@ -18,6 +18,27 @@ import hashlib
 import time
 import function
 
+def encrypt_file(file_path): 
+    """
+    파일을 sha256 암호화하는 기능
+    """
+    try: #파일 내용을 읽어, sha256으로 변환.
+        with open(file_path, 'rb') as file: 
+            file_content = file.read()
+            sha256_hash = hashlib.sha256(file_content).hexdigest()
+        
+        #그 후, 변환된 값을 다시 저장
+        with open(file_path, 'w') as file:
+            file.write(sha256_hash)
+        
+        #성공적으로 저장
+        return "File content has been hashed and saved."
+    except FileNotFoundError:
+        return "File not found. Please check the file path." # 파일을 찾을 수 없을때 나타나는 error
+    except Exception as e: #외의 에러 제어
+        return f"An error occurred: {e}"
+
+
 # 파일 관리 시스템
 # - 중복 파일 탐지 및 삭제: 주어진 디렉토리에서 중복 파일을 찾아내고, 중복된 파일을 삭제합니다.
 # - 파일 이름 변경: 사용자가 지정한 파일의 이름을 변경합니다.
