@@ -319,6 +319,20 @@ while not b_is_exit:
         dest = input("복사할 위치를 입력하세요: ")
         copyFile(src, dest)
 
+    elif func == "바로가기":
+        path = input("바로 가기가 가리킬 대상 파일 또는 디렉터리의 경로를 입력하세요: ")
+        dest = input("바로 가기를 생성할 위치와 이름을 포함한 경로를 입력하세요: ")
+        description = input("바로 가기에 대한 설명을 입력하세요: ")
+        CreateWindowsShortcut(path, dest, description)
+
+    elif func == "디스크사용량"
+        GetCdriveUsage()
+
+    elif func == "권한설정"
+        path = input("권한을 설정할 파일 또는 디렉터리의 경로을 입력하세요: ")
+        mode = input("파일 권한을 나타내는 8진수 값을 입력하세요: ")
+        SetPermissions(path, mode)
+
     elif func == "?":
         print("도움말: 1을 입력하여 잘라내기(이동)하거나 2, 3을 입력하여 기능을 선택하거나 '복사'를 입력하여 파일을 복사하거나 '종료'를 입력하여 종료합니다.")
 
