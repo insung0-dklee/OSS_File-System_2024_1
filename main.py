@@ -141,6 +141,27 @@ def search_file_content(root_directory, keyword, extensions=None):
 
     return matched_files
 
+def preview_file(file_path, num_lines=3):
+    """
+    주어진 파일의 첫 num_lines 줄을 미리보기 합니다.
+    
+    @Args
+        file_path(str): 미리보기 할 파일의 경로
+        num_lines(int): 미리보기 할 줄 수 (기본값은 3줄)
+    
+    @Returns
+        파일의 첫 num_lines줄
+    """
+    if not os.path.isfile(file_path):
+        return f"{file_path} 파일이 존재하지 않습니다."
+    
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            lines = [file.readline() for _ in range(num_lines)]
+        return ''.join(lines)
+    except Exception as e:
+        return f"파일을 읽는 중 오류가 발생했습니다: {e}"
+
 """
     입력한 경로의 디렉토리 내 파일 크기를 KB, MB처럼 사람이 읽기쉽게 변환하여 보여주는 함수
     매개변수 size_in_bytes: 바이트 단위의 파일 크기
@@ -315,6 +336,13 @@ while not b_is_exit:
                 print("키워드가 포함된 파일을 찾을 수 없습니다.")
         except Exception as e:
             print(f"검색 중 오류가 발생했습니다: {e}")
+
+    elif func == "미리보기":
+        print("미리보기는 .txt, .md, .py, .json 파일만 지원 가능합니다.")
+        file_path = input("미리보기할 파일의 경로를 입력하세요: ")
+        num_lines = int(input("미리보기할 줄 수를 입력하세요(기본값은 3줄): ") or 3)
+        preview = preview_file(file_path, num_lines)
+        print(f"파일 미리보기:\n{preview}")
 
     elif func == "?":
         print("도움말: 1을 입력하여 잘라내기(이동)하거나 2, 3을 입력하여 기능을 선택하거나 '복사'를 입력하여 파일을 복사하거나 '종료'를 입력하여 종료합니다.")
