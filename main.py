@@ -268,3 +268,24 @@ while not b_is_exit:
     else:
         print("알 수 없는 입력입니다. 다시 시도해주세요.")
 
+
+#Set the path for the log file (please set this to any path you prefer)
+log_file_path = "access_log.txt"
+
+"""
+Records file access(Read, write) information in the log.txt file only if it exists.
+@param
+file_path: The path of the accessed file.
+mode: The mode in which the file was accessed ('read', 'write').
+@return
+None
+@raises
+Prints an error message if the file operation fails.
+"""
+
+def log_access(file_path, mode):
+    if os.path.exists(log_file_path):
+        current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        log_message = f"{current_time} - {file_path} 파일에 {mode} 모드로 접근함\n"
+        with open(log_file_path, "a") as log_file:
+            log_file.write(log_message)
