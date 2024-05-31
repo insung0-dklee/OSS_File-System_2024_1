@@ -234,6 +234,23 @@ def showFavorites():
             print(f"{i}. {favorite}")
 
 
+# 도움말 출력 함수
+def print_help():
+    print("""
+    1: 잘라내기(이동)
+    2: 복사
+    3: 기능 3 실행
+    4: 기능 4 실행
+    5: 기능 5 실행
+    6: 기능 6 실행
+    7: 기능 7 실행
+    8: 기능 8 실행
+    9: 기능 9 실행
+    ?: 도움말 출력
+    종료: 프로그램 종료
+    """)
+
+
 b_is_exit = False
 
 while not b_is_exit:
@@ -246,20 +263,40 @@ while not b_is_exit:
         print("잘라내기 완료")
 
     elif func == "2":
-        print("기능 2 실행.")
-        # Add functionality for option 2 here
+        src = input("복사할 파일의 경로를 입력하세요: ")
+        dest = input("복사할 위치를 입력하세요: ")
+        copyFile(src, dest)
 
     elif func == "3":
         print("기능 3 실행.")
         # Add functionality for option 3 here
 
-    elif func == "복사":
-        src = input("복사할 파일의 경로를 입력하세요: ")
-        dest = input("복사할 위치를 입력하세요: ")
-        copyFile(src, dest)
+    elif func == "4":
+        print("기능 4 실행.")
+        # Add functionality for option 4 here
+
+    elif func == "5":
+        print("기능 5 실행.")
+        # Add functionality for option 5 here
+
+    elif func == "6":
+        print("기능 6 실행.")
+        # Add functionality for option 6 here
+
+    elif func == "7":
+        print("기능 7 실행.")
+        # Add functionality for option 7 here
+
+    elif func == "8":
+        print("기능 8 실행.")
+        # Add functionality for option 8 here
+
+    elif func == "9":
+        print("기능 9 실행.")
+        # Add functionality for option 9 here
 
     elif func == "?":
-        print("도움말: 1을 입력하여 잘라내기(이동)하거나 2, 3을 입력하여 기능을 선택하거나 '복사'를 입력하여 파일을 복사하거나 '종료'를 입력하여 종료합니다.")
+        print_help()
 
     elif func.lower() == "종료":
         b_is_exit = True
