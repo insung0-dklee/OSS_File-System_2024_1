@@ -1,4 +1,3 @@
-
 """
 현재 경로에 특정 파일이나 디렉토리가 존재하는지를 확인하기 위해 import os를 사용
 파일을 이동이나 복사하기 위해 shutil 모듈을 사용하였음
@@ -17,6 +16,7 @@ import shutil
 import hashlib
 import time
 import function
+
 
 # 파일 관리 시스템
 # - 중복 파일 탐지 및 삭제: 주어진 디렉토리에서 중복 파일을 찾아내고, 중복된 파일을 삭제합니다.
@@ -44,6 +44,7 @@ def manage_metadata(file_path):
     print(f"Modified Time: {modified_time_readable}")
     print(f"Size: {file_size} bytes")
 
+
 def find_duplicates(directory):
     """
     주어진 디렉토리에서 중복 파일을 찾아내고 중복된 파일의 경로를 반환합니다.
@@ -64,6 +65,7 @@ def find_duplicates(directory):
     # 중복된 파일만 반환
     return {hash: paths for hash, paths in duplicates.items() if len(paths) > 1}
 
+
 def remove_duplicates(duplicates):
     """
     중복된 파일을 삭제합니다.
@@ -73,6 +75,7 @@ def remove_duplicates(duplicates):
             # 중복된 파일 삭제
             os.remove(path)
             print(f"Deleted: {path}")
+
 
 # 지정한 파일을 삭제하는 함수
 def delete_file(path):
@@ -91,6 +94,7 @@ def delete_file(path):
     else:
         print(f"{path} 파일이 존재하지 않습니다.")
 
+
 def search_file(root_directory, target_filename):
     """
     특정 파일을 파일 시스템에서 검색하는 함수입니다.
@@ -107,23 +111,28 @@ def search_file(root_directory, target_filename):
 
     return matched_files
 
+
 """
     입력한 경로의 디렉토리 내 파일 크기를 KB, MB처럼 사람이 읽기쉽게 변환하여 보여주는 함수
     매개변수 size_in_bytes: 바이트 단위의 파일 크기
     리턴값 str: 사람이 읽기 쉬운 형식으로 변환된 파일 크기
 """
-def get_human_readable_size(size_in_bytes):
 
+
+def get_human_readable_size(size_in_bytes):
     for unit in ['B', 'KB', 'MB', 'GB', 'TB']:
         if size_in_bytes < 1024:
             return f"{size_in_bytes:.2f} {unit}"
         size_in_bytes /= 1024
+
 
 """
     주어진 디렉토리의 파일 크기를 사람이 읽기 쉬운 형식으로 출력
     매개변수 directory: 디렉토리 경로
     파일 사이즈 출력
 """
+
+
 def display_file_sizes(directory):
     try:
         for filename in os.listdir(directory):
@@ -135,6 +144,7 @@ def display_file_sizes(directory):
     except Exception as e:
         print(f"Error: {e}")
 
+
 """
 Moves a file from the source path to the destination path.
 @Param
@@ -145,12 +155,15 @@ Moves a file from the source path to the destination path.
 @Raises
     Prints an error message if the operation fails.
 """
+
+
 def move_file(source, destination):
     try:
         shutil.move(source, destination)
         print(f"Moved file from {source} to {destination}")
     except Exception as e:
         print(f"Error moving file: {e}")
+
 
 """
 Creates a directory at the specified path.
@@ -161,12 +174,15 @@ Creates a directory at the specified path.
 @Raises
     Prints an error message if the operation fails.
 """
+
+
 def create_directory(directory_path):
     try:
         os.makedirs(directory_path, exist_ok=True)
         print(f"Created directory {directory_path}")
     except Exception as e:
         print(f"Error creating directory: {e}")
+
 
 """
 Lists all files in the specified directory.
@@ -177,6 +193,8 @@ Lists all files in the specified directory.
 @Raises
     Prints an error message if the operation fails and returns an empty list.
 """
+
+
 def list_files(directory):
     try:
         files = os.listdir(directory)
@@ -186,6 +204,7 @@ def list_files(directory):
         print(f"Error listing files: {e}")
         return []
 
+
 """
 Gets the parent directory of the specified path.
 @Param
@@ -193,8 +212,11 @@ Gets the parent directory of the specified path.
 @Return
     The parent directory path.
 """
+
+
 def getParentDir(path):
     return os.path.dirname(path)
+
 
 def copyFile(src, dest):
     try:
@@ -203,6 +225,7 @@ def copyFile(src, dest):
     except Exception as e:
         print(f"파일 복사 중 오류가 발생했습니다: {e}")
 
+
 def cut_file(source, destination):
     try:
         shutil.move(source, destination)
@@ -210,20 +233,26 @@ def cut_file(source, destination):
     except Exception as e:
         print(f"파일을 이동하는 중 오류가 발생했습니다: {e}")
 
+
 def read_file(file_path):
     with open(file_path, 'r') as file:
         content = file.read()
     return content
 
+
 def create_and_write_file(file_path, content):
     with open(file_path, 'w') as file:
         file.write(content)
 
+
 favorites = []
+
+
 def addFavorite():
     path = input("즐겨찾기에 추가할 파일 경로를 입력하세요: ")
     favorites.append(path)
     print("즐겨찾기에 추가되었습니다.")
+
 
 def showFavorites():
     if not favorites:
@@ -246,20 +275,20 @@ while not b_is_exit:
         print("잘라내기 완료")
 
     elif func == "2":
-        print("기능 2 실행.")
-        # Add functionality for option 2 here
+        src = input("삭제할 파일의 경로를 입력하세요")
+        delete_file(src)
 
     elif func == "3":
-        print("기능 3 실행.")
-        # Add functionality for option 3 here
-
-    elif func == "복사":
         src = input("복사할 파일의 경로를 입력하세요: ")
         dest = input("복사할 위치를 입력하세요: ")
         copyFile(src, dest)
+    elif func =="4":
+        src = input("읽을 파일의 경로를 입력하세요: ")
+        file = read_file(src)
+        print(file)
 
     elif func == "?":
-        print("도움말: 1을 입력하여 잘라내기(이동)하거나 2, 3을 입력하여 기능을 선택하거나 '복사'를 입력하여 파일을 복사하거나 '종료'를 입력하여 종료합니다.")
+        print("도움말:\n1 : 잘라내기(이동)\n2 : 파일 삭제\n3 : 파일 복사\n4 : 파일 읽기\n종료 : 종료")
 
     elif func.lower() == "종료":
         b_is_exit = True
