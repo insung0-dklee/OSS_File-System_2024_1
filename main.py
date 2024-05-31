@@ -233,6 +233,17 @@ def showFavorites():
         for i, favorite in enumerate(favorites, 1):
             print(f"{i}. {favorite}")
 
+def change_permissions(path, mode):
+    """
+    파일 또는 디렉토리의 권한을 변경합니다.
+    :param path: 파일 또는 디렉토리 경로
+    :param mode: 권한 모드 (8진수 형태로 입력, 예: 0o755)
+    """
+    try:
+        os.chmod(path, mode)
+        print(f"{path}의 권한이 {oct(mode)}로 변경되었습니다.")
+    except Exception as e:
+        print(f"권한 변경 중 오류가 발생했습니다: {e}")
 
 b_is_exit = False
 
