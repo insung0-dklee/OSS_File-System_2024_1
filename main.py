@@ -16,6 +16,7 @@ import os
 import shutil
 import hashlib
 import time
+import zipfile
 import function
 
 # 파일 관리 시스템
@@ -232,7 +233,31 @@ def showFavorites():
         print("즐겨찾기 목록:")
         for i, favorite in enumerate(favorites, 1):
             print(f"{i}. {favorite}")
+# 압축 기능
+def zip_files(file_paths, zip_path):
+    try:
+        with zipfile.ZipFile(zip_path, 'w') as zipf:
+            for file in file_paths:
+                if os.path.isfile(file):
+                    zipf.write(file, os.path.basename(file))
+                else:
+                    print(f"경고: {file}은(는) 유효한 파일이 아니며 건너뛰기됩니다.")
+        print(f"파일이 {zip_path}로 압축되었습니다.")
+    except PermissionError:
+        print(f"오류: {zip_path}에 대한 권한이 거부되었습니다. 권한을 확인하세요.")
+    except Exception as e:
+        print(f"파일 압축 중 오류가 발생했습니다: {e}")
 
+# 압축 해제 기능
+def unzip_file(zip_path, extract_to):
+    try:
+        with zipfile.ZipFile(zip_path, 'r') as zipf:
+            zipf.extractall(extract_to)
+        print(f"파일이 {extract_to}로 추출되었습니다.")
+    except PermissionError:
+        print(f"오류: {zip_path}에 대한 권한이 거부되었습니다. 권한을 확인하세요.")
+    except Exception as e:
+        print(f"파일 추출 중 오류가 발생했습니다: {e}")
 
 b_is_exit = False
 
@@ -257,9 +282,19 @@ while not b_is_exit:
         src = input("복사할 파일의 경로를 입력하세요: ")
         dest = input("복사할 위치를 입력하세요: ")
         copyFile(src, dest)
+    
+    elif func == "압축":
+        file_paths = input("압축할 파일들의 경로를 쉼표로 구분하여 입력하세요: ").split(",")
+        zip_path = input("생성할 zip 파일의 경로를 입력하세요: ")
+        zip_files(file_paths, zip_path)
+
+    elif func == "압축해제":
+        zip_path = input("압축 해제할 zip 파일의 경로를 입력하세요: ")
+        extract_to = input("파일을 추출할 경로를 입력하세요: ")
+        unzip_file(zip_path, extract_to)
 
     elif func == "?":
-        print("도움말: 1을 입력하여 잘라내기(이동)하거나 2, 3을 입력하여 기능을 선택하거나 '복사'를 입력하여 파일을 복사하거나 '종료'를 입력하여 종료합니다.")
+        print("도움말: 1을 입력하여 잘라내기(이동)하거나 2, 3을 입력하여 기능을 선택하거나 '복사'를 입력하여 파일을 복사하거나 '압축'을 입력하여 파일을 압축하거나 '압축해제'를 입력하여 파일의 압축을 해제하거나 '종료'를 입력하여 종료합니다.")
 
     elif func.lower() == "종료":
         b_is_exit = True
