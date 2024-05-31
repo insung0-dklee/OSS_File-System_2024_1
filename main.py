@@ -14,6 +14,9 @@ showFavorites() : 즐겨찾기 안의 파일 목록을 순서대로 출력하는
 
 from Control import Bookmark
 from Control import FileEdit
+from Control import FileControl
+from Control import Duplicates
+from Control import Readable
 # 파일 관리 시스템
 # - 중복 파일 탐지 및 삭제: 주어진 디렉토리에서 중복 파일을 찾아내고, 중복된 파일을 삭제합니다.
 # - 파일 이름 변경: 사용자가 지정한 파일의 이름을 변경합니다.
@@ -26,30 +29,35 @@ while not b_is_exit:
     func = input("원하는 기능을 입력하세요. ('?' 입력시 도움말)")
     bookmark_list = []
 
-    if func == "파일 편집":
+    if func == "파일편집":
         print("파일 편집 기능 실행")
         FileEdit.file_edit()
 
     elif func == "즐겨찾기":
         print("즐겨찾기 기능 실행.")
         Bookmark.bookmark(bookmark_list)
-        # Add functionality for option 2 here
 
-    elif func == "파일 관리":
+    elif func == "파일관리":
         print("파일 관리 기능 실행")
-        # Add functionality for option 3 here
+        FileControl.file_control()
 
     elif func == "가독성":
         print("가독성 기능 실행")
+        Readable.readable()
+
+    elif func == "중복관리":
+        print("중복 관리 기능 실행")
+        Duplicates.duplicates()
 
     elif func == "?":
         print("""
                 [도움말]
-                1 을 입력하여 잘라내기(이동)하거나
-                '즐겨찾기' 입력시 즐겨찾기 기능 실행
-                3을 입력하여 기능을 선택하거나 
-                '복사' 입력시 파일을 복사하거나 
-                '종료'를 입력하여 종료합니다.
+                '파일편집' 입력시 파일을 편집할 수 있습니다.
+                '즐겨찾기' 입력시 즐겨찾기 기능을 사용할 수 있습니다.
+                '파일관리' 입력시 파일을 관리할 수 있습니다.
+                '가독성'   입력시 파일의 단위를 읽기 좋게 볼 수 있습니다.
+                '중복관리' 입력시 중복 파일을 관리할 수 있습니다.
+                '종료'     입력시 프로그램을 종료합니다.
             """)
 
     elif func.lower() == "종료":
@@ -57,4 +65,4 @@ while not b_is_exit:
         print("프로그램을 종료합니다.")
 
     else:
-        print("알 수 없는 입력입니다. 다시 시도해주세요.")
+        print("잘못 입력하셨습니다. 다시 입력해주세요. : ")

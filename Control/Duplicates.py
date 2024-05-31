@@ -4,6 +4,7 @@
 import os
 import hashlib
 
+
 def duplicates():
 
     finish = False

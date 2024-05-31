@@ -27,7 +27,7 @@ def bookmark(bookmark : List):
             finish = True
         
         else:
-            print("잘못 입력하셨습니다. 다시 입력해주세요.")
+            print("잘못 입력하셨습니다. 다시 입력해주세요. : ")
 
 def showFavorites(bookmark: List):
     if not bookmark:

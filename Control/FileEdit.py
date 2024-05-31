@@ -24,7 +24,7 @@ def file_edit():
             print('파일 편집 기능을 종료합니다.')
             finish = True
         else:
-            print("잘못된 입력입니다. 다시 입력해주세요.")
+            print("잘못 입력하셨습니다. 다시 입력해주세요. : ")
 
 
 def read_file():

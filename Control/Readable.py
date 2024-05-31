@@ -4,8 +4,11 @@
 
 import os
 
+def readable():
+    finish = False
+    while not finish:
 
-
+        select = input()
 
 
 """

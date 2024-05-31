@@ -15,25 +15,36 @@ def file_control():
         select = input("원하는 기능을 입력하세요. ('?' 입력시 도움말)")
 
         if select == '?':
-        
-        elif select == '':
-        
-        elif select == '':
-        
-        elif select == '':
-        
-        elif select == '':
-        
-        else select == '':
+            print("도움말")
+        elif select == '메타데이터 출력':
+            manage_metadata()
+        elif select == '삭제':
+            delete_file()
+        elif select == '검색':
+            search_file
+        elif select == '이동':
+            move_file()
+        elif select == '디렉토리 생성':
+            create_directory()
+        elif select == '파일 목록':
+            list_files()
+        elif select == '부모 디렉토리 확인':
+            getParentDir()
+        elif select == '복사':
+            copyFile()
+        elif select == '잘라내기':
+            cut_file()
+        else:
+            print("잘못 입력하셨습니다. 다시 입력해주세요. : ")
 
 
 
 
-
-def manage_metadata(file_path):
+def manage_metadata():
     """
     주어진 파일의 메타데이터를 관리합니다.
     """
+    file_path = input("메타데이터 확인을 원하는 파일의 경로를 입력하세요. : ")
     # 파일 생성 및 수정 시간 가져오기
     created_time = os.path.getctime(file_path)
     modified_time = os.path.getmtime(file_path)
@@ -55,7 +66,7 @@ def manage_metadata(file_path):
 
 
 # 지정한 파일을 삭제하는 함수
-def delete_file(path):
+def delete_file():
     """
     파일의 경로를 받아 해당 파일을 삭제
     
@@ -65,19 +76,26 @@ def delete_file(path):
     Returns:
         None
     """
+    path = input("삭제를 원하는 파일의 경로를 입력하세요. : ")
+
     if os.path.exists(path):
         os.remove(path)
         print(f"{path} 파일이 삭제되었습니다.")
     else:
         print(f"{path} 파일이 존재하지 않습니다.")
 
-def search_file(root_directory, target_filename):
+
+
+def search_file():
     """
     특정 파일을 파일 시스템에서 검색하는 함수입니다.
     :param root_directory: 검색을 시작할 루트 디렉토리
     :param target_filename: 검색할 파일의 이름
     :return: 파일의 경로 리스트 (파일이 여러 개일 경우)
     """
+    root_directory = input("검색을 원하는 루트 디렉토리를 입력하세요, : ")
+    target_filename = input("검색할 파일의 이름을 입력하세요. : ")
+
     matched_files = []
 
     for dirpath, dirnames, filenames in os.walk(root_directory):
@@ -99,7 +117,9 @@ Moves a file from the source path to the destination path.
 @Raises
     Prints an error message if the operation fails.
 """
-def move_file(source, destination):
+def move_file():
+    source = input("원본 파일의 경로를 입력하세요. : ")
+    destination = input("이동할 디렉토리의 경로를 입력하세요. :")
     try:
         shutil.move(source, destination)
         print(f"Moved file from {source} to {destination}")
@@ -115,7 +135,9 @@ Creates a directory at the specified path.
 @Raises
     Prints an error message if the operation fails.
 """
-def create_directory(directory_path):
+def create_directory():
+
+    directory_path = input("원하는 경로를 입력하세요. :")
     try:
         os.makedirs(directory_path, exist_ok=True)
         print(f"Created directory {directory_path}")
@@ -131,7 +153,9 @@ Lists all files in the specified directory.
 @Raises
     Prints an error message if the operation fails and returns an empty list.
 """
-def list_files(directory):
+def list_files():
+
+    directory = input("원하는 디렉토리의 경로를 입력하세요. :")
     try:
         files = os.listdir(directory)
         print(f"Files in {directory}: {files}")
@@ -147,17 +171,24 @@ Gets the parent directory of the specified path.
 @Return
     The parent directory path.
 """
-def getParentDir(path):
+def getParentDir():
+    path = input("자식 디렉토리의 경로를 입력하세요. :")
     return os.path.dirname(path)
 
-def copyFile(src, dest):
+def copyFile():
+
+    src = input("원본 파일의 경로를 입력하세요. : ")
+    dest = input("복사할 경로를 입력하세요. :")
     try:
         shutil.copy(src, dest)
         print(f"파일이 성공적으로 복사되었습니다: {dest}")
     except Exception as e:
         print(f"파일 복사 중 오류가 발생했습니다: {e}")
 
-def cut_file(source, destination):
+def cut_file():
+
+    source = input("잘라낼 파일의 경로를 입력하세요. :")
+    destination = input("이동할 경로를 입력하세요. :")
     try:
         shutil.move(source, destination)
         print(f"{source} 파일이 {destination}으로 잘라내기 되었습니다.")
