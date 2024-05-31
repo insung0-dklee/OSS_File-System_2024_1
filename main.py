@@ -233,6 +233,25 @@ def showFavorites():
         for i, favorite in enumerate(favorites, 1):
             print(f"{i}. {favorite}")
 
+"""
+removeFavorite - 즐겨찾기 목록에 있는 파일을 숫자를 입력하여 원하는 파일을 즐겨찾기 목록에서 삭제.
+if not favorites - 즐겨찾기 목록에 파일이 있는지 확인.
+showFavorite을 이용하여 현재 즐겨찾기 목록에 파일 출력.
+"""
+def removeFavorite():
+    if not favorites:
+        print("현재 즐겨찾기 목록이 비어있습니다.")
+        return
+
+    showFavorites()
+    index = int(input("삭제하기를 원하는 파일의 번호를 입력하십시오: "))
+
+    if 0 < index <= len(favorites):
+        removed = favorites.pop(index - 1)
+        print(f"즐겨찾기에서 {removed} 파일이 삭제되었습니다.")
+    else:
+        print("잘못된 번호입니다. 다시 시도해주십시오.")
+
 
 b_is_exit = False
 
