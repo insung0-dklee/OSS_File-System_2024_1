@@ -233,6 +233,25 @@ def showFavorites():
         for i, favorite in enumerate(favorites, 1):
             print(f"{i}. {favorite}")
 
+#파일 크기에 따라 오름차순 혹은 내림차순으로 정렬하는 함수
+def sort_files_by_size(directory, reverse=False):
+    """
+    디렉토리 내의 파일을 크기에 따라 정렬합니다.
+    
+    Args:
+        directory (str): 파일을 검색할 디렉토리 경로
+        reverse (bool, optional): 크기의 역순으로 정렬할지 여부를 나타내는 플래그
+    
+    Returns:
+        list: 크기에 따라 정렬된 파일 경로 리스트
+    """
+    try:
+        files = [os.path.join(directory, filename) for filename in os.listdir(directory) if os.path.isfile(os.path.join(directory, filename))]
+        files.sort(key=lambda x: os.path.getsize(x), reverse=reverse)
+        return files
+    except Exception as e:
+        print(f"Error sorting files by size: {e}")
+        return []
 
 b_is_exit = False
 
@@ -267,3 +286,4 @@ while not b_is_exit:
 
     else:
         print("알 수 없는 입력입니다. 다시 시도해주세요.")
+
