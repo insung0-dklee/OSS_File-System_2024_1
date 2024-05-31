@@ -11,12 +11,13 @@ favorites : 즐겨찾기 목록
 addFavorite() : 원하는 파일을 즐겨찾기에 추가하는 함수
 showFavorites() : 즐겨찾기 안의 파일 목록을 순서대로 출력하는 함수
 """
-
+import sys
+from PyQt5.QtWidgets import QApplication
 import os
 import shutil
 import hashlib
 import time
-import function
+from UI import *
 
 # 파일 관리 시스템
 # - 중복 파일 탐지 및 삭제: 주어진 디렉토리에서 중복 파일을 찾아내고, 중복된 파일을 삭제합니다.
@@ -234,36 +235,8 @@ def showFavorites():
             print(f"{i}. {favorite}")
 
 
-b_is_exit = False
-
-while not b_is_exit:
-    func = input("기능 입력 (? 입력시 도움말) : ")
-
-    if func == "1":
-        source = input("잘라낼 파일의 경로를 입력하세요: ")
-        destination = input("붙여넣을 경로를 입력하세요: ")
-        cut_file(source, destination)
-        print("잘라내기 완료")
-
-    elif func == "2":
-        print("기능 2 실행.")
-        # Add functionality for option 2 here
-
-    elif func == "3":
-        print("기능 3 실행.")
-        # Add functionality for option 3 here
-
-    elif func == "복사":
-        src = input("복사할 파일의 경로를 입력하세요: ")
-        dest = input("복사할 위치를 입력하세요: ")
-        copyFile(src, dest)
-
-    elif func == "?":
-        print("도움말: 1을 입력하여 잘라내기(이동)하거나 2, 3을 입력하여 기능을 선택하거나 '복사'를 입력하여 파일을 복사하거나 '종료'를 입력하여 종료합니다.")
-
-    elif func.lower() == "종료":
-        b_is_exit = True
-        print("프로그램을 종료합니다.")
-
-    else:
-        print("알 수 없는 입력입니다. 다시 시도해주세요.")
+if __name__ == '__main__':
+    # 실행
+    app = QApplication(sys.argv)
+    UI().show()
+    sys.exit(app.exec_())

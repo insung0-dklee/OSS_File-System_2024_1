@@ -63,3 +63,46 @@ def fileNamer():
         print("파일을 찾을 수 없거나 실행 도중 파일이 변경되었습니다.")
     except FileExistsError:
         print("동일한 이름의 파일이 이미 존재합니다.")
+
+"""
+디렉토리 경로를 반환, 디렉토리 경로를 입력받아 이동하는 함수
+작성자 : 권혁준
+학번 : 22311905
+일자 : 2024-05-31
+기능 : 디렉토리 경로를 입력받아 이동을 시도하고, 실패하면 오류 출력
+       현재 디렉토리 경로를 반환
+"""
+
+
+# 디렉토리 경로를 이동하는 함수
+def moveDir(path):
+    try:
+        os.chdir(path)
+        return os.listdir('.')
+    except:
+        print(f"경로가 존재하지 않거나, 폴더가 아니거나, 권한이 없습니다.")
+
+# 현재 디렉토리의 경로를 반환하는 함수
+def currentDir():
+    return os.getcwd()
+
+"""
+디렉토리 경로가 이동 가능한지 확인하는 함수
+작성자 : 권혁준
+학번 : 22311905
+일자 : 2024-05-31
+기능 : 선택된 파일의 경로가 이동 가능한 경로인지 확인하고, 
+       이동 가능하면 경로를, 아니라면 False를 반환
+"""
+
+# 리스트 위젯을 더블클릭했을 때 호출
+# 선택한 경로로 이동을 시도하고, 이동이 되지 않는 경우 False를 반환
+def moveSelected(selected):
+    selected_path = os.path.join(os.getcwd(), selected)
+    try:
+        if os.path.isdir(selected_path):
+            return selected_path
+        else:
+            return False
+    except:
+        return False
