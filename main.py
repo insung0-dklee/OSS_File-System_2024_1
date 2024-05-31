@@ -17,6 +17,7 @@ import shutil
 import hashlib
 import time
 import function
+import schedule
 
 # 파일 관리 시스템
 # - 중복 파일 탐지 및 삭제: 주어진 디렉토리에서 중복 파일을 찾아내고, 중복된 파일을 삭제합니다.
@@ -232,6 +233,20 @@ def showFavorites():
         print("즐겨찾기 목록:")
         for i, favorite in enumerate(favorites, 1):
             print(f"{i}. {favorite}")
+ 
+            
+            
+def backup_directory(source_directory, backup_directory):
+    timestamp = time.strftime("%Y%m%d%H%M%S")
+    destination = os.path.join(backup_directory, f"backup_{timestamp}.zip")
+    compress_files([os.path.join(source_directory, f) for f in os.listdir(source_directory)], destination)
+    print(f"Backup created at {destination}")
+
+def schedule_backup(source_directory, backup_directory, interval_minutes):
+    schedule.every(interval_minutes).minutes.do(backup_directory, source_directory, backup_directory)
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
 
 
 b_is_exit = False
