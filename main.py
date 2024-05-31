@@ -233,6 +233,25 @@ def showFavorites():
         for i, favorite in enumerate(favorites, 1):
             print(f"{i}. {favorite}")
 
+#파일 이름 변경
+def rename_file(file_path, new_name):
+    """Rename a file."""
+    try:
+        os.rename(file_path, os.path.join(os.path.dirname(file_path), new_name))
+        print("File renamed successfully.")
+        #예외가 발생했을 때 오류 메시지를 출력
+    except OSError as e:
+        print(f"Error: Failed to rename file - {e}")
+
+#디렉토리 이름 변경
+def rename_directory(directory_path, new_name):
+    """Rename a directory."""
+    try:
+        os.rename(directory_path, os.path.join(os.path.dirname(directory_path), new_name))
+        print("Directory renamed successfully.")
+        #예외가 발생했을 때 오류 메시지를 출력
+    except OSError as e:
+        print(f"Error: Failed to rename directory - {e}")
 
 b_is_exit = False
 
