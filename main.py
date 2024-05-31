@@ -17,6 +17,7 @@ import shutil
 import hashlib
 import time
 import function
+from datetime import datetime
 
 # 파일 관리 시스템
 # - 중복 파일 탐지 및 삭제: 주어진 디렉토리에서 중복 파일을 찾아내고, 중복된 파일을 삭제합니다.
@@ -233,6 +234,21 @@ def showFavorites():
         for i, favorite in enumerate(favorites, 1):
             print(f"{i}. {favorite}")
 
+"""
+입력한 파일 경로의 파일 생성 시간을 가져와서 형식을 변환하여 반환하는 함수
+@PARAM 
+	path: 파일 경로
+@RETURN
+	변환된 파일 생성 시간(형식: '연도-월-일 시:분:초')
+"""
+def getFileCreationTime(path):
+    try:
+        timestamp = os.path.getctime(path)
+        creation_time = datetime.fromtimestamp(timestamp)
+        return creation_time.strftime('%Y-%m-%d %H:%M:%S')
+    except Exception as e:
+        print(f"파일 생성 시간을 가져오는 중 오류가 발생했습니다: {e}") 
+
 
 b_is_exit = False
 
@@ -245,9 +261,14 @@ while not b_is_exit:
         cut_file(source, destination)
         print("잘라내기 완료")
 
+# "2"입력시 파일생성 날짜를 출력
     elif func == "2":
-        print("기능 2 실행.")
-        # Add functionality for option 2 here
+        path = input("파일 경로를 입력하세요: ")
+        creation_time = getFileCreationTime(path)
+        if creation_time:
+            print(f"파일이 생성된 날짜: {creation_time}")
+        else:
+            print("파일 생성 시간을 가져오는 데 실패했습니다.")
 
     elif func == "3":
         print("기능 3 실행.")
@@ -259,7 +280,7 @@ while not b_is_exit:
         copyFile(src, dest)
 
     elif func == "?":
-        print("도움말: 1을 입력하여 잘라내기(이동)하거나 2, 3을 입력하여 기능을 선택하거나 '복사'를 입력하여 파일을 복사하거나 '종료'를 입력하여 종료합니다.")
+        print("도움말: 1을 입력하여 잘라내기(이동)하거나 2를 입력하여 파일생성 날짜를 얻습니다. 혹은 3을 입력하여 기능을 선택하거나 '복사'를 입력하여 파일을 복사하거나 '종료'를 입력하여 종료합니다.")
 
     elif func.lower() == "종료":
         b_is_exit = True
