@@ -268,6 +268,33 @@ def GetCdriveUsage():
     except Exception as e:
         print(f"Error getting disk usage for '{path}': {e}")
 
+def CreateWindowsShortcut(target_path, shortcut_path, description=""):
+    """
+    Windows 운영체제에서 지정된 대상 경로에 대한 바로 가기를 생성합니다.
+
+    @param: target_path (str): 바로 가기가 가리킬 대상 파일 또는 디렉터리의 경로입니다.
+    @param: shortcut_path (str): 바로 가기를 생성할 위치와 이름을 포함한 경로입니다.
+    @param: description (str, optional): 바로 가기에 대한 설명입니다. 기본값은 빈 문자열입니다.
+
+    @return None
+
+    @exception: ImportError: 'winshell' 및 'pywin32' 패키지가 설치되지 않은 경우 발생합니다.
+    @exception: Exception: 바로 가기 생성 중 발생한 모든 예외를 캡처하고, 오류 메시지를 출력합니다.
+    """
+    try:
+        import winshell
+        from win32com.client import Dispatch
+        
+        shell = Dispatch('WScript.Shell')
+        shortcut = shell.CreateShortCut(shortcut_path)
+        shortcut.Targetpath = target_path
+        shortcut.WorkingDirectory = os.path.dirname(target_path)
+        shortcut.Description = description
+        shortcut.save()
+        print(f"Shortcut created at {shortcut_path}")
+    except ImportError:
+        print("Please install the 'winshell' and 'pywin32' packages to create shortcuts on Windows.")
+
 b_is_exit = False
 
 while not b_is_exit:
