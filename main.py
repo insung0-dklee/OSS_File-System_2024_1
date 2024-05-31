@@ -211,9 +211,21 @@ def cut_file(source, destination):
         print(f"파일을 이동하는 중 오류가 발생했습니다: {e}")
 
 def read_file(file_path):
-    with open(file_path, 'r') as file:
-        content = file.read()
-    return content
+    """
+    기존 read_file 함수는 존재하지 않은 file path일 경우에 대해 버그 야기
+    """
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            content = file.read()
+        return content
+    except FileNotFoundError:
+        return "존재하지 않은 파일입니다."
+    except PermissionError:
+        return "파일 권한이 없습니다."
+    except IsADirectoryError:
+        return "파일이 아닌 디렉토리 입니다."
+    except Exception as e:
+        return f"An error occurred: {e}"
 
 def create_and_write_file(file_path, content):
     with open(file_path, 'w') as file:
