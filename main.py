@@ -248,6 +248,26 @@ def SetPermissions(path, mode):
     except Exception as e:
         print(f"Error setting permissions for '{path}': {e}")
 
+def GetCdriveUsage():
+    """
+    C 드라이브의 디스크 사용량을 출력합니다.
+
+    @param None
+
+    @return None
+
+    @exception: 디스크 사용량을 출력하는 중 발생한 모든 예외를 캡처하고, 오류 메시지를 출력합니다
+    """
+    try:
+        path = 'C:\\'
+        total, used, free = shutil.disk_usage(path)
+        print(f"Disk usage for '{path}':")
+        print(f"  Total: {total // (2**30)} GiB")
+        print(f"  Used: {used // (2**30)} GiB")
+        print(f"  Free: {free // (2**30)} GiB")
+    except Exception as e:
+        print(f"Error getting disk usage for '{path}': {e}")
+
 b_is_exit = False
 
 while not b_is_exit:
