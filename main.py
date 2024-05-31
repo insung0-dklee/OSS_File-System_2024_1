@@ -233,6 +233,16 @@ def showFavorites():
         for i, favorite in enumerate(favorites, 1):
             print(f"{i}. {favorite}")
 
+def select_all_files(directory):
+    
+    #주어진 디렉토리에 있는 모든 파일 경로를 리스트로 반환
+    
+    all_files = []
+    for root, dirs, files in os.walk(directory):
+        for file in files:
+            file_path = os.path.join(root, file)
+            all_files.append(file_path)
+    return all_files
 
 b_is_exit = False
 
@@ -257,9 +267,17 @@ while not b_is_exit:
         src = input("복사할 파일의 경로를 입력하세요: ")
         dest = input("복사할 위치를 입력하세요: ")
         copyFile(src, dest)
+    #전체선택 기능 실행
+    elif func == "전체선택":
+        current_dir = input("디렉터리 경로를 입력하세요: ")
+        selected_files = select_all_files(current_dir)
+        print(f"선택된 파일 수: {len(selected_files)}")
+        for file in selected_files:
+            print(file)
+    # 선택된 파일 개수 알림 
 
     elif func == "?":
-        print("도움말: 1을 입력하여 잘라내기(이동)하거나 2, 3을 입력하여 기능을 선택하거나 '복사'를 입력하여 파일을 복사하거나 '종료'를 입력하여 종료합니다.")
+        print("도움말: 1을 입력하여 잘라내기(이동)하거나 2, 3을 입력하여 기능을 선택하거나 '복사'를 입력하여 파일을 복사하거나 '전체선택'을 입력하여 디렉터리 내의 모든 파일을 선택 또는 '종료'를 입력하여 종료합니다.")
 
     elif func.lower() == "종료":
         b_is_exit = True
