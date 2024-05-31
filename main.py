@@ -233,6 +233,77 @@ def showFavorites():
         for i, favorite in enumerate(favorites, 1):
             print(f"{i}. {favorite}")
 
+# 디렉토리 모니터링 기능 추가
+def get_files_snapshot(directory):
+    """
+    주어진 디렉토리의 파일 및 디렉토리 상태를 스냅샷으로 가져옵니다.
+    
+    Args:
+        directory (str): 스냅샷을 가져올 디렉토리 경로
+
+    Returns:
+        dict: 파일 경로와 수정 시간을 담은 딕셔너리
+    """
+    snapshot = {}  # 스냅샷을 저장할 딕셔너리 초기화
+    for root, _, files in os.walk(directory):
+        for file in files:
+            file_path = os.path.join(root, file)  # 파일의 절대 경로 생성
+            snapshot[file_path] = os.stat(file_path).st_mtime  # 파일의 마지막 수정 시간을 저장
+    return snapshot
+
+def compare_snapshots(old_snapshot, new_snapshot):
+    """
+    이전 스냅샷과 현재 스냅샷을 비교하여 파일 생성, 수정, 삭제를 감지합니다.
+    
+    Args:
+        old_snapshot (dict): 이전 스냅샷
+        new_snapshot (dict): 현재 스냅샷
+
+    Returns:
+        tuple: 추가된 파일 목록, 삭제된 파일 목록, 수정된 파일 목록
+    """
+    # new_snapshot에 있지만 old_snapshot에 없는 파일 (추가된 파일)
+    added = [file for file in new_snapshot if file not in old_snapshot]
+    
+    # old_snapshot에 있지만 new_snapshot에 없는 파일 (삭제된 파일)
+    removed = [file for file in old_snapshot if file not in new_snapshot]
+    
+    # 둘 다 있지만 수정 시간이 다른 파일 (수정된 파일)
+    modified = [file for file in new_snapshot if file in old_snapshot and old_snapshot[file] != new_snapshot[file]]
+    
+    return added, removed, modified
+
+def monitor_directory(directory, interval=5):
+    """
+    주어진 디렉토리를 모니터링하며, 변경 사항을 감지합니다.
+    
+    Args:
+        directory (str): 모니터링할 디렉토리 경로
+        interval (int): 스냅샷을 비교할 시간 간격 (초)
+    """
+    print(f"Monitoring directory: {directory}")
+    previous_snapshot = get_files_snapshot(directory)  # 초기 스냅샷 생성
+    try:
+        while True:
+            time.sleep(interval)  # 주어진 시간 간격(기본 5초)으로 대기
+            current_snapshot = get_files_snapshot(directory)  # 현재 상태 스냅샷 생성
+            added, removed, modified = compare_snapshots(previous_snapshot, current_snapshot)  # 스냅샷 비교
+            
+            # 추가된 파일 출력
+            for file in added:
+                print(f"File created: {file}")
+            
+            # 삭제된 파일 출력
+            for file in removed:
+                print(f"File deleted: {file}")
+            
+            # 수정된 파일 출력
+            for file in modified:
+                print(f"File modified: {file}")
+            
+            previous_snapshot = current_snapshot  # 현재 스냅샷을 이전 스냅샷으로 업데이트
+    except KeyboardInterrupt:
+        print("Directory monitoring stopped.")
 
 b_is_exit = False
 
@@ -257,6 +328,10 @@ while not b_is_exit:
         src = input("복사할 파일의 경로를 입력하세요: ")
         dest = input("복사할 위치를 입력하세요: ")
         copyFile(src, dest)
+
+    elif func == "모니터링":
+        directory = input("모니터링할 디렉토리의 경로를 입력하세요: ")
+        monitor_directory(directory)
 
     elif func == "?":
         print("도움말: 1을 입력하여 잘라내기(이동)하거나 2, 3을 입력하여 기능을 선택하거나 '복사'를 입력하여 파일을 복사하거나 '종료'를 입력하여 종료합니다.")
