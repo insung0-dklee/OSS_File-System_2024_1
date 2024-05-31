@@ -17,6 +17,7 @@ import shutil
 import hashlib
 import time
 import function
+from send2trash import send2trash
 
 # 파일 관리 시스템
 # - 중복 파일 탐지 및 삭제: 주어진 디렉토리에서 중복 파일을 찾아내고, 중복된 파일을 삭제합니다.
@@ -232,6 +233,13 @@ def showFavorites():
         print("즐겨찾기 목록:")
         for i, favorite in enumerate(favorites, 1):
             print(f"{i}. {favorite}")
+
+def moveToTrash(path):
+    try:
+        send2trash(path)
+        print(f"파일이 성공적으로 휴지통으로 이동되었습니다: {path}")
+    except Exception as e:
+        print(f"파일을 휴지통으로 이동하는 중 오류가 발생했습니다: {e}")
 
 
 b_is_exit = False
