@@ -233,6 +233,28 @@ def showFavorites():
         for i, favorite in enumerate(favorites, 1):
             print(f"{i}. {favorite}")
 
+ # 파일 시스템을 관리할 리스트
+file_system = []
+
+def add_file(file_name):
+    """파일을 파일 시스템에 추가합니다."""
+    file_system.append(file_name)
+    print(f"파일 '{file_name}'이(가) 추가되었습니다.")
+
+def list_files(order='asc'):
+    """파일을 저장한 순서대로 나열합니다.
+    order: 'asc'는 오름차순, 'desc'는 내림차순
+    """
+    if order == 'asc':
+        sorted_files = file_system
+    elif order == 'desc':
+        sorted_files = list(reversed(file_system))
+    else:
+        print("정렬 순서는 'asc' 또는 'desc' 중 하나여야 합니다.")
+        return
+
+    for file in sorted_files:
+        print(file)
 
 b_is_exit = False
 
