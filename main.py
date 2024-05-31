@@ -17,6 +17,7 @@ import shutil
 import hashlib
 import time
 import function
+import json
 
 # 파일 관리 시스템
 # - 중복 파일 탐지 및 삭제: 주어진 디렉토리에서 중복 파일을 찾아내고, 중복된 파일을 삭제합니다.
@@ -288,6 +289,95 @@ def showFavorites():
         for i, favorite in enumerate(favorites, 1):
             print(f"{i}. {favorite}")
 
+TAG_FILE = 'tags.json' # 설정한 태그가 저장될 파일
+
+def load_tags():
+    """
+    태그 파일(tags.json)을 로드하여 태그 데이터를 반환
+    파일이 존재하지 않거나 JSONDecodeError가 발생하면 빈 딕셔너리를 반환
+
+    @Returns
+        파일 경로를 키로 하고 태그 리스트를 값으로 하는 딕셔너리
+    """
+    if os.path.exists(TAG_FILE):
+        try:
+            with open(TAG_FILE, 'r') as file:
+                return json.load(file)
+        except json.JSONDecodeError:
+            return {}
+    return {}
+
+def save_tags(tags):
+    """
+    태그 데이터를 태그 파일(tags.json)에 저장
+
+    @Args
+        tags: 파일 경로를 키로 하고 태그 리스트를 값으로 하는 딕셔너리
+    """
+    with open(TAG_FILE, 'w') as file:
+        json.dump(tags, file, indent=4)
+
+def add_tag(file_path, tag):
+    """
+    주어진 파일 경로에 태그를 추가하고한다. 태그 파일에 해당 경로가 없으면 새로 추가
+
+    @Args
+        file_path: 태그를 추가할 파일 경로
+        tag: 추가할 태그
+    """
+    tags = load_tags()
+    if file_path in tags:
+        if tag not in tags[file_path]:
+            tags[file_path].append(tag)
+    else:
+        tags[file_path] = [tag]
+    save_tags(tags)
+    print(f"Tag '{tag}' added to file '{file_path}'.")
+
+def remove_tag(file_path, tag):
+    """
+    주어진 파일 경로에서 태그를 제거한다. 태그가 제거된 후 파일에 더 이상 태그가 없으면 경로를 삭제
+
+    @Args
+        file_path: 태그를 제거할 파일 경로
+        tag: 제거할 태그
+    """
+    tags = load_tags()
+    if file_path in tags and tag in tags[file_path]:
+        tags[file_path].remove(tag)
+        if not tags[file_path]:
+            del tags[file_path]
+        save_tags(tags)
+        print(f"Tag '{tag}' removed from file '{file_path}'.")
+    else:
+        print(f"Tag '{tag}' not found in file '{file_path}'.")
+
+def search_by_tag(tag):
+    """
+    주어진 태그를 가진 파일 경로를 검색하여 반환
+
+    @Args
+        tag: 검색할 태그
+
+    @Returns
+        list: 태그를 가진 파일 경로 리스트
+    """
+    tags = load_tags()
+    matched_files = [file for file, tags in tags.items() if tag in tags]
+    return matched_files
+
+def list_tags(file_path):
+    """
+    주어진 파일 경로에 부여된 태그 리스트를 반환
+
+    @Args
+        file_path: 태그를 확인할 파일 경로
+
+    @Returns
+        list: 파일 경로에 부여된 태그 리스트(태그가 없으면 빈 리스트 반환)
+    """
+    tags = load_tags()
+    return tags.get(file_path, [])
 
 b_is_exit = False
 
@@ -343,6 +433,36 @@ while not b_is_exit:
         num_lines = int(input("미리보기할 줄 수를 입력하세요(기본값은 3줄): ") or 3)
         preview = preview_file(file_path, num_lines)
         print(f"파일 미리보기:\n{preview}")
+
+    elif func == "태그 추가":
+        file_path = input("태그를 추가할 파일 경로를 입력하세요: ")
+        tag = input("추가할 태그를 입력하세요: ")
+        add_tag(file_path, tag)
+
+    elif func == "태그 제거":
+        file_path = input("태그를 제거할 파일 경로를 입력하세요: ")
+        tag = input("제거할 태그를 입력하세요: ")
+        remove_tag(file_path, tag)
+
+    elif func == "태그 검색":
+        tag = input("검색할 태그를 입력하세요: ")
+        matched_files = search_by_tag(tag)
+        if matched_files:
+            print("태그가 포함된 파일 목록:")
+            for file in matched_files:
+                print(file)
+        else:
+            print("해당 태그가 포함된 파일을 찾을 수 없습니다.")
+
+    elif func == "태그 목록":
+        file_path = input("태그 목록을 볼 파일 경로를 입력하세요: ")
+        tags = list_tags(file_path)
+        if tags:
+            print(f"파일 '{file_path}'의 태그 목록:")
+            for tag in tags:
+                print(tag)
+        else:
+            print("파일에 태그가 없습니다.")
 
     elif func == "?":
         print("도움말: 1을 입력하여 잘라내기(이동)하거나 2, 3을 입력하여 기능을 선택하거나 '복사'를 입력하여 파일을 복사하거나 '종료'를 입력하여 종료합니다.")
