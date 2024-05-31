@@ -240,28 +240,76 @@ while not b_is_exit:
     func = input("기능 입력 (? 입력시 도움말) : ")
 
     if func == "1":
+        # 파일 생성 및 쓰기
+        file_path = input("생성할 파일 경로를 입력하세요: ")
+        content = input("파일에 쓸 내용을 입력하세요: ")
+        create_and_write_file(file_path, content)
+        print("파일이 생성되었습니다.")
+
+
+    elif func == "2":
+    # 파일 잘라내기
         source = input("잘라낼 파일의 경로를 입력하세요: ")
         destination = input("붙여넣을 경로를 입력하세요: ")
         cut_file(source, destination)
         print("잘라내기 완료")
 
-    elif func == "2":
-        print("기능 2 실행.")
-        # Add functionality for option 2 here
-
     elif func == "3":
-        print("기능 3 실행.")
-        # Add functionality for option 3 here
+    # 중복 파일 삭제
+        directory = input("중복 파일을 찾을 디렉토리 경로를 입력하세요: ")
+        duplicates = find_duplicates(directory)
+        remove_duplicates(duplicates)
+        print("중복 파일 삭제 완료")
 
-    elif func == "복사":
+    elif func == "4":
+        # 파일 삭제
+        file_path = input("삭제할 파일의 경로를 입력하세요: ")
+        delete_file(file_path)
+
+    elif func == "5":
+        # 파일 검색
+        root_directory = input("검색을 시작할 디렉토리 경로를 입력하세요: ")
+        target_filename = input("검색할 파일의 이름을 입력하세요: ")
+        matched_files = search_file(root_directory, target_filename)
+        if matched_files:
+            print(f"찾은 경로들:")
+            for file_path in matched_files:
+                print(file_path)
+        else:
+            print("해당 파일을 찾을 수 없습니다.")
+
+    elif func == "6":
+        # 디렉토리 내 파일 크기 출력
+        directory = input("파일 크기를 출력할 디렉토리 경로를 입력하세요: ")
+        display_file_sizes(directory)
+
+    elif func == "7":
+        # 파일 이동
+        source = input("이동할 파일의 경로를 입력하세요: ")
+        destination = input("이동할 위치를 입력하세요: ")
+        move_file(source, destination)
+
+    elif func == "8":
+        # 파일 복사
         src = input("복사할 파일의 경로를 입력하세요: ")
         dest = input("복사할 위치를 입력하세요: ")
         copyFile(src, dest)
 
     elif func == "?":
-        print("도움말: 1을 입력하여 잘라내기(이동)하거나 2, 3을 입력하여 기능을 선택하거나 '복사'를 입력하여 파일을 복사하거나 '종료'를 입력하여 종료합니다.")
+    # 도움말
+        print("""1~9를 입력하여 각 기능들을 선택할 수 있습니다.
+    1 : 파일 생성 및 쓰기
+    2 : 파일 잘라내기
+    3 : 중복 파일 삭제하기
+    4 : 파일 삭제하기
+    5 : 파일 검색하기
+    6 : 디렉토리 내 파일 크기 출력하기
+    7 : 파일 이동하기
+    8 : 파일 복사하기
+"종료" 를 입력하면 프로그램이 종료됩니다.""")
 
     elif func.lower() == "종료":
+    # 프로그램 종료
         b_is_exit = True
         print("프로그램을 종료합니다.")
 
