@@ -267,3 +267,77 @@ while not b_is_exit:
 
     else:
         print("알 수 없는 입력입니다. 다시 시도해주세요.")
+
+# 메모 파일 저장 경로
+MEMO_DIR = './memos'
+
+# 메모 디렉토리가 존재하지 않으면 생성
+if not os.path.exists(MEMO_DIR):
+    os.makedirs(MEMO_DIR)
+
+def read_memo(file_path):
+    """
+    파일에 대한 메모를 읽어옵니다.
+    :param file_path: 파일의 경로
+    :return: 메모 내용 반환, 메모가 없을 경우 None 반환
+    """
+    # 메모 파일 경로 생성
+    memo_path = os.path.join(MEMO_DIR, os.path.basename(file_path) + '.txt')
+    # 메모 파일이 존재하면 내용을 읽어서 반환
+    if os.path.exists(memo_path):
+        with open(memo_path, 'r', encoding='utf-8') as f:
+            return f.read()
+    # 메모 파일이 없으면 None 반환
+    return None
+
+def write_memo(file_path, memo):
+    """
+    파일에 대한 메모를 작성합니다.
+    :param file_path: 파일의 경로
+    :param memo: 작성할 메모 내용
+    """
+    # 메모 파일 경로 생성
+    memo_path = os.path.join(MEMO_DIR, os.path.basename(file_path) + '.txt')
+    # 메모 파일에 내용을 작성
+    with open(memo_path, 'w', encoding='utf-8') as f:
+        f.write(memo)
+
+def manage_memo_for_files(root_directory, target_filename):
+    """
+    주어진 디렉토리에서 특정 파일을 검색하고 메모를 관리합니다.
+    :param root_directory: 검색을 시작할 루트 디렉토리
+    :param target_filename: 검색할 파일의 이름
+    """
+    # 파일 검색
+    matched_files = search_file(root_directory, target_filename)
+    
+    if matched_files:
+        for file_path in matched_files:
+            print(f'파일을 찾았습니다: {file_path}')
+            # 파일에 대한 메모 읽기
+            memo = read_memo(file_path)
+            if memo:
+                print(f'기존 메모:\n{memo}')
+                # 메모 수정 여부 확인
+                if input('메모를 수정하시겠습니까? (y/n): ').lower() == 'y':
+                    new_memo = input('새 메모 내용을 입력하세요: ')
+                    write_memo(file_path, new_memo)
+                    print('메모가 수정되었습니다.')
+                else:
+                    print('메모 수정이 취소되었습니다.')
+            else:
+                # 새 메모 작성
+                new_memo = input('메모가 없습니다. 새 메모 내용을 입력하세요: ')
+                write_memo(file_path, new_memo)
+                print('메모가 추가되었습니다.')
+    else:
+        print('파일을 찾을 수 없습니다.')
+
+if __name__ == '__main__':
+    # 사용자로부터 검색할 디렉토리와 파일명 입력
+    directory = input('검색할 디렉토리를 입력하세요: ')
+    filename = input('검색할 파일명을 입력하세요: ')
+    # 파일 검색 및 메모 관리
+    manage_memo_for_files(directory, filename)
+
+    
