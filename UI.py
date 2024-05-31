@@ -1,5 +1,5 @@
 # flake8: noqa
-from PyQt5.QtWidgets import QPushButton, QDialog, QDesktopWidget, QVBoxLayout, QWidget, QTabWidget, QVBoxLayout, QHBoxLayout, QLabel, QListWidget, QListWidgetItem, QScrollArea, QLineEdit
+from PyQt5.QtWidgets import QPushButton, QDialog, QDesktopWidget, QVBoxLayout, QWidget, QTabWidget, QVBoxLayout, QHBoxLayout, QLabel, QListWidget, QListWidgetItem, QScrollArea, QLineEdit, QMessageBox
 from PyQt5.QtCore import Qt, QSize
 import function
 import main
@@ -154,7 +154,7 @@ class DelDialog(QDialog):
 
     # 입력받은 데이터로 실행
     def execute(self):
-        main.delete_file(self.file_path_input.text())
+        QMessageBox.information(None, "실행 결과", main.delete_file(self.file_path_input.text()))
 
 
 #UI를 생성하는 UI 클래스

@@ -86,11 +86,15 @@ def delete_file(path):
     Returns:
         None
     """
-    if os.path.exists(path):
+    try:
         os.remove(path)
-        print(f"{path} 파일이 삭제되었습니다.")
-    else:
-        print(f"{path} 파일이 존재하지 않습니다.")
+        return f"{path} 파일이 삭제되었습니다."
+    except FileNotFoundError:
+        return f"Error: {path} 파일이 존재하지 않습니다."
+    except PermissionError:
+        return f"Error: {path} 파일을 삭제할 권한이 없습니다."
+    except Exception as e:
+        return f"Error: {e}"
 
 def search_file(root_directory, target_filename):
     """
