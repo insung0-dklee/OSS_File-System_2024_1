@@ -233,6 +233,19 @@ def showFavorites():
         for i, favorite in enumerate(favorites, 1):
             print(f"{i}. {favorite}")
 
+#지정된 사용자와 파일 공유
+def share_file(file_path, user):
+    # 파일이 존재하는지 확인
+    if not os.path.exists(file_path):
+        print("Error: File not found.")
+        return
+
+    # 파일을 사용자 디렉토리로 복사하여 공유
+    user_directory = os.path.join("/shared", user)  # 사용자의 공유 디렉토리 경로
+    if not os.path.exists(user_directory):
+        os.makedirs(user_directory)  # 사용자 디렉토리가 없으면 생성
+    shutil.copy(file_path, user_directory)
+    print(f"File shared with user '{user}' successfully.")
 
 b_is_exit = False
 
