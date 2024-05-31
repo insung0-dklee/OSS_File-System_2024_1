@@ -233,6 +233,20 @@ def showFavorites():
         for i, favorite in enumerate(favorites, 1):
             print(f"{i}. {favorite}")
 
+def SetPermissions(path, mode):
+    """
+    입력받은 경로의 파일 또는 디렉토리의 권한을 설정할 수 있다.
+
+    @param path (str): 권한을 설정할 파일 또는 디렉터리의 경로.
+    @param mode (int): 파일 권한을 나타내는 8진수 값. 예를 들어, 0o755.
+    @return None
+    @exception: 권한 설정 중 발생한 모든 예외를 캡처하고, 오류 메세지 출력
+    """
+    try:
+        os.chmod(path, mode)
+        print(f"Permissions for '{path}' set to '{oct(mode)}'.")
+    except Exception as e:
+        print(f"Error setting permissions for '{path}': {e}")
 
 b_is_exit = False
 
