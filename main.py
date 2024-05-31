@@ -17,6 +17,57 @@ import shutil
 import hashlib
 import time
 import function
+import zipfile
+
+def search_files(directory, extension=None, min_size=None, max_size=None):
+    """
+    지정된 디렉토리에서 조건에 맞는 파일들을 검색합니다.
+
+    :param directory: 검색을 시작할 디렉토리의 경로
+    :param extension: 검색할 파일의 확장자 (예: '.txt')
+    :param min_size: 검색할 파일의 최소 크기 (바이트 단위)
+    :param max_size: 검색할 파일의 최대 크기 (바이트 단위)
+    :return: 조건에 맞는 파일 경로의 리스트
+    """
+    matched_files = []
+    for dirpath, dirnames, filenames in os.walk(directory):
+        for filename in filenames:
+            if extension and not filename.endswith(extension):
+                continue
+            filepath = os.path.join(dirpath, filename)
+            file_size = os.path.getsize(filepath)
+            if min_size and file_size < min_size:
+                continue
+            if max_size and file_size > max_size:
+                continue
+            matched_files.append(filepath)
+    return matched_files
+
+"""
+주어진 file_paths 리스트의 파일들을 output_zip 파일로 압축.
+
+zipfile.ZipFile을 사용하여 파일을 순회하며 압축 파일에 추가
+"""
+def compress_files(file_paths, output_zip):
+    try:
+        with zipfile.ZipFile(output_zip, 'w') as zipf:
+            for file in file_paths:
+                zipf.write(file, os.path.basename(file))
+        print(f"파일들이 {output_zip}으로 압축되었습니다.")
+    except Exception as e:
+        print(f"파일 압축 중 오류가 발생했습니다: {e}")
+"""
+주어진 zip_path 파일을 extract_to 디렉토리로 압축 해제
+
+zipfile.ZipFile을 사용하여 압축 파일을 열고, extractall 메서드를 통해 모든 파일을 지정된 디렉토리로 해제
+"""
+def decompress_file(zip_path, extract_to):
+    try:
+        with zipfile.ZipFile(zip_path, 'r') as zipf:
+            zipf.extractall(extract_to)
+        print(f"{zip_path} 파일이 {extract_to}으로 압축 해제되었습니다.")
+    except Exception as e:
+        print(f"파일 압축 해제 중 오류가 발생했습니다: {e}")
 
 # 파일 관리 시스템
 # - 중복 파일 탐지 및 삭제: 주어진 디렉토리에서 중복 파일을 찾아내고, 중복된 파일을 삭제합니다.
