@@ -17,6 +17,7 @@ import shutil
 import hashlib
 import time
 import function
+import zipfile
 
 # 파일 관리 시스템
 # - 중복 파일 탐지 및 삭제: 주어진 디렉토리에서 중복 파일을 찾아내고, 중복된 파일을 삭제합니다.
@@ -233,6 +234,40 @@ def showFavorites():
         for i, favorite in enumerate(favorites, 1):
             print(f"{i}. {favorite}")
 
+def compress_directory(directory_path, zip_name):
+    """
+    지정된 디렉토리를 압축합니다.
+    
+    Args:
+        directory_path (str): 압축할 디렉토리의 경로
+        zip_name (str): 생성될 zip 파일의 이름
+    
+    Returns:
+        None
+    """
+    try:
+        shutil.make_archive(zip_name, 'zip', directory_path)
+        print(f"{directory_path}가 {zip_name}.zip으로 압축되었습니다.")
+    except Exception as e:
+        print(f"압축 중 오류가 발생했습니다: {e}")
+
+def extract_zip(zip_file, extract_to):
+    """
+    지정된 zip 파일을 해제합니다.
+    
+    Args:
+        zip_file (str): 해제할 zip 파일의 경로
+        extract_to (str): 해제될 디렉토리의 경로
+    
+    Returns:
+        None
+    """
+    try:
+        with zipfile.ZipFile(zip_file, 'r') as zip_ref:
+            zip_ref.extractall(extract_to)
+        print(f"{zip_file}가 {extract_to}에 해제되었습니다.")
+    except Exception as e:
+        print(f"해제 중 오류가 발생했습니다: {e}")
 
 b_is_exit = False
 
@@ -258,8 +293,18 @@ while not b_is_exit:
         dest = input("복사할 위치를 입력하세요: ")
         copyFile(src, dest)
 
+    elif func == "압축":
+        directory_path = input("압축할 디렉토리의 경로를 입력하세요: ")
+        zip_name = input("생성될 압축 파일의 이름을 입력하세요: ")
+        compress_directory(directory_path, zip_name)
+
+    elif func == "해제":
+        zip_file = input("해제할 zip 파일의 경로를 입력하세요: ")
+        extract_to = input("해제될 디렉토리의 경로를 입력하세요: ")
+        extract_zip(zip_file, extract_to)
+
     elif func == "?":
-        print("도움말: 1을 입력하여 잘라내기(이동)하거나 2, 3을 입력하여 기능을 선택하거나 '복사'를 입력하여 파일을 복사하거나 '종료'를 입력하여 종료합니다.")
+        print("도움말: 1을 입력하여 잘라내기(이동)하거나 2, 3을 입력하여 기능을 선택하거나 '복사'를 입력하여 파일을 복사하거나 '압축'을 입력하여 파일을 압축하거나 '해제'를 입력하여 파일을 해제할수있습니다. '종료'를 입력하여 종료합니다.")
 
     elif func.lower() == "종료":
         b_is_exit = True
