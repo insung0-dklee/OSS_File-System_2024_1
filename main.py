@@ -17,6 +17,7 @@ import shutil
 import hashlib
 import time
 import function
+from pathlib import Path
 
 # 파일 관리 시스템
 # - 중복 파일 탐지 및 삭제: 주어진 디렉토리에서 중복 파일을 찾아내고, 중복된 파일을 삭제합니다.
@@ -234,6 +235,36 @@ def showFavorites():
             print(f"{i}. {favorite}")
 
 
+def create_symLink(file_path,link_path):
+    """
+    파일 또는 폴더에 대한 심볼릭 링크(symbolic link)를 생성하는 함수
+    @Param
+        file_path: 심볼릭 링크의 대상이 되는 파일 또는 폴더의 절대경로
+        link_path: 생성될 심볼릭 링크의 절대경로
+        
+    @Return
+        None
+        
+    @Raises
+        Exception : If an error occurs while creating the link, an exception is output.
+    """
+
+    target = Path(file_path)
+    link = Path(link_path)
+
+    # link 파일이 이미 경로에 존재할 경우 처리
+    if link.exists():
+        print(f"{link} is already exists.")
+        return
+
+    try:
+        link.symlink_to(target, target.is_dir())
+        print(f"{link} | SymLink is created.")
+    except Exception as e:
+        print(f"Error is occured during creating SymLink : {e}")
+
+
+
 b_is_exit = False
 
 while not b_is_exit:
@@ -258,6 +289,12 @@ while not b_is_exit:
         dest = input("복사할 위치를 입력하세요: ")
         copyFile(src, dest)
 
+    elif func == "심볼릭링크 생성":
+        file_path = input("링크시킬 파일의 경로를 입력하세요(절대경로) : ")
+        link_path = input("링크가 생성될 경로를 입력하세요(절대경로) : ")
+        create_symLink(file_path,link_path)
+        
+ 
     elif func == "?":
         print("도움말: 1을 입력하여 잘라내기(이동)하거나 2, 3을 입력하여 기능을 선택하거나 '복사'를 입력하여 파일을 복사하거나 '종료'를 입력하여 종료합니다.")
 
