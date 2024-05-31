@@ -23,55 +23,6 @@ import function
 # - 파일 이름 변경: 사용자가 지정한 파일의 이름을 변경합니다.
 # - 파일 메타데이터 관리: 파일의 생성 시간, 수정 시간, 파일 크기를 출력합니다.
 
-BACKUP_DIR = "backup" #백업 디렉토리 경로
-
-#백업 디렉토리 없으면 생성
-if not os.path.exists(BACKUP_DIR):
-    os.makedirs(BACKUP_DIR) 
-
-def backup_file(file_path):
-    """
-    파일을 백업 디렉토리에 복사합니다.
-
-    Args:
-        file_path (str): 백업할 파일의 경로
-
-    Returns:
-        str: 백업된 파일의 경로
-    """
-    try:
-        if not os.path.exists(file_path):
-            raise FileNotFoundError(f"{file_path} 파일이 존재하지 않습니다.")
-
-        backup_path = os.path.join(BACKUP_DIR, os.path.basename(file_path))
-        shutil.copy(file_path, backup_path)
-        return backup_path
-
-    except Exception as e:
-        print(f"파일 백업 중 오류가 발생했습니다: {e}")
-        return None
-
-def restore_file(backup_file_path, original_location):
-    """
-    백업된 파일을 원래 위치로 복원합니다.
-
-    Args:
-        backup_file_path (str): 백업된 파일의 경로
-        original_location (str): 파일을 복원할 원래 위치
-
-    Returns:
-        None
-    """
-    try:
-        if not os.path.exists(backup_file_path):
-            raise FileNotFoundError(f"{backup_file_path} 백업 파일이 존재하지 않습니다.")
-
-        shutil.move(backup_file_path, original_location)
-        print(f"백업 파일이 원래 위치로 복원되었습니다: {original_location}")
-
-    except Exception as e:
-        print(f"파일 복원 중 오류가 발생했습니다: {e}")
-
 def manage_metadata(file_path):
     """
     주어진 파일의 메타데이터를 관리합니다.
@@ -306,11 +257,6 @@ while not b_is_exit:
         src = input("복사할 파일의 경로를 입력하세요: ")
         dest = input("복사할 위치를 입력하세요: ")
         copyFile(src, dest)
-
-    elif func == "복원":
-        backup_file_path = input("복원할 백업 파일의 경로를 입력하세요: ")
-        original_location = input("원래 파일 위치를 입력하세요: ")
-        restore_file(backup_file_path, original_location)
 
     elif func == "?":
         print("도움말: 1을 입력하여 잘라내기(이동)하거나 2, 3을 입력하여 기능을 선택하거나 '복사'를 입력하여 파일을 복사하거나 '종료'를 입력하여 종료합니다.")
