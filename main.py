@@ -233,6 +233,20 @@ def showFavorites():
         for i, favorite in enumerate(favorites, 1):
             print(f"{i}. {favorite}")
 
+"""
+파일을 압축하는 함수
+param 
+ file_path: 압축할 파일 경로
+return:
+ 없음
+"""
+def extract_file(file_path):
+    try:
+        shutil.unpack_archive(file_path, extract_dir=os.path.dirname(file_path))
+        print(f"{file_path} 파일이 성공적으로 압축 해제되었습니다.")
+    except Exception as e:
+        print(f"압축 해제 중 오류가 발생했습니다: {e}")
+
 
 b_is_exit = False
 
