@@ -219,6 +219,20 @@ def create_and_write_file(file_path, content):
     with open(file_path, 'w') as file:
         file.write(content)
 
+def replace_string_in_file(file_path, target_string, replacement_string):
+    try:
+        with open(file_path, 'r') as file:
+            content = file.read()
+
+        new_content = content.replace(target_string, replacement_string)
+
+        with open(file_path, 'w') as file:
+            file.write(new_content)
+
+        print(f"'{target_string}'을(를) '{replacement_string}'(으)로 교체했습니다.")
+    except Exception as e:
+        print(f"파일을 교체하는 중 오류가 발생했습니다: {e}")
+
 favorites = []
 def addFavorite():
     path = input("즐겨찾기에 추가할 파일 경로를 입력하세요: ")
@@ -246,8 +260,11 @@ while not b_is_exit:
         print("잘라내기 완료")
 
     elif func == "2":
-        print("기능 2 실행.")
-        # Add functionality for option 2 here
+        file_path = input("문자열을 교체할 파일 경로를 입력하세요: ")
+        target_string = input("교체할 문자열을 입력하세요: ")
+        replacement_string = input("새로운 문자열을 입력하세요: ")
+        replace_string_in_file(file_path, target_string, replacement_string)
+        print("문자열 교체 완료")
 
     elif func == "3":
         print("기능 3 실행.")
