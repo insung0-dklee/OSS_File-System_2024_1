@@ -1,22 +1,8 @@
 
-"""
-현재 경로에 특정 파일이나 디렉토리가 존재하는지를 확인하기 위해 import os를 사용
-파일을 이동이나 복사하기 위해 shutil 모듈을 사용하였음
-파일 탐색기에서의 잘라내기 기능을 구현함
-cut_file 함수는 잘라낼 파일의 경로와 붙여넣을 경로를 매개변수로 함
-이때 붙여넣을 경로에 입력이 잘못됐을 경우 에러를 발생시킴
-b_is_exit 변수를 0으로 초기화하고
-1을 입력하였을때 잘라내기 기능이 구현되도록 함수를 작성하였음
-favorites : 즐겨찾기 목록
-addFavorite() : 원하는 파일을 즐겨찾기에 추가하는 함수
-showFavorites() : 즐겨찾기 안의 파일 목록을 순서대로 출력하는 함수
-"""
-
 import os
 import shutil
 import hashlib
 import time
-import function
 
 # 파일 관리 시스템
 # - 중복 파일 탐지 및 삭제: 주어진 디렉토리에서 중복 파일을 찾아내고, 중복된 파일을 삭제합니다.
@@ -233,6 +219,19 @@ def showFavorites():
         for i, favorite in enumerate(favorites, 1):
             print(f"{i}. {favorite}")
 
+# 파일 미리보기 기능 추가
+def preview_file(file_path, num_lines=10):
+    """
+    텍스트 파일의 앞부분 몇 줄을 미리보는 기능.
+    :param file_path: 미리볼 파일의 경로
+    :param num_lines: 미리볼 줄 수
+    """
+    try:
+        with open(file_path, 'r') as file:
+            for i in range(num_lines):
+                print(file.readline().strip())
+    except Exception as e:
+        print(f"Error previewing file: {e}")
 
 b_is_exit = False
 
@@ -258,8 +257,13 @@ while not b_is_exit:
         dest = input("복사할 위치를 입력하세요: ")
         copyFile(src, dest)
 
+    elif func == "미리보기":
+        file_path = input("미리볼 파일의 경로를 입력하세요: ")
+        num_lines = int(input("미리볼 줄 수를 입력하세요: "))
+        preview_file(file_path, num_lines)
+
     elif func == "?":
-        print("도움말: 1을 입력하여 잘라내기(이동)하거나 2, 3을 입력하여 기능을 선택하거나 '복사'를 입력하여 파일을 복사하거나 '종료'를 입력하여 종료합니다.")
+        print("도움말: 1을 입력하여 잘라내기(이동)하거나 2, 3을 입력하여 기능을 선택하거나 '복사', '미리보기'를 입력하여 파일을 복사하거나 미리보기를 수행하거나 '종료'를 입력하여 종료합니다.")
 
     elif func.lower() == "종료":
         b_is_exit = True
