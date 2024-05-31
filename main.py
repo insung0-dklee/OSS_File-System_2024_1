@@ -235,9 +235,12 @@ def cut_file(source, destination):
 
 
 def read_file(file_path):
-    with open(file_path, 'r') as file:
-        content = file.read()
-    return content
+    try:
+        with open(file_path, 'r') as file:
+            content = file.read()
+        return content
+    except Exception as e:
+        print(f"파일을 읽는 중 오류가 발생했습니다: {e}")
 
 
 def create_and_write_file(file_path, content):
