@@ -210,14 +210,52 @@ def cut_file(source, destination):
     except Exception as e:
         print(f"파일을 이동하는 중 오류가 발생했습니다: {e}")
 
-def read_file(file_path):
-    with open(file_path, 'r') as file:
-        content = file.read()
-    return content
 
-def create_and_write_file(file_path, content):
-    with open(file_path, 'w') as file:
-        file.write(content)
+'''
+    Read or Write txt file.
+    @Param
+        file_path  :  Variables representing the path of the text
+    @return
+        None
+
+    When use open(filename,mode)
+    Mode has 4 types.
+    r - read only
+    w - write only(overlay)
+    a - write only(add)
+    x - write only(error if present file)
+'''
+def readOrWrite(file_path):
+    try:
+        while True:
+            #row = readorwrite, just mean choose mode
+            row = input("1: 읽기 모드, 2: 쓰기 모드(덮어쓰기), 3:쓰기 모드(덧붙이기). 4: 종료 : ")
+
+            if row == "1":
+                with open(file_path, "r") as file:
+                    text = file.read()
+                    print(text)
+
+            elif row == "2":
+                with open(file_path, "w") as file:
+                    text = input("적을 내용을 입력해주세요 : ")
+                    file.write(text)
+
+            elif row == "3":
+                with open(file_path, "a") as file:
+                    text = input("적을 내용을 입력해주세요 : ")
+                    file.write(text)
+
+            elif row == "4":
+                print("텍스트 읽기 및 쓰기를 종료합니다.")
+                break
+
+            else:
+                print("잘못된 입력입니다. 다시 입력해주세요")
+
+    except Exception as e:
+        print(f"텍스트 읽기 및 쓰기 중 오류가 발생했습니다: {e}")
+
 
 favorites = []
 def addFavorite():
@@ -246,8 +284,10 @@ while not b_is_exit:
         print("잘라내기 완료")
 
     elif func == "2":
-        print("기능 2 실행.")
-        # Add functionality for option 2 here
+        print("텍스트 읽기 및 쓰기 기능 실행")
+        print("텍스트 파일이 없거나 새로 만들려고 한다면 해당 경로에 만들 텍스트 파일명까지 경로로 입력해주세요.")
+        file_path = input("읽거나 수정할 텍스트 경로를 입력해주세요 : ")
+        readOrWrite(file_path)
 
     elif func == "3":
         print("기능 3 실행.")
@@ -259,7 +299,7 @@ while not b_is_exit:
         copyFile(src, dest)
 
     elif func == "?":
-        print("도움말: 1을 입력하여 잘라내기(이동)하거나 2, 3을 입력하여 기능을 선택하거나 '복사'를 입력하여 파일을 복사하거나 '종료'를 입력하여 종료합니다.")
+        print("도움말: 1을 입력하여 잘라내기(이동)하거나 2를 입력하여 텍스트를 읽고 쓰거나 3을 입력하여 기능을 선택하거나 '복사'를 입력하여 파일을 복사하거나 '종료'를 입력하여 종료합니다.")
 
     elif func.lower() == "종료":
         b_is_exit = True
