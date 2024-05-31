@@ -107,6 +107,40 @@ def search_file(root_directory, target_filename):
 
     return matched_files
 
+def search_file_content(root_directory, keyword, extensions=None):
+    """
+    특정 키워드가 포함된 파일을 검색하는 함수입니다.
+    @param
+        root_directory: 검색을 시작할 루트 디렉토리
+        keyword: 검색할 키워드
+        extensions: 검색할 파일 확장자 리스트 (예: ['.txt', '.md'])
+    @return
+        키워드가 포함된 파일의 경로 리스트
+    """
+    if not keyword:
+        print("검색할 키워드가 입력되지 않았습니다.")
+        return []
+    
+    if extensions is None or not extensions:
+        extensions = ['.txt', '.md', '.py', '.json']  # 기본 검색 파일 확장자 목록
+    
+    matched_files = []
+
+    for dirpath, _, filenames in os.walk(root_directory):
+        for filename in filenames:
+            file_path = os.path.join(dirpath, filename)
+            file_extension = os.path.splitext(filename)[1]
+            if file_extension in extensions:
+                try:
+                    with open(file_path, 'r', encoding='utf-8') as file:
+                        content = file.read()
+                        if keyword in content:
+                            matched_files.append(file_path)
+                except Exception as e:
+                    print(f"Error reading {file_path}: {e}")  # 파일을 읽을 수 없는 경우 예외 출력
+
+    return matched_files
+
 """
     입력한 경로의 디렉토리 내 파일 크기를 KB, MB처럼 사람이 읽기쉽게 변환하여 보여주는 함수
     매개변수 size_in_bytes: 바이트 단위의 파일 크기
@@ -257,6 +291,30 @@ while not b_is_exit:
         src = input("복사할 파일의 경로를 입력하세요: ")
         dest = input("복사할 위치를 입력하세요: ")
         copyFile(src, dest)
+
+    elif func == "검색":
+        try:
+            print("지원하는 파일 확장자는 .txt, .md, .py, .json 입니다.")
+            root_directory = input("검색을 시작할 루트 디렉토리를 입력하세요: ")
+            keyword = input("검색할 키워드를 입력하세요: ").strip()
+            extensions_input = input("전체를 검색하고 싶다면 공백을 입력하고, 검색할 파일 확장자를 쉼표로 구분하여 입력하세요(예: .txt,.md,.py,.json): ").strip()
+            extensions = [ext.strip() for ext in extensions_input.split(',')] if extensions_input else ['.txt', '.md', '.py', '.json']
+            
+            # 지원되는 확장자인지 확인
+            supported_extensions = ['.txt', '.md', '.py', '.json']
+            if any(ext not in supported_extensions for ext in extensions):
+                print(f"지원되지 않는 파일 확장자가 포함되어 있습니다. 지원되는 확장자는 {', '.join(supported_extensions)} 입니다.")
+                continue
+            
+            matched_files = search_file_content(root_directory, keyword, extensions)
+            if matched_files:
+                print("키워드가 포함된 파일 목록:")
+                for file in matched_files:
+                    print(file)
+            else:
+                print("키워드가 포함된 파일을 찾을 수 없습니다.")
+        except Exception as e:
+            print(f"검색 중 오류가 발생했습니다: {e}")
 
     elif func == "?":
         print("도움말: 1을 입력하여 잘라내기(이동)하거나 2, 3을 입력하여 기능을 선택하거나 '복사'를 입력하여 파일을 복사하거나 '종료'를 입력하여 종료합니다.")
