@@ -1,3 +1,48 @@
+"""
+파일에 비밀번호를 부여하고 그 파일의 경로를 만들기 위해선 비밀번호를 입력해야하는 코드입니다.
+
+import os
+import getpass                                -> getpass 라이브러리는 비밀번호와 같은 입력을 받기위해 사용했습니다.
+
+def check_password(input_password):            -> 입력한 비밀번호가 맞는지 확인하기 위해 만든 함수입니다.
+    correct_password = "1234"                  -> correct_password는 사용자가 지정한 비밀번호를 담기 위해 만들었습니다.
+    return input_password == correct_password  -> 함수의 매개변수에 사용자가 지정해준 비밀번호를 리턴해줍니다.
+
+def create_file(filename):                            -> 파일을 만드는 함수입니다.
+    password = getpass.getpass("비밀번호를 입력하세요: ")  -> getpass.getpass()는 사용자에게 비밀번호를 입력받는 getpass 라이브러리에
+                                                          등록되어있는 함수입니다.
+    if check_password(password):                       -> 만약 입력받은 password가 지정해둔 password와 같다면,
+        print(f"'{filename}' 파일이 생성되었습니다.")      -> 파일을 생성시키는 함수를 나타내었습니다. f"string"을 사용하여 중괄호 안에
+                                                          넣고자하는 변수를 사용하여 변수에 해당한 값을 나타내줍니다.
+    else:
+        print("비밀번호가 틀렸습니다.")                     -> 비밀번호가 틀렸다는 것을 알려주기 위해 작성하였습니다.
+
+if __name__ == "__main__":
+    filename = input("만들고자 하는 파일 명을 입력하시오: ")   -> 만들고자 하는 파일명을 입력받습니다.
+    file_path = os.path.join(os.getcwd(), filename)      -> 파일명을 현재 작업하고 있는 파일의 경로와 합쳐 파일 경로 형식으로 만듭니다.
+    create_file(file_path)                               -> create_file함수를 통과하면서 코드가 마무리됩니다.
+"""
+
+
+import os
+import getpass
+
+def check_password(input_password):
+    correct_password = "1234"
+    return input_password == correct_password
+
+def create_file(filename):
+    password = getpass.getpass("비밀번호를 입력하세요: ")
+    if check_password(password):
+        print(f"'{filename}' 파일이 생성되었습니다.")
+    else:
+        print("비밀번호가 틀렸습니다.")
+
+if __name__ == "__main__":
+    filename = input("만들고자 하는 파일 명을 입력하시오: ")
+    file_path = os.path.join(os.getcwd(), filename)
+    create_file(file_path)
+
 
 """
 현재 경로에 특정 파일이나 디렉토리가 존재하는지를 확인하기 위해 import os를 사용
