@@ -3,7 +3,6 @@ import os
 def getParentDir(path):
     return os.path.dirname(path)
 
-
 """
 파일이름 변경 함수 renameFile 설명
 
@@ -28,7 +27,6 @@ def renameFile():
     except Exception as e:
         print("파일이름 변경 중 에러발생", e)
 
-
 """
 기능을 선택할 수 있음
 
@@ -40,6 +38,9 @@ def renameFile():
 추가기능 구현 시, 조건문 추가
 """
 if __name__ == "__main__":
+    version = "1.0.0"
+    print(f"프로그램 버전: {version}")
+
     while True:
         print("--------------------------------")
         print("기능 선택")
@@ -50,17 +51,10 @@ if __name__ == "__main__":
         select = input("입력 (0번 입력시, 종료): ")
         print("\n")
 
-
         if select == '1':
             renameFile()
-            
-        
         elif select == '0':
             print("종료")
             break
         else:
             print("잘못된 입력입니다. 다시 입력하세요.")
-        
-
-
-
