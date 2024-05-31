@@ -319,12 +319,16 @@ def save_tags(tags):
 
 def add_tag(file_path, tag):
     """
-    주어진 파일 경로에 태그를 추가하고한다. 태그 파일에 해당 경로가 없으면 새로 추가
+    주어진 파일 경로에 태그를 추가한다. 태그 파일에 해당 경로가 없으면 새로 추가
 
     @Args
         file_path: 태그를 추가할 파일 경로
         tag: 추가할 태그
     """
+    if not os.path.exists(file_path):
+        print(f"Error: The file '{file_path}' does not exist.")
+        return
+
     tags = load_tags()
     if file_path in tags:
         if tag not in tags[file_path]:
