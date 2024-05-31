@@ -13,16 +13,20 @@ def file_edit():
         select = input("원하는 기능을 입력하세요. ('?' 입력시 도움말)")
 
         if select == '?':
-            print('''
-                    도움말 
-                ''')
+            print(" '읽기'      입력시 해당 파일의 내용을 출력")
+            print(" '파일생성'  입력시 파일을 생성하고 원하는 내용을 작성")
+            print(" '종료'      입력시 프로그램을 종료할 수 있습니다.")
+
         elif select == "읽기":
             read_file()
-        elif select == "파일 생성 및 쓰기":
+
+        elif select == "파일생성":
             create_and_write_file()
+
         elif select == '종료':
             print('파일 편집 기능을 종료합니다.')
             finish = True
+
         else:
             print("잘못 입력하셨습니다. 다시 입력해주세요. : ")
 

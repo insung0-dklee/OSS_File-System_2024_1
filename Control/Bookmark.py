@@ -13,8 +13,9 @@ def bookmark(bookmark : List):
         select = input("원하는 기능을 입력하세요. ('?' 입력시 도움말)")
         
         if select == '?':
-            print(" '목록' 을 입력하면 현재 즐겨찾기 목록을 볼 수 있습니다.")
-            print(" '추가' 를 입력하면 즐겨찾기를 목록에 추가할 수 있습니다.")
+            print(" '목록' 입력시 현재 즐겨찾기 목록을 볼 수 있습니다.")
+            print(" '추가' 입력시 즐겨찾기를 목록에 추가할 수 있습니다.")
+            print(" '종료' 입력시 프로그램을 종료할 수 있습니다.")
 
         elif select == '목록':
             showFavorites(bookmark)
@@ -22,7 +23,7 @@ def bookmark(bookmark : List):
         elif select == '추가':
             addFavorite(bookmark)
 
-        elif select == "나가기":
+        elif select == "종료":
             print("즐겨찾기를 종료합니다.")
             finish = True
         

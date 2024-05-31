@@ -16,24 +16,48 @@ def file_control():
 
         if select == '?':
             print("도움말")
+            print(" '메타데이터 출력'    입력시 해당 파일 메타 데이터 확인")
+            print(" '파일삭제'           입력시 해당 파일 삭제")
+            print(" '파일검색'           입력시 원하는 파일의 위치 검색")
+            print(" '파일이동'           입력시 파일을 원하는 디렉토리로 이동")
+            print(" '디렉토리 생성'      입력시 원하는 경로에 디렉토리 생성")
+            print(" '파일목록'           입력시 해당 디렉토리의 파일의 목록 출력")
+            print(" '부모 디렉토리 확인' 입력시 선택한 디렉토리의 부모 디렉토리 출력")
+            print(" '파일복사'           입력시 파일 복사 및 붙여넣기")
+            print(" '잘라내기'           입력시 파일 잘라내기 및 붙여넣기")
+            print(" '종료'               입력시 프로그램을 종료할 수 있습니다.")
+
         elif select == '메타데이터 출력':
             manage_metadata()
-        elif select == '삭제':
+
+        elif select == '파일삭제':
             delete_file()
-        elif select == '검색':
-            search_file
-        elif select == '이동':
+
+        elif select == '파일검색':
+            search_file()
+
+        elif select == '파일이동':
             move_file()
+
         elif select == '디렉토리 생성':
             create_directory()
-        elif select == '파일 목록':
+
+        elif select == '파일목록':
             list_files()
+
         elif select == '부모 디렉토리 확인':
             getParentDir()
-        elif select == '복사':
+
+        elif select == '파일복사':
             copyFile()
+
         elif select == '잘라내기':
             cut_file()
+
+        elif select == "종료":
+            print("중복 관리를 종료합니다.")
+            finish = True
+
         else:
             print("잘못 입력하셨습니다. 다시 입력해주세요. : ")
 
