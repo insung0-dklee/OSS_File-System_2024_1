@@ -232,7 +232,24 @@ def showFavorites():
         print("즐겨찾기 목록:")
         for i, favorite in enumerate(favorites, 1):
             print(f"{i}. {favorite}")
-
+            
+def get_directory_size(directory):
+    """
+    디렉토리의 전체 크기를 계산합니다.
+    :param directory: 디렉토리 경로
+    :return: 디렉토리의 전체 크기 (바이트 단위)
+    """
+    total_size = 0
+    try:
+        for dirpath, dirnames, filenames in os.walk(directory):
+            for filename in filenames:
+                file_path = os.path.join(dirpath, filename)
+                total_size += os.path.getsize(file_path)
+        print(f"{directory}의 전체 크기: {get_human_readable_size(total_size)}")
+        return total_size
+    except Exception as e:
+        print(f"디렉토리 크기 계산 중 오류가 발생했습니다: {e}")
+        return 0
 
 b_is_exit = False
 
