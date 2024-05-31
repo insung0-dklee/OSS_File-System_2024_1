@@ -1,6 +1,7 @@
 
 import os
 import shutil
+import time
 
 def getParentDir(path):
     return os.path.dirname(path)
@@ -11,6 +12,32 @@ def copyFile(src, dest):
         print(f"파일이 성공적으로 복사되었습니다: {dest}")
     except Exception as e:
         print(f"파일 복사 중 오류가 발생했습니다: {e}")
+
+def clean_up_directory(directory, days_threshold):
+    """
+    지정된 디렉토리에서 지정된 기간 이상 사용되지 않은 파일 자동 삭제
+    
+        directory (str): 정리할 디렉토리 경로
+        days_threshold (int): 삭제 기준 일수 (예: 30일)
+    """
+    # 현재 시간을 가져옴
+    current_time = time.time()
+    
+    # 지정된 경로의 파일 목록을 가져옴
+    for root, dirs, files in os.walk(directory):
+        for file in files:
+            file_path = os.path.join(root, file)
+            
+            # 파일의 최종 수정 시간을 가져옴
+            file_modified_time = os.path.getmtime(file_path)
+            
+            # 파일의 최종 수정 시간과 현재 시간의 차이를 일(day) 단위로 계산
+            time_difference_days = (current_time - file_modified_time) / (60 * 60 * 24)
+            
+            # 지정된 기간 이상 미사용된 파일을 삭제
+            if time_difference_days > days_threshold:
+                os.remove(file_path)
+                print(f"Deleted: {file_path}") 
 
 b_is_exit = False
 
