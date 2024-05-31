@@ -234,6 +234,22 @@ def showFavorites():
             print(f"{i}. {favorite}")
 
 
+def sort(file_path, is_reverse):
+    try:
+        with open(file_path, 'r') as file:
+            lines = file.readlines()
+
+        sorted_lines = sorted(lines, reverse=is_reverse)
+
+        with open(file_path, 'w') as file:
+            for line in sorted_lines:
+                file.write(line)
+
+        print(f"정렬 완료.")
+    except Exception as e:
+        print(f"오류 발생: {e}")
+
+
 b_is_exit = False
 
 while not b_is_exit:
@@ -257,6 +273,11 @@ while not b_is_exit:
         src = input("복사할 파일의 경로를 입력하세요: ")
         dest = input("복사할 위치를 입력하세요: ")
         copyFile(src, dest)
+
+    elif func == "정렬":
+        file_path = input("정렬할 파일의 경로를 입력하세요 : ")
+        is_reverse = int(input("오름차순정렬 : 0\n내림차순정렬 : 1\n"))
+        sort(file_path, is_reverse)
 
     elif func == "?":
         print("도움말: 1을 입력하여 잘라내기(이동)하거나 2, 3을 입력하여 기능을 선택하거나 '복사'를 입력하여 파일을 복사하거나 '종료'를 입력하여 종료합니다.")
