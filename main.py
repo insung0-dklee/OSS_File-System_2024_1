@@ -365,6 +365,17 @@ def create_file(filename):
     else:
         print("비밀번호가 틀렸습니다.")
 
+def copy_file(src_path, dest_path):
+    if not os.path.exists(src_path):
+        raise FileNotFoundError(f"소스 파일이 존재하지 않습니다: {src_path}")
+    
+    if not os.path.exists(os.path.dirname(dest_path)):
+        raise FileNotFoundError(f"대상 디렉토리가 존재하지 않습니다: {os.path.dirname(dest_path)}")
+    
+    shutil.copy(src_path, dest_path)
+    print(f"파일이 복사되었습니다: {src_path} -> {dest_path}")
+
+
 
 b_is_exit = False
 
