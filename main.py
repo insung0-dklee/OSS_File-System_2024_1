@@ -365,6 +365,19 @@ def create_file(filename):
     else:
         print("비밀번호가 틀렸습니다.")
 
+#파일 백업 함수
+def backup_file(file_path, backup_dir):
+    """
+    파일을 백업합니다.
+    :param file_path: 백업할 파일의 경로
+    :param backup_dir: 백업을 저장할 디렉토리 경로
+    """
+    if not os.path.exists(backup_dir):
+        os.makedirs(backup_dir)
+    backup_path = os.path.join(backup_dir, os.path.basename(file_path))
+    shutil.copy2(file_path, backup_path)
+    print(f"파일이 성공적으로 백업되었습니다: {backup_path}")
+
 
 b_is_exit = False
 
@@ -393,6 +406,15 @@ while not b_is_exit:
         print("중복 관리 기능 실행")
         Duplicates.duplicates()
 
+    elif func == "파일 백업":
+        print("파일 백업 기능 실행")
+        file_path = input("백업할 파일의 경로를 입력하세요: ")
+        backup_dir = input("백업을 저장할 디렉토리 경로를 입력하세요: ")
+        if os.path.isfile(file_path) and os.path.isdir(backup_dir):
+            backup_file(file_path, backup_dir)
+        else:
+            print("유효한 파일 경로와 백업 디렉토리 경로를 입력해주세요.")
+
     elif func == "?":
         print("""
                 [도움말]
@@ -401,6 +423,7 @@ while not b_is_exit:
                 '파일관리' 입력시 파일을 관리할 수 있습니다.
                 '가독성'   입력시 파일의 단위를 읽기 좋게 볼 수 있습니다.
                 '중복관리' 입력시 중복 파일을 관리할 수 있습니다.
+                '파일 백업' 입력시 파일을 백업할 수 있습니다.
                 '종료'     입력시 프로그램을 종료합니다.
             """)
 
