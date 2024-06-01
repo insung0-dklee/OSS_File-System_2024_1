@@ -366,6 +366,28 @@ def create_file(filename):
         print("비밀번호가 틀렸습니다.")
 
 
+# 파일 목록을 알파벳 순으로 정리하는 기능 추가
+def list_files_sorted(directory):
+    """
+    주어진 디렉토리의 파일 목록을 알파벳 순으로 정리하여 출력합니다.
+    :param directory: 파일 목록을 정리할 디렉토리의 경로
+    """
+    try:
+        files = [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))]
+        sorted_files = sorted(files)
+        for file in sorted_files:
+            print(file)
+    except Exception as e:
+        print(f"파일 목록 정리 중 오류가 발생했습니다: {e}")
+
+# Readable 모듈의 readable 함수 예제 사용
+if Readable.readable():
+    print("모든 파일을 알파벳 순으로 정리하여 출력합니다.")
+    list_files_sorted('./')  # 현재 디렉토리 기준, 필요한 경우 디렉토리 경로를 변경하세요.
+else:
+    print("파일 목록을 불러올 수 없습니다.")
+
+
 b_is_exit = False
 
 while not b_is_exit:
