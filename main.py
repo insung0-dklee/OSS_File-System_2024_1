@@ -365,6 +365,58 @@ def create_file(filename):
     else:
         print("비밀번호가 틀렸습니다.")
 
+def file_properties():
+    file_path = input("속성을 확인할 파일 경로를 입력하세요: ")
+    show_file_properties(file_path)
+
+
+def show_file_properties(file_path):
+    """
+    주어진 파일의 속성을 출력합니다.
+    :param file_path: 속성을 확인할 파일의 경로
+    """
+    try:
+        if not os.path.exists(file_path):
+            print(f"파일이 존재하지 않습니다: {file_path}")
+            return
+
+        # 파일 경로
+        print(f"File Path: {file_path}")
+
+        # 파일 크기
+        file_size = os.path.getsize(file_path)
+        print(f"Size: {file_size} bytes")
+
+        # 생성 시간
+        created_time = os.path.getctime(file_path)
+        created_time_readable = time.ctime(created_time)
+        print(f"Created Time: {created_time_readable}")
+
+        # 수정 시간
+        modified_time = os.path.getmtime(file_path)
+        modified_time_readable = time.ctime(modified_time)
+        print(f"Modified Time: {modified_time_readable}")
+
+        # 접근 시간
+        accessed_time = os.path.getatime(file_path)
+        accessed_time_readable = time.ctime(accessed_time)
+        print(f"Accessed Time: {accessed_time_readable}")
+
+        # 파일 모드 (권한)
+        file_mode = oct(os.stat(file_path).st_mode)
+        print(f"File Mode (Permissions): {file_mode}")
+
+        # 소유자 ID
+        owner_id = os.stat(file_path).st_uid
+        print(f"Owner ID: {owner_id}")
+
+        # 그룹 ID
+        group_id = os.stat(file_path).st_gid
+        print(f"Group ID: {group_id}")
+
+    except Exception as e:
+        print(f"파일 속성 조회 중 오류가 발생했습니다: {e}")
+
 
 b_is_exit = False
 
@@ -393,6 +445,11 @@ while not b_is_exit:
         print("중복 관리 기능 실행")
         Duplicates.duplicates()
 
+    elif func == "속성":
+        print("속성 기능 실행")
+        FileProperties.file_properties()
+
+
     elif func == "?":
         print("""
                 [도움말]
@@ -401,6 +458,7 @@ while not b_is_exit:
                 '파일관리' 입력시 파일을 관리할 수 있습니다.
                 '가독성'   입력시 파일의 단위를 읽기 좋게 볼 수 있습니다.
                 '중복관리' 입력시 중복 파일을 관리할 수 있습니다.
+                '속성' 입력시 파일의 속성을 확인할 수 있습니다.
                 '종료'     입력시 프로그램을 종료합니다.
             """)
 
