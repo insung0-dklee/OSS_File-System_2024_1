@@ -26,6 +26,7 @@ from Control import FileControl
 from Control import Duplicates
 from Control import Readable
 from Control.FileControl import search_file
+from Control import GUI
 
 # 파일 관리 시스템
 # - 중복 파일 탐지 및 삭제: 주어진 디렉토리에서 중복 파일을 찾아내고, 중복된 파일을 삭제합니다.
@@ -454,6 +455,10 @@ while not b_is_exit:
         print()
         FileEdit.make_file()
         print()
+    elif func == 'GUI':
+        print()
+        GUI.gui_main()
+        print()
 
     elif func == "?":
         print("""
@@ -475,6 +480,7 @@ while not b_is_exit:
     '파일복사'           입력시 파일 복사 및 붙여넣기
     '잘라내기'           입력시 파일 잘라내기 및 붙여넣기
     '파일생성'           입력시 현재 디렉토리에 빈 파일을 생성한다.
+    'GUI'                입력시 GUI로 부분적인 기능을 사용할 수 있습니다.
     '종료'               입력시 프로그램을 종료할 수 있습니다.
     ==========================================================
             """)
