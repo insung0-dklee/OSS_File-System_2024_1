@@ -26,6 +26,7 @@ from Control import FileControl
 from Control import Duplicates
 from Control import Readable
 from Control.FileControl import search_file
+from datetime import datetime
 
 # 파일 관리 시스템
 # - 중복 파일 탐지 및 삭제: 주어진 디렉토리에서 중복 파일을 찾아내고, 중복된 파일을 삭제합니다.
@@ -365,6 +366,20 @@ def create_file(filename):
     else:
         print("비밀번호가 틀렸습니다.")
 
+"""
+입력한 파일 경로의 파일 생성 시간을 가져와서 형식을 변환하여 반환하는 함수
+@PARAM 
+	path: 파일 경로
+@RETURN
+	변환된 파일 생성 시간(형식: '연도-월-일 시:분:초')
+"""
+def getFileCreationTime(path):
+    try:
+        timestamp = os.path.getctime(path)
+        creation_time = datetime.fromtimestamp(timestamp)
+        return creation_time.strftime('%Y-%m-%d %H:%M:%S')
+    except Exception as e:
+        print(f"파일 생성 시간을 가져오는 중 오류가 발생했습니다: {e}") 
 
 b_is_exit = False
 
@@ -393,6 +408,14 @@ while not b_is_exit:
         print("중복 관리 기능 실행")
         Duplicates.duplicates()
 
+    elif func.lower() == "파일날짜":
+        path = input("파일 경로를 입력하세요: ")
+        creation_time = getFileCreationTime(path)
+        if creation_time:
+            print(f"파일이 생성된 날짜: {creation_time}")
+        else:
+            print("파일 생성 시간을 가져오는 데 실패했습니다.")
+
     elif func == "?":
         print("""
                 [도움말]
@@ -402,6 +425,7 @@ while not b_is_exit:
                 '가독성'   입력시 파일의 단위를 읽기 좋게 볼 수 있습니다.
                 '중복관리' 입력시 중복 파일을 관리할 수 있습니다.
                 '종료'     입력시 프로그램을 종료합니다.
+                '파일날짜' 입력시 파일이 생성된 날짜를 확인할 수 있습니다.
             """)
 
     elif func.lower() == "종료":
