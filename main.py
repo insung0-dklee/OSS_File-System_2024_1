@@ -320,6 +320,62 @@ def monitor_directory(directory, interval=5):
     except KeyboardInterrupt:
         print("Directory monitoring stopped.")
 
+def write_log(file_path, action):
+    """
+    파일 수정 기록을 로그 파일에 작성합니다.
+    :param file_path: 수정된 파일의 경로
+    :param action: 취해진 동작(수정, 생성 등)
+    """
+    log_file = "./file_edit_log.txt"  # 수정 기록을 저장할 로그 파일 경로
+
+    # 현재 시간을 기록
+    current_time = time.strftime("%Y-%m-%d %H:%M:%S")
+
+    # 로그 기록 포맷
+    log_entry = f"{current_time} - '{action}' - {file_path}\n"
+
+    # 로그 파일에 기록
+    with open(log_file, 'a') as f:
+        f.write(log_entry)
+
+def edit_file(file_path):
+    """
+    파일을 수정하고 수정 기록을 작성합니다.
+    :param file_path: 수정할 파일의 경로
+    """
+    try:
+        # 파일 수정 코드 작성
+        # 여기에 파일 수정 코드 작성
+
+        # 파일 수정 기록 작성
+        write_log(file_path, "수정")
+        
+        print(f"{file_path}가 성공적으로 수정되었습니다.")
+    except Exception as e:
+        print(f"파일 수정 중 오류가 발생했습니다: {e}")
+
+def print_edit_log():
+    """
+    파일 수정 기록을 출력합니다.
+    """
+    log_file = "./file_edit_log.txt"  # 수정 기록이 저장된 로그 파일 경로
+
+    try:
+        with open(log_file, 'r') as f:
+            edit_logs = f.readlines()  # 로그 파일에서 모든 수정 기록을 읽어옴
+            if edit_logs:
+                print("===== 파일 수정 기록 =====")
+                for log in edit_logs:
+                    print(log.strip())  # 각 수정 기록을 화면에 출력 (strip()은 개행 문자 제거)
+                print("=========================")
+            else:
+                print("수정된 파일 기록이 없습니다.")
+    except FileNotFoundError:
+        print("수정된 파일 기록이 없습니다.")
+    except Exception as e:
+        print(f"수정된 파일 기록을 출력하는 중 오류가 발생했습니다: {e}")
+
+
 """
 파일에 비밀번호를 부여하고 그 파일의 경로를 만들기 위해선 비밀번호를 입력해야하는 코드입니다.
 import os
