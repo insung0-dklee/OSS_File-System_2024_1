@@ -26,6 +26,8 @@ from Control import FileControl
 from Control import Duplicates
 from Control import Readable
 from Control.FileControl import search_file
+from newFunctions import compress_file, list_file_creation_times, preview_image, preview_text
+
 
 # 파일 관리 시스템
 # - 중복 파일 탐지 및 삭제: 주어진 디렉토리에서 중복 파일을 찾아내고, 중복된 파일을 삭제합니다.
@@ -393,14 +395,34 @@ while not b_is_exit:
         print("중복 관리 기능 실행")
         Duplicates.duplicates()
 
+    elif func == "압축":
+        file_path = input("압축할 파일 경로를 입력하세요: ")
+        compress_file(file_path)
+
+    elif func == "파일 생성 시간":
+        dir_path = input("파일 생성 시간을 확인할 디렉토리 경로를 입력하세요: ")
+        list_file_creation_times(dir_path)
+
+    elif func == "이미지 미리보기":
+        file_path = input("미리보기할 이미지 파일 경로를 입력하세요(확장자 포함): ")
+        preview_image(file_path)
+
+    elif func == "텍스트 미리보기":
+        file_path = input("미리보기할 텍스트 파일 경로를 입력하세요: ")
+        preview_text(file_path)
+
     elif func == "?":
         print("""
                 [도움말]
                 '파일편집' 입력시 파일을 편집할 수 있습니다.
                 '즐겨찾기' 입력시 즐겨찾기 기능을 사용할 수 있습니다.
                 '파일관리' 입력시 파일을 관리할 수 있습니다.
-                '가독성'   입력시 파일의 단위를 읽기 좋게 볼 수 있습니다.
+                '가독성' 입력시 파일의 단위를 읽기 좋게 볼 수 있습니다.
                 '중복관리' 입력시 중복 파일을 관리할 수 있습니다.
+                '압축' 입력시 파일을 압축할 수 있습니다.
+                '파일 생성 시간' 입력시 파일 생성 시간을 확인할 수 있습니다.
+                '이미지 미리보기' 입력시 이미지 파일을 미리볼 수 있습니다.
+                '텍스트 미리보기' 입력시 텍스트 파일을 미리볼 수 있습니다.
                 '종료'     입력시 프로그램을 종료합니다.
             """)
 
