@@ -289,3 +289,29 @@ while not b_is_exit:
 
     else:
         print("알 수 없는 입력입니다. 다시 시도해주세요.")
+
+
+
+def classify_files_by_extension(source_directory, destination_directory):
+    """
+    파일 형식에 따라 파일을 분류하여 이동하는 함수
+
+    :param source_directory: 파일들이 있는 소스 디렉토리
+    :param destination_directory: 분류된 파일들을 저장할 목적지 디렉토리
+    """
+    # 소스 디렉토리에서 모든 파일과 디렉토리 가져오기
+    for item in os.listdir(source_directory):
+        item_path = os.path.join(source_directory, item)
+        
+        # 파일인 경우에만 처리
+        if os.path.isfile(item_path):
+            # 파일 확장자 가져오기
+            file_extension = os.path.splitext(item)[1][1:].lower()  # 확장자에서 점(.) 제거하고 소문자로 변환
+            if file_extension:  # 확장자가 있는 경우
+                # 목적지 디렉토리 경로 만들기
+                extension_dir = os.path.join(destination_directory, file_extension)
+                os.makedirs(extension_dir, exist_ok=True)  # 확장자 디렉토리 생성 (이미 있으면 무시)
+                
+                # 파일을 목적지 디렉토리로 이동
+                shutil.move(item_path, os.path.join(extension_dir, item))
+                print(f"Moved: {item} -> {extension_dir}")
