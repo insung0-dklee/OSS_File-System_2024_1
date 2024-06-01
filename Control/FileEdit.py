@@ -4,6 +4,7 @@
 현재 구현 상태
 1. 파일 읽기
 2. 파일 쓰기
+3. 파일 단어 찾아 바꾸기
 '''
 
 def file_edit():
@@ -13,13 +14,16 @@ def file_edit():
         select = input("원하는 기능을 입력하세요. ('?' 입력시 도움말)")
 
         if select == '?':
-            print(" '읽기'      입력시 해당 파일의 내용을 출력")
-            print(" '파일생성'  입력시 파일을 생성하고 원하는 내용을 작성")
-            print(" '종료'      입력시 프로그램을 종료할 수 있습니다.")
+            print(" '읽기'        입력시 해당 파일의 내용을 출력")
+            print(" '파일생성'     입력시 파일을 생성하고 원하는 내용을 작성")
+            print(" '찾아 바꾸기'  입력시 파일을 불러오고 원하는 단어를 찾아 새 단어로 바꿀 수 있습니다")
+            print(" '종료'         입력시 프로그램을 종료할 수 있습니다.")
         elif select == "읽기":
             read_file()
         elif select == "파일 생성 및 쓰기":
             create_and_write_file()
+        elif select == "찾아 바꾸기":
+            modify_file()
         elif select == '종료':
             print('파일 편집 기능을 종료합니다.')
             finish = True
@@ -38,3 +42,18 @@ def create_and_write_file():
     content = input("쓰고 싶은 문장을 입력하세요. : ")
     with open(file_path, 'w') as file:
         file.write(content)
+
+def modify_file():
+    """
+    이미 만들어진 파일의 내용을 읽고, 특정 문자열을 찾아 새 문자열로 바꿔주는 함수
+    """
+    file_path = input("찾아 바꾸기를 하고 싶은 파일의 경로를 입력하세요. : ")
+    with open(file_path, 'r') as file:
+        content = file.read()
+    print(f"현재 파일 내용:\n{content}")
+    old_string = input("찾을 단어를 입력하세요: ")
+    new_string = input("바꿀 단어를 입력하세요: ")
+    modified_content = content.replace(old_string, new_string)
+    with open(file_path, 'w') as file:
+        file.write(modified_content)
+    print("찾아 바꾸기가 완료되었습니다.")
