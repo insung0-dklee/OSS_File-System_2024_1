@@ -246,7 +246,6 @@ def showFavorites():
         for i, favorite in enumerate(favorites, 1):
             print(f"{i}. {favorite}")
 
-
 b_is_exit = False
 
 while not b_is_exit:
