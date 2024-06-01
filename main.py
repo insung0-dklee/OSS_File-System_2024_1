@@ -26,6 +26,7 @@ from Control import FileControl
 from Control import Duplicates
 from Control import Readable
 from Control.FileControl import search_file
+from Control import AutoFileManage
 
 # 파일 관리 시스템
 # - 중복 파일 탐지 및 삭제: 주어진 디렉토리에서 중복 파일을 찾아내고, 중복된 파일을 삭제합니다.
@@ -393,6 +394,10 @@ while not b_is_exit:
         print("중복 관리 기능 실행")
         Duplicates.duplicates()
 
+    elif func == "자동관리":
+        print("자동 파일 관리자 실행")
+        AutoFileManage.AutoFileManager()
+        
     elif func == "?":
         print("""
                 [도움말]
