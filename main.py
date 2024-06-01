@@ -406,7 +406,32 @@ while not b_is_exit:
 
     elif func.lower() == "종료":
         b_is_exit = True
-        print("프로그램을 종료합니다.")
+        print("프로그램을 종료합니다.")s
 
     else:
         print("잘못 입력하셨습니다. 다시 입력해주세요. : ")
+
+def customizing_Function(directory):
+    """
+    이 함수는 지정된 디렉토리에 'addFunction.txt' 파일이 존재할 때만,
+    파일에 담긴 Python 코드를 읽어서 실행합니다.
+    *주의* 코드는 반드시 신뢰가능한 코드일 때만 입력하세요
+    
+    Args:
+        directory (str): 파일이 위치한 디렉토리의 경로입니다.
+    """
+    filename = 'addFunction.txt'
+    file_path = os.path.join(directory, filename)
+    
+    if os.path.exists(file_path):
+        with open(file_path, 'r') as file:
+            code = file.read()
+            
+        try:
+            exec(code, globals())
+            
+            print(f"'{filename}' 파일의 코드가 성공적으로 추가되었습니다.")
+        except Exception as e:
+            print(f"코드 추가에 실패했습니다: {e}")
+    else:
+        print(f"'{directory}' 디렉토리에 '{filename}' 파일이 존재하지 않습니다.")
