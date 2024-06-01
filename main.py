@@ -1,3 +1,58 @@
+"""
+import os
+import shutil
+import time
+
+
+trashcan_path = os.path.join(os.getcwd(), 'trash_can')                  -> trashcan_path는 현재 작업중이네 디렉토리 내에 trash_can이라는 폴더의 주소를 나타냅니다.
+trashcan_file = os.makedirs(trashcan_path, exist_ok=True)               -> trashcan_path로 trash_can이라는 파일을 실제로 만들어줍니다.
+
+main_path = os.getcwd()                                                 -> 현재 작업중인 디렉토리 주소를 main_path로 두었습니다.
+
+trash_time= 30 * 24 * 60 * 60                                           -> 30일 단위로 파일을 지울 것이기 때문에, 30일을 초 단위로 나타낸 것입니다.
+
+
+def go_to_trash_can(main_path, trashcan_path):                     ->  trash_can파일로 파일을 옮길지 아닐지 결정해주는 함수입니다.
+
+    current_time = time.time()                                     -> time라이브러리를 통해 현재 시간을 나타내는 코드입니다.
+
+    for foldername, subfolders, filenames in os.walk(main_path):    -> foldername : 현재 작업중인 디렉토리
+                                                                    -> subfolders : 하위 디렉토리의 리스트
+                                                                    -> filenames : 현재 디렉토리에 포함된 하위 파일들
+                                                                    -> 따라서 현재 디렉토리 내의 모든 파일을 검사할 수 있습니다.
+        for filename in filenames:                            -> 디렉토리 내의 모든 filename을 비교할 떄까지 반복됩니다.
+            file_path = os.path.join(foldername, filename)     -> 그 파일의 주소를 file_path라는 변수에 담습니다.
+            last_access_time = os.path.getatime(file_path)     -> os.path.getatime(file_path)는 file_path의 가장 최근 접근시간을 보여줍니다.
+            if (current_time - last_access_time) > trash_time:  -> 만약 (현재 시간 - 마지막 접근 시간)이 30일을 초 단위로 바꾼 trash_time 보다 크다면
+                shutil.move(file_path, trashcan_path)           -> 그 file을 trash_can으로 옮기기 위해 shutil 라이브러리를 사용하였습니다.
+                print("사용하지 않은 기간이 30일이 넘어 자동으로 휴지통으로 이동합니다.") 
+"""
+
+
+import os
+import shutil
+import time
+
+
+trashcan_path = os.path.join(os.getcwd(), 'trash_can')
+trashcan_file = os.makedirs(trashcan_path, exist_ok=True)
+
+main_path = os.getcwd()
+
+trash_time= 30 * 24 * 60 * 60
+
+
+def go_to_trash_can(main_path, trashcan_path):
+
+    current_time = time.time()
+
+    for foldername, subfolders, filenames in os.walk(main_path):
+        for filename in filenames:
+            file_path = os.path.join(foldername, filename)
+            last_access_time = os.path.getatime(file_path)
+            if (current_time - last_access_time) > trash_time:
+                shutil.move(file_path, trashcan_path)
+                print("사용하지 않은 기간이 30일이 넘어 자동으로 휴지통으로 이동합니다.")
 
 """
 현재 경로에 특정 파일이나 디렉토리가 존재하는지를 확인하기 위해 import os를 사용
