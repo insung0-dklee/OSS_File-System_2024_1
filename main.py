@@ -365,6 +365,18 @@ def create_file(filename):
     else:
         print("비밀번호가 틀렸습니다.")
 
+# 파일 복원 함수
+def restore_file(backup_path, restore_dir):
+    """
+    백업된 파일을 복원합니다.
+    :param backup_path: 복원할 백업 파일의 경로
+    :param restore_dir: 파일을 복원할 디렉토리 경로
+    """
+    if not os.path.exists(restore_dir):
+        os.makedirs(restore_dir)
+    restore_path = os.path.join(restore_dir, os.path.basename(backup_path))
+    shutil.copy2(backup_path, restore_path)
+    print(f"파일이 성공적으로 복원되었습니다: {restore_path}")
 
 b_is_exit = False
 
@@ -393,6 +405,15 @@ while not b_is_exit:
         print("중복 관리 기능 실행")
         Duplicates.duplicates()
 
+    elif func == "파일 복원":
+        print("파일 복원 기능 실행")
+        backup_path = input("복원할 백업 파일의 경로를 입력하세요: ")
+        restore_dir = input("파일을 복원할 디렉토리 경로를 입력하세요: ")
+        if os.path.isfile(backup_path) and os.path.isdir(restore_dir):
+            restore_file(backup_path, restore_dir)
+        else:
+            print("유효한 백업 파일 경로와 복원 디렉토리 경로를 입력해주세요.")
+
     elif func == "?":
         print("""
                 [도움말]
@@ -401,6 +422,7 @@ while not b_is_exit:
                 '파일관리' 입력시 파일을 관리할 수 있습니다.
                 '가독성'   입력시 파일의 단위를 읽기 좋게 볼 수 있습니다.
                 '중복관리' 입력시 중복 파일을 관리할 수 있습니다.
+                '파일 복원' 입력시 백업된 파일을 복원할 수 있습니다.
                 '종료'     입력시 프로그램을 종료합니다.
             """)
 
