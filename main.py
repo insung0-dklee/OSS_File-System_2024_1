@@ -373,7 +373,7 @@ while not b_is_exit:
     func = input("원하는 기능을 입력하세요. ('?' 입력시 도움말)")
     bookmark_list = []
 
-    if func == "파일 편집":
+    if func == "파일편집":
         print("파일 편집 기능 실행")
         FileEdit.file_edit()
 
@@ -381,7 +381,7 @@ while not b_is_exit:
         print("즐겨찾기 기능 실행.")
         Bookmark.bookmark(bookmark_list)
 
-    elif func == "파일 관리":
+    elif func == "파일관리":
         print("파일 관리 기능 실행")
         FileControl.file_control()
 
