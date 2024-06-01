@@ -7,6 +7,7 @@
 3. 파일 내용 추가
 4. 파일 내용 부분 삭제
 5. 파일 내용 전체 삭제
+6. 파일 내용 덮어쓰기
 '''
 
 def file_edit():
@@ -21,6 +22,7 @@ def file_edit():
             print(" '파일 내용 추가'  입력시 이미 생성된 파일에 원하는 내용을 추가 작성")
             print(" '파일 내용 부분 삭제'  입력시 이미 생성된 파일의 내용을 확인하고 원하는 부분을 삭제")
             print(" '파일 내용 전체 삭제'  입력시 이미 생성된 파일의 내용 전체를 삭제")
+            print(" '파일 내용 덮어쓰기' 입력시 이미 생성된 파일의 내용을 새로운 내용으로 덮어씀")
             print(" '종료'      입력시 프로그램을 종료할 수 있습니다.")
         elif select == "읽기":
             read_file()
@@ -32,6 +34,8 @@ def file_edit():
             delete_partial_content()
         elif select == "파일 내용 전체 삭제":
             delete_file_content()
+        elif select == "파일 내용 덮어쓰기":
+            overwrite_file_content()
         elif select == '종료':
             print('파일 편집 기능을 종료합니다.')
             finish = True
@@ -86,3 +90,12 @@ def delete_file_content():
     file_path = input("전체 내용을 삭제할 파일의 경로를 입력하세요. : ")
     with open(file_path, 'w') as file:
         pass
+
+def overwrite_file_content():
+    """
+    덮어쓸 내용을 입력받아 이미 생성된 파일 안의 내용을 새로운 내용으로 덮어씀
+    """
+    file_path = input("내용을 덮어쓸 파일의 경로를 입력하세요. : ")
+    new_content = input("덮어쓸 내용을 입력하세요. : ")
+    with open(file_path, 'w') as file:
+        file.write(new_content)
