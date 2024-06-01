@@ -17,6 +17,7 @@ import shutil
 import hashlib
 import time
 import function
+from PIL import Image
 
 # 파일 관리 시스템
 # - 중복 파일 탐지 및 삭제: 주어진 디렉토리에서 중복 파일을 찾아내고, 중복된 파일을 삭제합니다.
@@ -234,6 +235,28 @@ def showFavorites():
             print(f"{i}. {favorite}")
 
 
+def convert_imageFile(input_path, output_path):
+    """
+    이미지 파일을 변환하는 함수
+    라이브러리 설치 필요함 => cmd에서 "pip install Pillow" 입력 후 엔터
+
+    @Param
+        input_path: 변환할 이미지 파일의 경로
+        output_path: 변환된 이미지 파일을 저장할 경로
+
+    @Return
+        None
+
+    @Raises
+        FileNotFoundError: input_path에 해당하는 파일이 없을 때 발생
+        OSError: 이미지 파일을 저장할 때 발생할 수 있는 오류
+    """
+    with Image.open(input_path) as img:
+        img.save(output_path)
+        print(f"{output_path}가 생성되었습니다,")
+
+
+
 b_is_exit = False
 
 while not b_is_exit:
@@ -257,6 +280,12 @@ while not b_is_exit:
         src = input("복사할 파일의 경로를 입력하세요: ")
         dest = input("복사할 위치를 입력하세요: ")
         copyFile(src, dest)
+
+    elif func == "이미지 파일 변환":
+        input_path = input("변환 할 이미지 파일의 경로를 입력하세요 : ")
+        output_path = input("저장할 경로를 입력하세요(format 형식 포함) : ")
+        convert_imageFile(input_path,output_path)
+    
 
     elif func == "?":
         print("도움말: 1을 입력하여 잘라내기(이동)하거나 2, 3을 입력하여 기능을 선택하거나 '복사'를 입력하여 파일을 복사하거나 '종료'를 입력하여 종료합니다.")
