@@ -389,12 +389,12 @@ def print_directory_tree(dir_path, level=0):
     except Exception:
         print("트리출력 중 에러발생")
 
+
+
 def print_system_info():
     """
     현재 시스템의 운영체제 및 컴퓨터 정보를 출력한다.
     매개변수 없음
-
-
     """
     try:
         # 운영체제 및 기본 시스템 정보
@@ -408,6 +408,28 @@ def print_system_info():
 
     except Exception as e:
         print(f"시스템 정보 출력 중 오류가 발생했습니다: {e}")
+
+
+
+def print_files_by_mtime(directory):
+    """
+    사용자가 입력한 디렉토리 내에서 파일을 수정 시간 순으로 정렬하여 출력한다.
+    매개변수 directory: 디렉토리 경로
+    """
+    try:
+        files = [os.path.join(directory, f) for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))]
+
+        files.sort(key=lambda x: os.path.getmtime(x), reverse=True)
+
+        for file in files:
+            mtime = os.path.getmtime(file)
+            mtime_readable = time.ctime(mtime)
+            print(f"{file}: 수정 시간 - {mtime_readable}")
+    
+    except Exception as e:
+        print(f"파일 목록 출력 중 오류 발생: {e}")
+
+
 
 
 b_is_exit = False
@@ -445,6 +467,12 @@ while not b_is_exit:
     elif func == "시스템정보":
         print("현재 시스템 정보 출력기능 실행")
         print_system_info()
+
+    elif func == "수정시간정렬":
+        print("수정시간기준 정렬 기능 실행")
+        directory_path = input("파일 목록을 수정 시간 순으로 정렬하여 출력할 디렉토리 경로를 입력하세요: ")
+        print_files_by_mtime(directory_path)
+
 
     elif func == "?":
         print("""
