@@ -38,3 +38,12 @@ def create_and_write_file():
     content = input("쓰고 싶은 문장을 입력하세요. : ")
     with open(file_path, 'w') as file:
         file.write(content)
+
+
+def make_file():
+    '''
+    간단하게 현재 위치에 빈 파일을 생성하는 함수
+    '''
+    file_name = input("파일의 이름을 입력하세요. \n >>")
+    open(file_name,'w')
+    return print(f" '{file_name}' 파일이 생성되었습니다.")

@@ -4,6 +4,8 @@
 
 from typing import List
 
+favorites = []
+
 def bookmark(bookmark : List):
 
     finish = False

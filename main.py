@@ -405,16 +405,77 @@ while not b_is_exit:
         print("\n [] 중복 관리 기능 실행")
         Duplicates.duplicates()
 
+    elif func == '메타데이터 출력':
+        print()
+        FileControl.manage_metadata()
+        print()
+        
+    elif func == '파일삭제':
+        print()
+        FileControl.delete_file()
+        print()
+    
+    elif func == '파일검색':
+        print()
+        FileControl.search_file()
+        print()
+
+    elif func == '파일이동':
+        print()
+        FileControl.move_file()
+        print()
+    
+    elif func == '디렉토리 생성':
+        print()
+        FileControl.create_directory()
+        print()
+
+    elif func == '파일목록':
+        print()
+        FileControl.list_files()
+        print()
+
+    elif func == '부모 디렉토리 확인':
+        print()
+        FileControl.getParentDir()
+        print()
+
+    elif func == '파일복사':
+        print()
+        FileControl.copyFile()
+        print()
+
+    elif func == '잘라내기':
+        print()
+        FileControl.cut_file()
+        print()
+    
+    elif func == '파일생성':
+        print()
+        FileEdit.make_file()
+        print()
+
     elif func == "?":
         print("""
     ==========================================================
     [도움말]
-    '파일편집' 입력시 파일을 편집할 수 있습니다.
-    '즐겨찾기' 입력시 즐겨찾기 기능을 사용할 수 있습니다.
-    '파일관리' 입력시 파일을 관리할 수 있습니다.
-    '가독성'   입력시 파일의 단위를 읽기 좋게 볼 수 있습니다.
-    '중복관리' 입력시 중복 파일을 관리할 수 있습니다.
-    '종료'     입력시 프로그램을 종료합니다.
+    '파일편집'           입력시 파일을 편집할 수 있습니다.
+    '즐겨찾기'           입력시 즐겨찾기 기능을 사용할 수 있습니다.
+    '파일관리'           입력시 파일을 관리할 수 있습니다.
+    '가독성'             입력시 파일의 단위를 읽기 좋게 볼 수 있습니다.
+    '중복관리'           입력시 중복 파일을 관리할 수 있습니다.
+    '종료'               입력시 프로그램을 종료합니다.
+    '메타데이터 출력'    입력시 해당 파일 메타 데이터 확인
+    '파일삭제'           입력시 해당 파일 삭제
+    '파일검색'           입력시 원하는 파일의 위치 검색
+    '파일이동'           입력시 파일을 원하는 디렉토리로 이동
+    '디렉토리 생성'      입력시 원하는 경로에 디렉토리 생성
+    '파일목록'           입력시 해당 디렉토리의 파일의 목록 출력
+    '부모 디렉토리 확인' 입력시 선택한 디렉토리의 부모 디렉토리 출력
+    '파일복사'           입력시 파일 복사 및 붙여넣기
+    '잘라내기'           입력시 파일 잘라내기 및 붙여넣기
+    '파일생성'           입력시 현재 디렉토리에 빈 파일을 생성한다.
+    '종료'               입력시 프로그램을 종료할 수 있습니다.
     ==========================================================
             """)
 
