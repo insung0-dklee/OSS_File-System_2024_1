@@ -60,7 +60,6 @@ def file_control():
             color_choice = int(input("파일 이름의 색을 선택하세요 (1 또는 2): "))
             list_files(directory, color_choice)
 
-            
         elif select == "종료":
             print("중복 관리를 종료합니다.")
             finish = True
@@ -210,6 +209,7 @@ def cut_file(source, destination):
     except Exception as e:
         print(f"파일을 이동하는 중 오류가 발생했습니다: {e}")
 
+
 # 파일 이름 색상을 바꾸는 기능
 def display_files_with_color(files: List[str], color_choice: int):
     if color_choice == 1:
@@ -243,3 +243,4 @@ def list_files(directory: str, color_choice: int = None) -> List[str]:
     except Exception as e:
         print(f"Error listing files: {e}")
         return []
+
