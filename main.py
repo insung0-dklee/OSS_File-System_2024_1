@@ -19,6 +19,7 @@ import time
 import function
 import zipfile
 from functools import lru_cache
+from collections import defaultdict
 import getpass
 from Control import Bookmark
 from Control import FileEdit
@@ -432,6 +433,56 @@ def compare_files(file1_path, file2_path):
     except Exception as e:
         print(f"파일 비교 중 오류가 발생했습니다: {e}")
 
+def get_file_system_statistics(directory):
+    """
+    주어진 디렉토리의 파일 시스템 통계를 계산합니다.
+    
+    @param
+        directory: 통계를 계산할 디렉토리 경로
+    
+    @Returns
+        파일 시스템 통계를 담은 딕셔너리
+    """
+    statistics = {
+        'total_files': 0,
+        'total_directories': 0,
+        'total_size': 0,
+        'file_type_counts': defaultdict(int)
+    }
+
+    for dirpath, dirnames, filenames in os.walk(directory):
+        # 디렉토리 수 증가
+        statistics['total_directories'] += len(dirnames)
+        
+        # 파일 수 및 파일 크기 증가
+        for filename in filenames:
+            statistics['total_files'] += 1
+            file_path = os.path.join(dirpath, filename)
+            statistics['total_size'] += os.path.getsize(file_path)
+            
+            # 파일 유형별 통계 증가
+            _, file_extension = os.path.splitext(filename)
+            statistics['file_type_counts'][file_extension] += 1
+
+    return statistics
+
+def print_file_system_statistics(directory):
+    """
+    주어진 디렉토리의 파일 시스템 통계를 출력합니다.
+    
+    @param
+        directory: 통계를 출력할 디렉토리 경로
+    """
+    stats = get_file_system_statistics(directory)
+    
+    print(f"디렉토리: {directory}")
+    print(f"총 파일 수: {stats['total_files']}")
+    print(f"총 디렉토리 수: {stats['total_directories']}")
+    print(f"총 용량: {stats['total_size']} bytes")
+    print("파일 유형별 통계:")
+    for file_type, count in stats['file_type_counts'].items():
+        print(f"  {file_type if file_type else 'No Extension'}: {count} files")
+
 b_is_exit = False
 
 while not b_is_exit:
@@ -474,6 +525,15 @@ while not b_is_exit:
         file1_path = input("첫 번째 파일 경로를 입력하세요: ")
         file2_path = input("두 번째 파일 경로를 입력하세요: ")
         compare_files(file1_path, file2_path)
+    
+    elif func == "통계":
+        print("파일 시스템 통계 기능 실행")
+        directory_to_analyze = input("통계를 분석할 디렉토리 경로를 입력하세요: ")
+        if os.path.exists(directory_to_analyze) and os.path.isdir(directory_to_analyze):
+            print_file_system_statistics(directory_to_analyze)
+        else:
+            print("유효한 디렉토리 경로가 아닙니다.")
+
 
     elif func == "?":
         print("""
@@ -485,6 +545,7 @@ while not b_is_exit:
                 '중복관리' 입력시 중복 파일을 관리할 수 있습니다.
                 '트리출력' 입력시 디렉토리 구조를 트리 형태로 출력합니다.
                 '파일비교' 입력시 텍스트 파일 내용을 비교합니다.
+                '통계'     입력시 파일 시스템 통계를 분석합니다.
                 '종료'     입력시 프로그램을 종료합니다.
             """)
 
