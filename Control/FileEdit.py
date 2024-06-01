@@ -28,10 +28,18 @@ def file_edit():
 
 
 def read_file():
-    file_path = input("읽고 싶은 파일의 경로를 입력하세요. : ")
-    with open(file_path, 'r') as file:
-        content = file.read()
-    return content
+    while True:
+        file_path = input("읽고 싶은 파일의 경로를 입력하세요. : ")
+        try:
+            with open(file_path, 'r') as file:
+                content = file.read()
+                return content
+        except FileNotFoundError:
+            print("파일을 찾을 수 없습니다. 올바른 경로를 입력하세요.")
+        except IOError:
+            print("파일을 열 수 없습니다. 다시 시도하세요.")
+        except UnicodeDecodeError:  # 인코딩 관련 오류 처리
+            print("파일을 읽을 수 없습니다. 다시 입력해주세요.")
 
 def create_and_write_file():
     file_path = input("파일을 생성하고 싶은 디렉토리의 경로를 입력하세요. : ")
