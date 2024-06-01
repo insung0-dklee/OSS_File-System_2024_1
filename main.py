@@ -26,6 +26,7 @@ from Control import FileControl
 from Control import Duplicates
 from Control import Readable
 from Control.FileControl import search_file
+from cryptography.fernet import Fernet
 
 # 파일 관리 시스템
 # - 중복 파일 탐지 및 삭제: 주어진 디렉토리에서 중복 파일을 찾아내고, 중복된 파일을 삭제합니다.
@@ -364,6 +365,45 @@ def create_file(filename):
         print(f"'{filename}' 파일이 생성되었습니다.")
     else:
         print("비밀번호가 틀렸습니다.")
+
+def generate_key():
+    """
+    암호화 키를 생성합니다.
+    """
+    return Fernet.generate_key()
+
+def encrypt_file(file_path, key):
+    """
+    파일을 암호화합니다.
+    :param file_path: 암호화할 파일의 경로
+    :param key: 암호화 키
+    """
+    cipher = Fernet(key)
+    with open(file_path, 'rb') as file:
+        file_data = file.read()
+    encrypted_data = cipher.encrypt(file_data)
+    with open(file_path, 'wb') as file:
+        file.write(encrypted_data)
+    print(f"파일이 암호화되었습니다: {file_path}")
+
+def decrypt_file(file_path, key):
+    """
+    파일을 복호화합니다.
+    :param file_path: 복호화할 파일의 경로
+    :param key: 암호화 키
+    """
+    cipher = Fernet(key)
+    with open(file_path, 'rb') as file:
+        encrypted_data = file.read()
+    decrypted_data = cipher.decrypt(encrypted_data)
+    with open(file_path, 'wb') as file:
+        file.write(decrypted_data)
+    print(f"파일이 복호화되었습니다: {file_path}")
+
+# 파일 암호화 및 복호화 테스트
+key = generate_key()
+encrypt_file('secret.txt', key)
+decrypt_file('secret.txt', key)
 
 
 b_is_exit = False
