@@ -440,7 +440,7 @@ def unhide_files_with_extension_in_directory(directory, extension):
     Windows 시스템에서만 적용되며 'attrib -h' 명령어를 사용해 파일의 숨김 상태를 해제합니다.
     Args:
         directory (str): 파일의 숨김 상태를 해제하고자 하는 디렉토리의 경로.
-        extension (str): 숨김 상태를 해제하고자 하는 파일의 확장자 (예: '.txt').
+        extension (str): 숨김 상태를 해제하고자 하는 파일의 확장자 (예: '.txt')
         
     Returns:
         None
@@ -451,3 +451,4 @@ def unhide_files_with_extension_in_directory(directory, extension):
         if file.endswith(extension):
             os.system(f'attrib -h "{os.path.join(directory, file)}"')
             print(f'"{file}" file has been unhidden.')
+
