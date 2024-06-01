@@ -365,6 +365,23 @@ def create_file(filename):
     else:
         print("비밀번호가 틀렸습니다.")
 
+favorites = []
+
+def addFavorite(file_path):
+    if os.path.exists(file_path):
+        favorites.append(file_path)
+        print(f"{file_path}이(가) 즐겨찾기에 추가되었습니다.")
+    else:
+        print("파일 경로가 잘못되었습니다.")
+
+def showFavorites():
+    print("즐겨찾기 목록:")
+    for idx, fav in enumerate(favorites):
+        print(f"{idx + 1}: {fav}")
+
+# 즐겨찾기 기능 테스트
+addFavorite('path/to/favorite/file.txt')
+showFavorites()
 
 b_is_exit = False
 
