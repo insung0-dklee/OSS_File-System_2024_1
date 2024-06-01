@@ -374,33 +374,28 @@ while not b_is_exit:
     bookmark_list = []
 
     if func == "파일 편집":
-        print("파일 편집 기능 실행")
         FileEdit.file_edit()
 
     elif func == "즐겨찾기":
-        print("즐겨찾기 기능 실행.")
         Bookmark.bookmark(bookmark_list)
 
     elif func == "파일 관리":
-        print("파일 관리 기능 실행")
         FileControl.file_control()
 
     elif func == "가독성":
-        print("가독성 기능 실행")
         Readable.readable()
 
-    elif func == "중복관리":
-        print("중복 관리 기능 실행")
+    elif func == "중복 관리":
         Duplicates.duplicates()
 
     elif func == "?":
         print("""
                 [도움말]
-                '파일편집' 입력시 파일을 편집할 수 있습니다.
+                '파일 편집' 입력시 파일을 편집할 수 있습니다.
                 '즐겨찾기' 입력시 즐겨찾기 기능을 사용할 수 있습니다.
-                '파일관리' 입력시 파일을 관리할 수 있습니다.
+                '파일 관리' 입력시 파일을 관리할 수 있습니다.
                 '가독성'   입력시 파일의 단위를 읽기 좋게 볼 수 있습니다.
-                '중복관리' 입력시 중복 파일을 관리할 수 있습니다.
+                '중복 관리' 입력시 중복 파일을 관리할 수 있습니다.
                 '종료'     입력시 프로그램을 종료합니다.
             """)
 

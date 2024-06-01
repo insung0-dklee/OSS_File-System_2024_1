@@ -12,12 +12,13 @@ def bookmark(bookmark : List):
     finish = False
     while not finish:
 
-        select = input("원하는 기능을 입력하세요. ('?' 입력시 도움말)")
+        select = input("즐겨찾기 기능을 실행합니다. 원하는 세부기능을 입력하세요. ('?' 입력시 도움말)")
         
         if select == '?':
+            print(" [도움말]")
             print(" '목록' 입력시 현재 즐겨찾기 목록을 볼 수 있습니다.")
             print(" '추가' 입력시 즐겨찾기를 목록에 추가할 수 있습니다.")
-            print(" '종료' 입력시 프로그램을 종료할 수 있습니다.")
+            print(" '종료' 입력시 즐겨찾기 기능을 종료할 수 있습니다.")
 
         elif select == '목록':
             showFavorites(bookmark)

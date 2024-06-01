@@ -9,12 +9,13 @@ def duplicates():
     finish = False
     while not finish:
 
-        select = input("원하는 기능을 입력하세요. ('?' 입력시 도움말)")
+        select = input("중복 관리 기능을 실행합니다. 원하는 세부 기능을 입력하세요. ('?' 입력시 도움말)")
 
         if select == '?':
+            print(" [도움말]")
             print(" '탐색'      입력시 중복이 있는지 확인할 수 있습니다. ")
             print(" '중복 제거' 입력시 중복되는 파일을 제거할 수 있습니다. ")
-            print(" '종료'      입력시 프로그램을 종료할 수 있습니다.")
+            print(" '종료'      입력시 중복 관리 기능을 종료할 수 있습니다.")
 
         elif select == "탐색":
             find_duplicates()
