@@ -384,6 +384,54 @@ def print_directory_tree(root_directory, indent=""):
         if os.path.isdir(item_path):
             print_directory_tree(item_path, new_indent)
 
+def compare_files(file1_path, file2_path):
+    """
+    두 텍스트 파일을 비교하여 차이점을 출력합니다.
+    
+    @param
+        file1_path: 첫 번째 파일 경로
+        file2_path: 두 번째 파일 경로
+    """
+    supported_extensions = ['.txt', '.md', '.py', '.json']
+    
+    def check_extension(file_path):
+        _, ext = os.path.splitext(file_path)
+        if ext not in supported_extensions:
+            raise ValueError(f"지원하지 않는 파일 형식입니다: {ext}")
+
+    try:
+        check_extension(file1_path)
+        check_extension(file2_path)
+        
+        with open(file1_path, 'r') as file1, open(file2_path, 'r') as file2:
+            file1_lines = file1.readlines()
+            file2_lines = file2.readlines()
+
+        differences = []
+        max_lines = max(len(file1_lines), len(file2_lines))
+
+        for i in range(max_lines):
+            line1 = file1_lines[i] if i < len(file1_lines) else ""
+            line2 = file2_lines[i] if i < len(file2_lines) else ""
+            if line1 != line2:
+                differences.append((i + 1, line1, line2))
+
+        if differences:
+            print("파일의 내용 차이점:")
+            for line_num, line1, line2 in differences:
+                print(f"Line {line_num}:")
+                print(f"  파일1: {line1.strip()}")
+                print(f"  파일2: {line2.strip()}")
+        else:
+            print("두 파일의 내용은 동일합니다.")
+
+    except FileNotFoundError as e:
+        print(f"파일을 찾을 수 없습니다: {e}")
+    except ValueError as e:
+        print(e)
+    except Exception as e:
+        print(f"파일 비교 중 오류가 발생했습니다: {e}")
+
 b_is_exit = False
 
 while not b_is_exit:
@@ -420,6 +468,13 @@ while not b_is_exit:
         else:
             print("유효한 디렉토리 경로가 아닙니다.")
 
+    elif func == "파일비교":
+        print("지원하는 파일의 확장자는 .txt, .md, .py, .json 입니다.")
+        print("파일 내용 비교 기능 실행")
+        file1_path = input("첫 번째 파일 경로를 입력하세요: ")
+        file2_path = input("두 번째 파일 경로를 입력하세요: ")
+        compare_files(file1_path, file2_path)
+
     elif func == "?":
         print("""
                 [도움말]
@@ -429,6 +484,7 @@ while not b_is_exit:
                 '가독성'   입력시 파일의 단위를 읽기 좋게 볼 수 있습니다.
                 '중복관리' 입력시 중복 파일을 관리할 수 있습니다.
                 '트리출력' 입력시 디렉토리 구조를 트리 형태로 출력합니다.
+                '파일비교' 입력시 텍스트 파일 내용을 비교합니다.
                 '종료'     입력시 프로그램을 종료합니다.
             """)
 
