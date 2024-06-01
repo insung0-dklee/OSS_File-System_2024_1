@@ -404,7 +404,7 @@ def compare_files(file1_path, file2_path):
         check_extension(file1_path)
         check_extension(file2_path)
         
-        with open(file1_path, 'r') as file1, open(file2_path, 'r') as file2:
+        with open(file1_path, 'r', encoding='utf-8') as file1, open(file2_path, 'r', encoding='utf-8') as file2:
             file1_lines = file1.readlines()
             file2_lines = file2.readlines()
 
@@ -430,6 +430,8 @@ def compare_files(file1_path, file2_path):
         print(f"파일을 찾을 수 없습니다: {e}")
     except ValueError as e:
         print(e)
+    except UnicodeDecodeError as e:
+        print(f"파일 인코딩 문제로 파일을 읽을 수 없습니다: {e}")
     except Exception as e:
         print(f"파일 비교 중 오류가 발생했습니다: {e}")
 
