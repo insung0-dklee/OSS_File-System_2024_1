@@ -263,20 +263,24 @@ class UI(QWidget):
             # 확장자를 분리해서 py파일과 zip파일을 따로 예외처리한 후 기본 응용 프로그램을 기준으로 실행한다.
             # 기본 응용 프로그램으로 오류가 나면 크롬 브라우저로 실행한다.
             # 크롬 브라우저로도 실패하면 파일을 그냥 실행한다.
-            _, file_extension = os.path.splitext(selected_item)
-            file_path = os.path.join(os.getcwd(), selected_item)
-            if file_extension == '.py':
-                subprocess.Popen(["python", file_path])
-            if file_extension == '.zip':
-                subprocess.Popen(["start", file_path], shell=True)
-            elif function.get_default_program(file_extension[1:]):
-                process = subprocess.Popen(["start", function.get_default_program(file_extension[1:]),  file_path], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                stdout, stderr = process.communicate()
-                if stderr:
-                    process2 = subprocess.Popen(["start", "chrome", file_path], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                    stdout, stderr = process2.communicate()
+            try:
+                _, file_extension = os.path.splitext(selected_item)
+                file_path = os.path.join(os.getcwd(), selected_item)
+                if file_extension == '.py':
+                    subprocess.Popen(["python", file_path])
+                if file_extension == '.zip':
+                    subprocess.Popen(["start", file_path], shell=True)
+                elif function.get_default_program(file_extension[1:]):
+                    process = subprocess.Popen(["start", function.get_default_program(file_extension[1:]),  file_path], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                    stdout, stderr = process.communicate()
                     if stderr:
-                        subprocess.Popen(["start", file_path], shell=True)
+                        process2 = subprocess.Popen(["start", "chrome", file_path], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                        stdout, stderr = process2.communicate()
+                        if stderr:
+                            subprocess.Popen(["start", file_path], shell=True)
+            except:
+                return False
+
 
     # 복사 버튼 클릭 시에 실행될 함수
     def copy_clicked(self):
