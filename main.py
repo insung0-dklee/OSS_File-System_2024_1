@@ -410,3 +410,46 @@ while not b_is_exit:
 
     else:
         print("잘못 입력하셨습니다. 다시 입력해주세요. : ")
+
+def compare_Files(file1_path, file2_path):
+    """
+    Compares data of two files, including creation time, modification time, and size.
+    
+    @Param
+        file1_path : The path of the file 1.
+        file2_path : The path of the file 2.
+    @Return
+        None
+    @Raises
+        Prints an error message if the operation fails.
+    """
+    try:
+        data1 = {
+            'created_time': os.path.getctime(file1_path),
+            'modified_time': os.path.getmtime(file1_path),
+            'size': os.path.getsize(file1_path)
+        }
+        data2 = {
+            'created_time': os.path.getctime(file2_path),
+            'modified_time': os.path.getmtime(file2_path),
+            'size': os.path.getsize(file2_path)
+        }
+
+        for key, value in data1.items():
+            readable_value1 = value
+            readable_value2 = data2[key]
+            difference = readable_value2 - readable_value1
+
+            if key in ['created_time', 'modified_time']:
+                readable_value1 = time.ctime(value)
+                readable_value2 = time.ctime(data2[key])
+                difference_in_hours = difference / 3600
+                print(f"{key.replace('_', ' ').title()}: 파일1 -> {readable_value1}, 파일2 -> {readable_value2}, 차이: {difference_in_hours:.2f} 시간")
+
+            elif key == 'size':
+                readable_value1 = get_human_readable_size(value)
+                readable_value2 = get_human_readable_size(data2[key])
+                print(f"Size: 파일1 -> {readable_value1}, 파일2 -> {readable_value2}, 차이: {abs(difference)} 바이트")
+
+    except Exception as e:
+        print(f"Error: {e}")
