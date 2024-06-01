@@ -1,3 +1,46 @@
+"""
+import os
+import time                                          ->파일의 속성정보를 확인하기 위하여 time라이브러리를 사용하였습니다.
+
+def get_file_features(file_path):                     ->파일의 속성정보를 list에 저장하고 출력하는 함수입니다.
+    features = {}                                      -> features{}라는 파일의 속성정보를 저장할 list를 만들었습니다.
+    file_name = os.path.basename(file_path)             -> 파일의 이름을 file_name에 저장하였습니다.
+    features[file_name+"file's 크기: "] = os.path.getsize(file_path)    -> 파일의 크기를 알게해주는 os.path.getsize()를 통해 크기를 출력하였습니다.
+    features[file_name+"file's 생성 시간: "] = time.ctime(os.path.getctime(file_path)) -> 파일의 생성시간을 알게 해주기 위하여 사용하였습니다.
+                                                                                      -> os.path.getctime()은 사용자가 알기 어려운 형태로 시간이 저장되므로
+                                                                                      -> time.ctime()을 사용하여 사용자가 읽기 쉬운형태로 저장하였습니다.
+    features[file_name+"file's 수정 시간: "] = time.ctime(os.path.getmtime(file_path))  -> 파일의 수정시간을 알게 해주기 위하여 사용하였습니다.
+                                                                                      -> time.ctime()과 os.path.getmtime() 을 사용하여 수정시간을 저장하였습니다.
+    features[file_name+"file's 최근 접근 시간: "] = time.ctime(os.path.getatime(file_path)) -> 최근에 파일을 접근한 시간을 나타내주기 위하여 사용하였습니다.
+    for key, value in features.items():      -> features안에 있는 key값과 그에 맞는 value값을 전부 표시해주기 위하여 사용하였습니다.
+        print(f"{key}: {value}")    -> 만약 파일명이 OSS였다면 파일의 크기를 나타낼 때는 "OSSfile's 크기 : Size" 형식으로 나오도록 하였습니다.
+
+def show_file_features():                                   -> 파일의 속성정보를 보여주기 위하여 사용하였습니다.
+    file_name = input("속성을 확인하고자 하는 파일 명을 입력: ")   -> 확인하고자 하는 파일 명을 입력받습니다.
+    main_path = os.path.join(os.getcwd(), file_name)         -> 입력받은 파일명으로 파일의 경로를 만들어줍니다.
+    os.makedirs(main_path, exist_ok=True)                    -> 입력받은 파일명으로 파일을 만들어줍니다.
+    get_file_features(main_path)                            -> get_file_features()를 사용하여 파일의 속성정보를 표시합니다.
+"""
+
+import os
+import time
+
+def get_file_features(file_path):
+    features = {}
+    file_name = os.path.basename(file_path)
+    features[file_name+"file's 크기: "] = os.path.getsize(file_path)
+    features[file_name+"file's 생성 시간: "] = time.ctime(os.path.getctime(file_path))
+    features[file_name+"file's 수정 시간: "] = time.ctime(os.path.getmtime(file_path))
+    features[file_name+"file's 최근 접근 시간: "] = time.ctime(os.path.getatime(file_path))
+    for key, value in features.items():
+        print(f"{key}: {value}")
+
+def show_file_features():
+    file_name = input("속성을 확인하고자 하는 파일 명을 입력: ")
+    main_path = os.path.join(os.getcwd(), file_name)
+    os.makedirs(main_path, exist_ok=True)
+    get_file_features(main_path)
+
 
 """
 현재 경로에 특정 파일이나 디렉토리가 존재하는지를 확인하기 위해 import os를 사용
