@@ -16,16 +16,16 @@ import os
 import shutil
 import hashlib
 import time
-import function
+#import function
 import zipfile
 from functools import lru_cache
 import getpass
-from Control import Bookmark
-from Control import FileEdit
-from Control import FileControl
-from Control import Duplicates
-from Control import Readable
-from Control.FileControl import search_file
+#from Control import Bookmark
+#from Control import FileEdit
+#from Control import FileControl
+#from Control import Duplicates
+#from Control import Readable
+#from Control.FileControl import search_file
 
 # 파일 관리 시스템
 # - 중복 파일 탐지 및 삭제: 주어진 디렉토리에서 중복 파일을 찾아내고, 중복된 파일을 삭제합니다.
@@ -365,6 +365,17 @@ def create_file(filename):
     else:
         print("비밀번호가 틀렸습니다.")
 
+def text_to_pdf(input_text, output_pdf):
+    """
+    텍스트를 PDF로 변환합니다.
+    
+    :param input_text: 변환할 텍스트
+    :param output_pdf: 생성된 PDF 파일의 경로
+    """
+    # PDF 파일을 쓰기 모드로 엽니다
+    with open(output_pdf, 'w') as pdf_file:
+        # 텍스트를 PDF 형식에 맞게 작성합니다.
+        pdf_file.write(input_text)
 
 b_is_exit = False
 
