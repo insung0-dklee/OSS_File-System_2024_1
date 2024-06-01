@@ -26,11 +26,33 @@ from Control import FileControl
 from Control import Duplicates
 from Control import Readable
 from Control.FileControl import search_file
+from googletrans import Translator
 
 # 파일 관리 시스템
 # - 중복 파일 탐지 및 삭제: 주어진 디렉토리에서 중복 파일을 찾아내고, 중복된 파일을 삭제합니다.
 # - 파일 이름 변경: 사용자가 지정한 파일의 이름을 변경합니다.
 # - 파일 메타데이터 관리: 파일의 생성 시간, 수정 시간, 파일 크기를 출력합니다.
+
+def translate_file_to_english(self, file_path):
+    """
+    주어진 파일의 내용을 영어로 번역하여 새로운 파일에 저장합니다.
+    :param file_path: 번역할 파일의 경로
+    """
+    if os.path.exists(file_path):
+        with open(file_path, 'r', encoding='utf-8') as file:
+            content = file.read()
+
+        # 번역
+        translated = self.translator.translate(content, dest='en').text
+
+        # 번역된 내용을 새 파일에 저장
+        translated_file_path = f"{file_path}_translated.txt"
+        with open(translated_file_path, 'w', encoding='utf-8') as file:
+            file.write(translated)
+
+        print(f"파일이 성공적으로 번역되었습니다: {translated_file_path}")
+    else:
+        print("파일이 존재하지 않습니다.")
 
 def manage_metadata(file_path):
     """
