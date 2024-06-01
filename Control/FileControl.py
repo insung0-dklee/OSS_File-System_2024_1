@@ -11,7 +11,6 @@ def file_control():
     finish = False
 
     while not finish:
-        
         select = input("원하는 기능을 입력하세요. ('?' 입력시 도움말)")
 
         if select == '?':
@@ -26,35 +25,45 @@ def file_control():
             print(" '파일복사'           입력시 파일 복사 및 붙여넣기")
             print(" '잘라내기'           입력시 파일 잘라내기 및 붙여넣기")
             print(" '종료'               입력시 프로그램을 종료할 수 있습니다.")
+        
         elif select == '메타데이터 출력':
-            manage_metadata()
+            file_path = input("파일 경로를 입력하세요: ")
+            manage_metadata(file_path)
         
         elif select == '파일삭제':
-            delete_file()
+            file_path = input("파일 경로를 입력하세요: ")
+            delete_file(file_path)
         
         elif select == '파일검색':
-            search_file()
+            root_path, file_name = input("검색할 디렉토리와 찾을 파일명을 입력하세요: ").split()
+            print(search_file(root_path, file_name))
 
         elif select == '파일이동':
-            move_file()
+            src, dest = input("이동 대상과 파일이 이동할 경로를 입력하세요: ").split()
+            move_file(src, dest)
         
         elif select == '디렉토리 생성':
-            create_directory()
+            directory = input("디렉토리를 생성할 경로를 입력허세요: ")
+            create_directory(directory)
 
         elif select == '파일목록':
-            list_files()
+            directory = input("파일 목록을 조회할 디렉토리를 입력하세요: ")
+            print(list_files(directory))
 
         elif select == '부모 디렉토리 확인':
-            getParentDir()
+            path = input("부모 디렉토리를 확인할 경로를 입력하세요: ")
+            getParentDir(path)
 
         elif select == '파일복사':
-            copyFile()
+            src, dest = input("복사 대상과 파일이 복사될 경로를 입력하세요: ").split()
+            copyFile(src, dest)
 
         elif select == '잘라내기':
-            cut_file()
+            src, dest = input("잘라내기 대상과 파일이 잘라내기될 경로를 입력하세요: ").split()
+            cut_file(src, dest)
 
         elif select == "종료":
-            print("중복 관리를 종료합니다.")
+            print("파일 관리를 종료합니다.")
             finish = True
 
         else:
