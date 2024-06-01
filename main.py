@@ -18,6 +18,7 @@ import hashlib
 import time
 import function
 import zipfile
+import datetime
 from functools import lru_cache
 import getpass
 from Control import Bookmark
@@ -364,6 +365,27 @@ def create_file(filename):
         print(f"'{filename}' 파일이 생성되었습니다.")
     else:
         print("비밀번호가 틀렸습니다.")
+
+def get_last_modified_time(file_path):
+    """
+    파일의 최종 수정시간을 출력하는 함수
+
+    매개변수
+    file_path : 최종 수정시간을 확인하고 싶은 파일의 경로
+
+    출력 : "최종 수정 시간 :", last_modified_time)
+    """
+    try:
+        # 파일의 최종 수정 시간을 가져옴 (os.path.getmtime)
+        # 타임스탬프를 datetime 객체로 변환
+        last_modified_datetime = datetime.datetime.fromtimestamp(os.path.getmtime(file_path))
+        # 문자열로 반환
+        last_modified_datetime.strftime("%Y-%m-%d %H:%M:%S")
+        print("Last modified time:", last_modified_datetime)
+    except OSError as e:
+        print("Error:", e)
+        return None
+        
 
 
 b_is_exit = False
