@@ -365,6 +365,30 @@ def create_file(filename):
     else:
         print("비밀번호가 틀렸습니다.")
 
+# cut-file 함수 추
+def cut_file(src_path, dest_path):
+    """
+    파일을 잘라내어 다른 위치로 이동합니다.
+    :param src_path: 잘라낼 파일의 경로
+    :param dest_path: 붙여넣을 위치의 경로
+    """
+    try:
+        if not os.path.exists(src_path):
+            print("잘라낼 파일이 존재하지 않습니다.")
+            return
+        
+        if not os.path.exists(dest_path):
+            print("붙여넣을 경로가 잘못되었습니다.")
+            return
+
+        shutil.move(src_path, dest_path)
+        print(f"파일이 {dest_path}로 이동되었습니다.")
+    except Exception as e:
+        print(f"파일 이동 중 오류가 발생했습니다: {e}")
+
+# 잘라내기 기능 테스트
+cut_file('source.txt', 'destination_directory/')
+
 
 b_is_exit = False
 
