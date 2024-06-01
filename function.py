@@ -1,5 +1,6 @@
 # flake8: noqa
 import os, re
+import winreg
 
 """
 파일 이름 일괄 변경 코드
@@ -106,3 +107,20 @@ def moveSelected(selected):
             return False
     except:
         return False
+    
+"""
+확장자의 기본 응용 프로그램이 설정되어 있는지 확인하는 함수
+작성자 : 권혁준
+학번 : 22311905
+일자 : 2024-06-01
+기능 : 기본 응용 프로그램이 설정되어 있으면 해당 프로그램을 반환하고,
+       아니면 None을 반환한다.
+"""
+
+def get_default_program(extension):
+    try:
+        with winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\." + extension + r"\OpenWithList") as key:
+            value, _ = winreg.QueryValueEx(key, "MRUList")
+            return winreg.QueryValueEx(key, value[0])[0]
+    except FileNotFoundError:
+        return None

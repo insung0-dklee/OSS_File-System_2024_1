@@ -1,9 +1,11 @@
 # flake8: noqa
+import subprocess
 from PyQt5.QtWidgets import QPushButton, QDialog, QDesktopWidget, QVBoxLayout, QWidget, QTabWidget, QVBoxLayout, QHBoxLayout, QLabel, QListWidget, QListWidgetItem, QScrollArea, QLineEdit, QMessageBox
 from PyQt5.QtCore import Qt, QSize
 import function
 import main
-
+import sys, os
+from PyQt5.QtWidgets import QApplication
 """
 display : 경로를 표시하는 라벨
 list_widget : 파일, 폴더 목록을 표시하는 위젯
@@ -211,7 +213,7 @@ class UI(QWidget):
         button_size = QSize(50, 35)
 
         # 상위 폴더로 돌아가는 버튼
-        parent_dir = self.create_button('<-', button_size, lambda: display.setText(UI.refresh(self, function.moveDir(main.getParentDir(function.currentDir())))))
+        parent_dir = self.create_button('<-', button_size, lambda: display.setText(UI.refresh(self, function.moveDir(os.path.dirname(function.currentDir())))))
 
         # 각각 복사, 잘라내기, 이동, 삭제 버튼 생성
         copy = self.create_button('복사', button_size, lambda: self.copy_clicked())
@@ -252,9 +254,29 @@ class UI(QWidget):
     # 리스트 위젯의 목록이 더블클릭되면 폴더인지 확인하고 경로를 변경하는 함수
     def double_clicked(self, item):
         selected_item = item.text()
+        # 디렉토리인 경우 경로를 이동하고 refresh한다.
         path = function.moveSelected(selected_item)
         if path:
             UI.refresh(self, function.moveDir(path))
+        else:
+            # 파일인 경우 실행한다.
+            # 확장자를 분리해서 py파일과 zip파일을 따로 예외처리한 후 기본 응용 프로그램을 기준으로 실행한다.
+            # 기본 응용 프로그램으로 오류가 나면 크롬 브라우저로 실행한다.
+            # 크롬 브라우저로도 실패하면 파일을 그냥 실행한다.
+            _, file_extension = os.path.splitext(selected_item)
+            file_path = os.path.join(os.getcwd(), selected_item)
+            if file_extension == '.py':
+                subprocess.Popen(["python", file_path])
+            if file_extension == '.zip':
+                subprocess.Popen(["start", file_path], shell=True)
+            elif function.get_default_program(file_extension[1:]):
+                process = subprocess.Popen(["start", function.get_default_program(file_extension[1:]),  file_path], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                stdout, stderr = process.communicate()
+                if stderr:
+                    process2 = subprocess.Popen(["start", "chrome", file_path], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                    stdout, stderr = process2.communicate()
+                    if stderr:
+                        subprocess.Popen(["start", file_path], shell=True)
 
     # 복사 버튼 클릭 시에 실행될 함수
     def copy_clicked(self):
@@ -283,3 +305,9 @@ class UI(QWidget):
         if dialog.exec_() == QDialog.Accepted:
             dialog.execute()
             UI.refresh(self, function.moveDir(function.currentDir())) 
+
+if __name__ == '__main__':
+    # 실행
+    app = QApplication(sys.argv)
+    UI().show()
+    sys.exit(app.exec_())
