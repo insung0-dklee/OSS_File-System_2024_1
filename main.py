@@ -366,6 +366,28 @@ def create_file(filename):
         print("비밀번호가 틀렸습니다.")
 
 
+def print_directory_tree(dir_path, level=0):
+    """
+    사용자가 입력한 디렉토리 경로의 트리를 출력한다.
+    매개변수 dir_path: 트리를 출력할 디렉토리의 경로
+    """
+    try:
+        if level == 0:
+            print(f"해당 경로의 트리출력: {dir_path}")
+        
+        for item in os.listdir(dir_path):
+            item_path = os.path.join(dir_path, item)
+            try:
+                if os.path.isdir(item_path):
+                    print("  " * level + "|-- " + item + "/")
+                    print_directory_tree(item_path, level + 1)
+                else:
+                    print("  " * level + "|-- " + item)
+            except Exception:
+                print("  " * level + "|-- " + item + " 에러")
+    except Exception:
+        print("트리출력 중 에러발생")
+
 b_is_exit = False
 
 while not b_is_exit:
@@ -392,6 +414,11 @@ while not b_is_exit:
     elif func == "중복관리":
         print("중복 관리 기능 실행")
         Duplicates.duplicates()
+
+    elif func == "트리출력":
+        print("디렉토리 트리 출력기능 실행")
+        directory_path = input("출력하고자 하는 디렉토리 경로입력: ")
+        print_directory_tree(directory_path)
 
     elif func == "?":
         print("""
