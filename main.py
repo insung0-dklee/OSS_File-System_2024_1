@@ -366,6 +366,21 @@ def create_file(filename):
         print("비밀번호가 틀렸습니다.")
 
 
+def get_file_creation_time(file_path):
+    """
+    주어진 파일의 생성 시간을 출력합니다.
+    :param file_path: 파일의 경로
+    """
+    try:
+        created_time = os.path.getctime(file_path)
+        created_time_readable = time.ctime(created_time)
+        print(f"File: {file_path}")
+        print(f"Created Time: {created_time_readable}")
+    except FileNotFoundError:
+        print("파일을 찾을 수 없습니다.")
+    except Exception as e:
+        print(f"파일 생성 시간을 가져오는 도중 오류가 발생했습니다: {e}")
+
 b_is_exit = False
 
 while not b_is_exit:
@@ -393,6 +408,10 @@ while not b_is_exit:
         print("중복 관리 기능 실행")
         Duplicates.duplicates()
 
+    elif func == "파일생성시간":
+        file_path = input("생성 시간을 확인하고자 하는 파일 경로를 입력하세요: ")
+        get_file_creation_time(file_path)
+
     elif func == "?":
         print("""
                 [도움말]
@@ -401,6 +420,7 @@ while not b_is_exit:
                 '파일관리' 입력시 파일을 관리할 수 있습니다.
                 '가독성'   입력시 파일의 단위를 읽기 좋게 볼 수 있습니다.
                 '중복관리' 입력시 중복 파일을 관리할 수 있습니다.
+                '파일생성시간' 입력시 파일이 생성된 날짜를 확인 가능합니다.
                 '종료'     입력시 프로그램을 종료합니다.
             """)
 
