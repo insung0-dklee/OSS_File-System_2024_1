@@ -365,6 +365,24 @@ def create_file(filename):
     else:
         print("비밀번호가 틀렸습니다.")
 
+def print_directory_tree(root_directory, indent=""):
+    """
+    주어진 디렉토리의 트리 구조를 출력합니다.
+    @param
+        root_directory: 트리를 출력할 루트 디렉토리
+        indent: 들여쓰기 문자열
+    """
+    items = os.listdir(root_directory)
+    for index, item in enumerate(items):
+        item_path = os.path.join(root_directory, item)
+        if index == len(items) - 1:
+            print(indent + "└── " + item)
+            new_indent = indent + "    "
+        else:
+            print(indent + "├── " + item)
+            new_indent = indent + "│   "
+        if os.path.isdir(item_path):
+            print_directory_tree(item_path, new_indent)
 
 b_is_exit = False
 
@@ -393,6 +411,15 @@ while not b_is_exit:
         print("중복 관리 기능 실행")
         Duplicates.duplicates()
 
+    elif func == "트리출력":
+        print("트리 출력 기능 실행")
+        root_dir = input("트리를 출력할 루트 디렉토리 경로를 입력하세요: ")
+        if os.path.exists(root_dir) and os.path.isdir(root_dir):
+            print(root_dir)
+            print_directory_tree(root_dir)
+        else:
+            print("유효한 디렉토리 경로가 아닙니다.")
+
     elif func == "?":
         print("""
                 [도움말]
@@ -401,6 +428,7 @@ while not b_is_exit:
                 '파일관리' 입력시 파일을 관리할 수 있습니다.
                 '가독성'   입력시 파일의 단위를 읽기 좋게 볼 수 있습니다.
                 '중복관리' 입력시 중복 파일을 관리할 수 있습니다.
+                '트리출력' 입력시 디렉토리 구조를 트리 형태로 출력합니다.
                 '종료'     입력시 프로그램을 종료합니다.
             """)
 
