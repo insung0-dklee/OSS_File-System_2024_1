@@ -18,6 +18,7 @@ import hashlib
 import time
 import function
 import zipfile
+import platform
 from functools import lru_cache
 import getpass
 from Control import Bookmark
@@ -388,6 +389,27 @@ def print_directory_tree(dir_path, level=0):
     except Exception:
         print("트리출력 중 에러발생")
 
+def print_system_info():
+    """
+    현재 시스템의 운영체제 및 컴퓨터 정보를 출력한다.
+    매개변수 없음
+
+
+    """
+    try:
+        # 운영체제 및 기본 시스템 정보
+        print(f"운영체제: {platform.system()}") 
+        print(f"운영체제 상세 버전: {platform.version()}")  
+        arch_info = platform.architecture()
+        print(f"시스템 아키텍처: {arch_info[0]}") 
+        print(f"컴퓨터 이름: {platform.node()}")
+        print(f"프로세서: {platform.processor()}")  
+        print(f"Python 버전: {platform.python_version()}")
+
+    except Exception as e:
+        print(f"시스템 정보 출력 중 오류가 발생했습니다: {e}")
+
+
 b_is_exit = False
 
 while not b_is_exit:
@@ -419,6 +441,10 @@ while not b_is_exit:
         print("디렉토리 트리 출력기능 실행")
         directory_path = input("출력하고자 하는 디렉토리 경로입력: ")
         print_directory_tree(directory_path)
+
+    elif func == "시스템정보":
+        print("현재 시스템 정보 출력기능 실행")
+        print_system_info()
 
     elif func == "?":
         print("""
