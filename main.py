@@ -31,6 +31,57 @@ from Control.FileControl import search_file
 # - 중복 파일 탐지 및 삭제: 주어진 디렉토리에서 중복 파일을 찾아내고, 중복된 파일을 삭제합니다.
 # - 파일 이름 변경: 사용자가 지정한 파일의 이름을 변경합니다.
 # - 파일 메타데이터 관리: 파일의 생성 시간, 수정 시간, 파일 크기를 출력합니다.
+class FileBackupManager:
+    """
+    파일 백업 매니저 클래스
+    """
+    def __init__(self, backup_dir='./backups'):
+        """
+        파일 백업 매니저 클래스의 생성자
+        :param backup_dir: 백업 파일을 저장할 디렉토리 경로
+        """
+        self.backup_dir = backup_dir
+        if not os.path.exists(self.backup_dir):
+            os.makedirs(self.backup_dir)
+
+    def backup_file(self, file_path):
+        """
+        주어진 파일을 백업 디렉토리로 복사합니다.
+        :param file_path: 백업할 파일의 경로
+        """
+        if os.path.exists(file_path):
+            base_name = os.path.basename(file_path)
+            backup_path = os.path.join(self.backup_dir, f"{base_name}.bak")
+            shutil.copy2(file_path, backup_path)
+            print(f"파일이 성공적으로 백업되었습니다: {backup_path}")
+        else:
+            print("파일이 존재하지 않습니다.")
+
+    def list_backups(self):
+        """
+        백업된 파일 목록을 출력합니다.
+        """
+        backups = os.listdir(self.backup_dir)
+        if backups:
+            print("백업된 파일 목록:")
+            for backup in backups:
+                print(backup)
+        else:
+            print("백업된 파일이 없습니다.")
+
+    def restore_backup(self, file_name):
+        """
+        백업된 파일을 원래 위치로 복원합니다.
+        :param file_name: 백업된 파일의 이름
+        """
+        backup_path = os.path.join(self.backup_dir, file_name)
+        original_path = os.path.join('.', file_name.replace('.bak', ''))
+
+        if os.path.exists(backup_path):
+            shutil.copy2(backup_path, original_path)
+            print(f"파일이 성공적으로 복원되었습니다: {original_path}")
+        else:
+            print("백업 파일이 존재하지 않습니다.")
 
 def manage_metadata(file_path):
     """
