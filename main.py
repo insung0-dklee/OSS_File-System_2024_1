@@ -26,6 +26,317 @@ from Control import FileControl
 from Control import Duplicates
 from Control import Readable
 from Control.FileControl import search_file
+from pathlib import Path
+import datetime
+from collections import defaultdict
+import platform
+
+def compare_files(file1_path, file2_path):
+    """
+    두 텍스트 파일을 비교하여 차이점을 출력합니다.
+    
+    @param
+        file1_path: 첫 번째 파일 경로
+        file2_path: 두 번째 파일 경로
+    """
+    supported_extensions = ['.txt', '.md', '.py', '.json']
+
+    def check_extension(file_path):
+        _, ext = os.path.splitext(file_path)
+        if ext not in supported_extensions:
+            raise ValueError(f"지원하지 않는 파일 형식입니다: {ext}")
+
+    try:
+        check_extension(file1_path)
+        check_extension(file2_path)
+
+        with open(file1_path, 'r') as file1, open(file2_path, 'r') as file2:
+            file1_lines = file1.readlines()
+            file2_lines = file2.readlines()
+
+        differences = []
+        max_lines = max(len(file1_lines), len(file2_lines))
+
+        for i in range(max_lines):
+            line1 = file1_lines[i] if i < len(file1_lines) else ""
+            line2 = file2_lines[i] if i < len(file2_lines) else ""
+            if line1 != line2:
+                differences.append((i + 1, line1, line2))
+
+        if differences:
+            print("파일의 내용 차이점:")
+            for line_num, line1, line2 in differences:
+                print(f"Line {line_num}:")
+                print(f"  파일1: {line1.strip()}")
+                print(f"  파일2: {line2.strip()}")
+        else:
+            print("두 파일의 내용은 동일합니다.")
+
+    except FileNotFoundError as e:
+        print(f"파일을 찾을 수 없습니다: {e}")
+    except ValueError as e:
+        print(e)
+    except Exception as e:
+        print(f"파일 비교 중 오류가 발생했습니다: {e}")
+
+def get_file_system_statistics(directory):
+    """
+    주어진 디렉토리의 파일 시스템 통계를 계산합니다.
+    
+    @param
+        directory: 통계를 계산할 디렉토리 경로
+    
+    @Returns
+        파일 시스템 통계를 담은 딕셔너리
+    """
+    statistics = {
+        'total_files': 0,
+        'total_directories': 0,
+        'total_size': 0,
+        'file_type_counts': defaultdict(int)
+    }
+
+    for dirpath, dirnames, filenames in os.walk(directory):
+        # 디렉토리 수 증가
+        statistics['total_directories'] += len(dirnames)
+
+        # 파일 수 및 파일 크기 증가
+        for filename in filenames:
+            statistics['total_files'] += 1
+            file_path = os.path.join(dirpath, filename)
+            statistics['total_size'] += os.path.getsize(file_path)
+
+            # 파일 유형별 통계 증가
+            _, file_extension = os.path.splitext(filename)
+            statistics['file_type_counts'][file_extension] += 1
+
+    return statistics
+
+def print_file_system_statistics(directory):
+    """
+    주어진 디렉토리의 파일 시스템 통계를 출력합니다.
+    
+    @param
+        directory: 통계를 출력할 디렉토리 경로
+    """
+    stats = get_file_system_statistics(directory)
+
+    print(f"디렉토리: {directory}")
+    print(f"총 파일 수: {stats['total_files']}")
+    print(f"총 디렉토리 수: {stats['total_directories']}")
+    print(f"총 용량: {stats['total_size']} bytes")
+    print("파일 유형별 통계:")
+    for file_type, count in stats['file_type_counts'].items():
+        print(f"  {file_type if file_type else 'No Extension'}: {count} files")
+
+def print_directory_tree(root_directory, indent=""):
+    """
+    주어진 디렉토리의 트리 구조를 출력합니다.
+    @param
+        root_directory: 트리를 출력할 루트 디렉토리
+        indent: 들여쓰기 문자열
+    """
+    items = os.listdir(root_directory)
+    for index, item in enumerate(items):
+        item_path = os.path.join(root_directory, item)
+        if index == len(items) - 1:
+            print(indent + "└── " + item)
+            new_indent = indent + "    "
+        else:
+            print(indent + "├── " + item)
+            new_indent = indent + "│   "
+        if os.path.isdir(item_path):
+            print_directory_tree(item_path, new_indent)
+
+def print_system_info():
+    """
+    현재 시스템의 운영체제 및 컴퓨터 정보를 출력한다.
+    매개변수 없음
+    """
+    try:
+        # 운영체제 및 기본 시스템 정보
+        print(f"운영체제: {platform.system()}") 
+        print(f"운영체제 상세 버전: {platform.version()}")  
+        arch_info = platform.architecture()
+        print(f"시스템 아키텍처: {arch_info[0]}") 
+        print(f"컴퓨터 이름: {platform.node()}")
+        print(f"프로세서: {platform.processor()}")  
+        print(f"Python 버전: {platform.python_version()}")
+
+    except Exception as e:
+        print(f"시스템 정보 출력 중 오류가 발생했습니다: {e}")
+
+def print_files_by_mtime(directory):
+    """
+    사용자가 입력한 디렉토리 내에서 파일을 수정 시간 순으로 정렬하여 출력한다.
+    매개변수 directory: 디렉토리 경로
+    """
+    try:
+        files = [os.path.join(directory, f) for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))]
+
+        files.sort(key=lambda x: os.path.getmtime(x), reverse=True)
+
+        for file in files:
+            mtime = os.path.getmtime(file)
+            mtime_readable = time.ctime(mtime)
+            print(f"{file}: 수정 시간 - {mtime_readable}")
+
+    except Exception as e:
+        print(f"파일 목록 출력 중 오류 발생: {e}")
+
+def classify_files_by_extension(source_directory, destination_directory):
+    """
+    파일 형식에 따라 파일을 분류하여 이동하는 함수
+    :param source_directory: 파일들이 있는 소스 디렉토리
+    :param destination_directory: 분류된 파일들을 저장할 목적지 디렉토리
+    """
+    # 소스 디렉토리에서 모든 파일과 디렉토리 가져오기
+    for item in os.listdir(source_directory):
+        item_path = os.path.join(source_directory, item)
+
+        # 파일인 경우에만 처리
+        if os.path.isfile(item_path):
+            # 파일 확장자 가져오기
+            file_extension = os.path.splitext(item)[1][1:].lower()  # 확장자에서 점(.) 제거하고 소문자로 변환
+            if file_extension:  # 확장자가 있는 경우
+                # 목적지 디렉토리 경로 만들기
+                extension_dir = os.path.join(destination_directory, file_extension)
+                os.makedirs(extension_dir, exist_ok=True)  # 확장자 디렉토리 생성 (이미 있으면 무시)
+
+                # 파일을 목적지 디렉토리로 이동
+                shutil.move(item_path, os.path.join(extension_dir, item))
+                print(f"Moved: {item} -> {extension_dir}")
+
+def get_last_modified_time(file_path):
+    """
+    파일의 최종 수정시간을 출력하는 함수
+    매개변수
+    file_path : 최종 수정시간을 확인하고 싶은 파일의 경로
+    출력 : "최종 수정 시간 :", last_modified_time)
+    """
+    try:
+        # 파일의 최종 수정 시간을 가져옴 (os.path.getmtime)
+        # 타임스탬프를 datetime 객체로 변환
+        last_modified_datetime = datetime.datetime.fromtimestamp(os.path.getmtime(file_path))
+        # 문자열로 반환
+        last_modified_datetime.strftime("%Y-%m-%d %H:%M:%S")
+        print("Last modified time:", last_modified_datetime)
+    except OSError as e:
+        print("Error:", e)
+        return None
+
+def create_symlink(target, link_name):
+    os.symlink(target, link_name)
+
+def is_symlink(path):
+    return os.path.islink(path)
+
+def create_hardlink(target, link_name):
+    os.link(target, link_name)
+
+def is_hardlink(path):
+    """하드 링크 여부는 직접적으로 확인하기 어렵지만, os.stat()으로 inode 번호를 통해 확인 가능하다."""
+    try:
+        stat_info = os.stat(path)
+        return stat_info.st_nlink > 1
+    except FileNotFoundError:
+        return False
+
+def create_symLink(file_path,link_path):
+    """
+    파일 또는 폴더에 대한 심볼릭 링크(symbolic link)를 생성하는 함수
+    @Param
+        file_path: 심볼릭 링크의 대상이 되는 파일 또는 폴더의 절대경로
+        link_path: 생성될 심볼릭 링크의 절대경로
+        
+    @Return
+        None
+        
+    @Raises
+        Exception : If an error occurs while creating the link, an exception is output.
+    """
+
+    target = Path(file_path)
+    link = Path(link_path)
+
+    # link 파일이 이미 경로에 존재할 경우 처리
+    if link.exists():
+        print(f"{link} is already exists.")
+        return
+
+    try:
+        link.symlink_to(target, target.is_dir())
+        print(f"{link} | SymLink is created.")
+    except Exception as e:
+        print(f"Error is occured during creating SymLink : {e}")
+
+def encrypt_file(file_path): 
+    """
+    파일을 sha256 암호화하는 기능
+    """
+    try: #파일 내용을 읽어, sha256으로 변환.
+        with open(file_path, 'rb') as file: 
+            file_content = file.read()
+            sha256_hash = hashlib.sha256(file_content).hexdigest()
+
+        #그 후, 변환된 값을 다시 저장
+        with open(file_path, 'w') as file:
+            file.write(sha256_hash)
+
+        #성공적으로 저장
+        return "File content has been hashed and saved."
+    except FileNotFoundError:
+        return "File not found. Please check the file path." # 파일을 찾을 수 없을때 나타나는 error
+    except Exception as e: #외의 에러 제어
+        return f"An error occurred: {e}"
+    
+def save_hash(file_path):
+    """
+    경로의 파일의 해시 값을 계산하는 함수
+    
+    @Param
+        file_path : 해시 값을 계산할 파일의 경로
+        
+    @Return
+        생성된 해시 값
+        
+    @Raises
+        FileNotFoundError : 파일 경로가 존재 하지 않을때 발생
+        IOError : 파일 읽기에 실패시 발생
+    """
+    hasher = hashlib.sha256()
+    with open(file_path, 'rb') as f:
+        buf = f.read(4096)
+        while buf:
+            hasher.update(buf)
+            buf = f.read(4096)
+    return hasher.hexdigest()
+
+
+def check_integrity(origin_hash, file_path):
+    """
+    경로상 파일의 저장된 원본 해시값과 현재 해시값을 비교해 무결성을 검사하는 함수
+    
+    @Param
+        origin_hash: 비교할 원본 해시 값
+        file_path: 무결성을 확인할 파일의 경로
+        
+    @Return
+        없음
+        
+    @Raises
+        FileNotFoundError : 파일 경로가 존재 하지 않을때 발생
+        IOError : 파일 읽기에 실패시 발생
+    """
+    current_hash = save_hash(file_path)
+    if current_hash == origin_hash:
+        print(f"{file_path}의 무결성 : 정상")
+    else:
+        print(f"{file_path}의 무결성 : 손상\nCurrent Hash: {current_hash}\nOrigin Hash: {origin_hash}")
+
+
+
+origin_hash = "" #해시값 저장을 위한 변수
 
 # 파일 관리 시스템
 # - 중복 파일 탐지 및 삭제: 주어진 디렉토리에서 중복 파일을 찾아내고, 중복된 파일을 삭제합니다.
@@ -367,13 +678,17 @@ def create_file(filename):
 
 
 b_is_exit = False
+version = "1.0.0"
+print(f"프로그램 버전: {version}")
+
+bookmark_list = []
 
 while not b_is_exit:
 
     func = input("원하는 기능을 입력하세요. ('?' 입력시 도움말)")
-    bookmark_list = []
+    
 
-    if func == "파일 편집":
+    if func == "파일편집":
         print("파일 편집 기능 실행")
         FileEdit.file_edit()
 
@@ -381,7 +696,7 @@ while not b_is_exit:
         print("즐겨찾기 기능 실행.")
         Bookmark.bookmark(bookmark_list)
 
-    elif func == "파일 관리":
+    elif func == "파일관리":
         print("파일 관리 기능 실행")
         FileControl.file_control()
 
