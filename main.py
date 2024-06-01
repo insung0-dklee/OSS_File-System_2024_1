@@ -365,7 +365,71 @@ def create_file(filename):
     else:
         print("비밀번호가 틀렸습니다.")
 
+"""
+디렉터리 선택 대화 상자를 띄워 사용자가 파일 이름을 바꿀 디렉터리를 선택할 수 있도록 합니다. 지정된 접두사를 사용하고 원래 확장자를 유지하면서 os.path.join() 메서드를 사용하여 새 파일 이름을 만듭니다.
+os.rename(src, despath)을 사용하여 파일 이름을 바꿉니다.
 
+@Param 
+    prefix_extry:사용자 입력을 받기 위한 접두사 문자열
+    
+@Return 
+    None
+"""
+# 배치 파일 이름 바꾸기
+def batch_rename(prefix_entry=None):
+    if prefix_entry is None or not isinstance(prefix_entry, tk.Entry):
+        messagebox.showerror("잘못된", "잘못된 입력。")
+        return
+
+    directory = filedialog.askdirectory()
+    if directory:
+        prefix = prefix_entry.get()
+        for count, filename in enumerate(os.listdir(directory)):
+            src = os.path.join(directory, filename)
+            if os.path.isfile(src):
+                despath = os.path.join(directory, f"{prefix}_{count}{os.path.splitext(filename)[1]}")
+                os.rename(src, despath)
+        messagebox.showinfo("성공했습니다", "일괄 이름 변경 완료。")
+
+"""
+사용자가 파일과 대상 디렉터리를 선택하여 선택한 파일을 대상 디렉터리에 복사할 수 있습니다.
+
+@Param:
+    None
+
+@Return: 
+    None
+"""
+# 문서 복사
+def copy_file():
+    source_file = filedialog.askopenfilename()
+    if source_file:
+        des_directory = filedialog.askdirectory()
+        if des_directory:
+            shutil.copy(source_file, des_directory)
+            messagebox.showinfo("문서 복사", "복사 성공")
+
+"""
+사용자가 찾을 파일을 선택합니다. 파일이 열리고 내용이 한 줄씩 읽혀집니다. 키워드가 포함된 줄을 찾아 일치 목록에 저장합니다. 
+일치하는 줄은 줄 바꿈으로 문자열로 변환되어 결과 변수에 저장됩니다.
+@Param:
+    None
+
+@Return: 
+    None
+"""
+# 문서 콘텐츠 검색
+def search_in_file_content():
+    file_path = filedialog.askopenfilename()
+    if file_path:
+        find_text = simpledialog.askstring("키워드 입력", "찾고 있는 키워드를 입력하세요.:")
+        if find_text:
+            with open(file_path, 'r', encoding='utf-8') as file:
+                linex = file.readlines()
+                matches = [line for line in linex if find_text in line]
+                result = "\n".join(matches)
+                messagebox.showinfo("결국", result if result else "일치하는 항목이 없습니다.。")
+                
 b_is_exit = False
 
 while not b_is_exit:
