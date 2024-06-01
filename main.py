@@ -372,6 +372,48 @@ def backup_file(file_path, backup_directory):
     shutil.copy2(file_path, backup_path)
     print(f"파일이 {backup_path}에 백업되었습니다.")
 
+def backup_file(file_path: str, backup_directory: str):
+    """
+    파일을 백업 디렉토리 내의 새 폴더에 백업합니다.
+    """
+    if not os.path.exists(backup_directory):
+        os.makedirs(backup_directory)
+    
+    # 현재 시간으로 폴더 이름 생성
+    timestamp = time.strftime("%Y%m%d%H%M%S")
+    backup_folder = os.path.join(backup_directory, f"backup_{timestamp}")
+    
+    # 백업 폴더 생성
+    os.makedirs(backup_folder)
+    
+    # 백업 파일 경로 생성
+    backup_path = os.path.join(backup_folder, os.path.basename(file_path))
+    
+    # 파일 복사
+    shutil.copy2(file_path, backup_path)
+    print(f"파일이 {backup_path}에 백업되었습니다.")
+
+def list_backups(backup_directory: str):
+    """
+    백업 디렉토리 내의 백업 폴더 목록을 반환합니다.
+    """
+    return [f for f in os.listdir(backup_directory) if os.path.isdir(os.path.join(backup_directory, f))]
+
+def restore_file(backup_directory: str, backup_folder: str, restore_directory: str):
+    """
+    백업 폴더에서 파일을 복원 디렉토리로 복사합니다.
+    """
+    backup_path = os.path.join(backup_directory, backup_folder)
+    if not os.path.exists(backup_path):
+        print(f"백업 폴더를 찾을 수 없습니다: {backup_path}")
+        return
+    
+    for file_name in os.listdir(backup_path):
+        file_path = os.path.join(backup_path, file_name)
+        restore_path = os.path.join(restore_directory, file_name)
+        shutil.copy2(file_path, restore_path)
+        print(f"파일이 {file_path}에서 {restore_path}(으)로 복원되었습니다.")
+
 
 b_is_exit = False
 
@@ -401,9 +443,29 @@ while not b_is_exit:
         Duplicates.duplicates()
     
     elif func == "파일백업":
-        file_path = input("백업할 파일 경로를 입력하세요:")
-        backup_directory = input("백업 디렉토리를 입력하세요:")
+        file_path = input("백업할 파일 경로를 입력하세요: ")
+        backup_directory = input("백업 디렉토리를 입력하세요: ")
         backup_file(file_path, backup_directory)
+    
+    elif func == "파일복원":
+        backup_directory = input("백업 디렉토리를 입력하세요: ")
+        backups = list_backups(backup_directory)
+        if not backups:
+            print("백업이 없습니다.")
+            continue
+
+        print("사용 가능한 백업 폴더:")
+        for i, backup_folder in enumerate(backups):
+            print(f"{i + 1}. {backup_folder}")
+
+        selection = int(input("복원할 백업 폴더 번호를 선택하세요: ")) - 1
+        if selection < 0 or selection >= len(backups):
+            print("잘못된 선택입니다.")
+            continue
+
+        backup_folder = backups[selection]
+        restore_directory = input("복원할 디렉토리를 입력하세요: ")
+        restore_file(backup_directory, backup_folder, restore_directory)
 
     elif func == "?":
         print("""
@@ -413,7 +475,8 @@ while not b_is_exit:
                 '파일관리' 입력시 파일을 관리할 수 있습니다.
                 '가독성'   입력시 파일의 단위를 읽기 좋게 볼 수 있습니다.
                 '중복관리' 입력시 중복 파일을 관리할 수 있습니다.
-                '파일백업' 입력시 중요한 파일을 백업하여 데이터 손실을 방지합니다.
+                '파일백업' 입력시 중요한 파일을 백업할 수 있습니다.
+                '파일복원' 입력시 백업한 파일을 복원할 수 있습니다.
                 '종료'     입력시 프로그램을 종료합니다.
             """)
 
