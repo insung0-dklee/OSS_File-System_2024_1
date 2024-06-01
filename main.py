@@ -410,3 +410,44 @@ while not b_is_exit:
 
     else:
         print("잘못 입력하셨습니다. 다시 입력해주세요. : ")
+
+def hide_files_with_extension_in_directory(directory, extension):
+    """
+    지정된 디렉토리 내의 특정 확장자를 가진 파일들을 숨깁니다.
+    
+    이 함수는 주어진 디렉토리를 탐색하여, 지정된 확장자를 가진 모든 파일을 찾아 숨깁니다.
+    Windows 시스템에서만 적용되며, 'attrib +h' 명령어를 사용해 파일을 숨깁니다.
+    
+    Args:
+        directory (str): 파일을 숨기고자 하는 디렉토리의 경로.
+        extension (str): 숨기고자 하는 파일의 확장자 (예: '.txt').
+        
+    Returns:
+        None
+    """
+    os.chdir(directory)
+    
+    for file in os.listdir(directory):
+        if file.endswith(extension):
+            os.system(f'attrib +h "{os.path.join(directory, file)}"')
+            print(f'"{file}" 파일이 숨겨졌습니다.')
+
+def unhide_files_with_extension_in_directory(directory, extension):
+    """
+    지정된 디렉토리 내의 특정 확장자를 가진 숨김 파일들의 숨김 상태를 해제합니다.
+    
+    이 함수는 주어진 디렉토리를 탐색하여, 지정된 확장자를 가진 모든 숨김 파일을 찾아 숨김 상태를 해제합니다.
+    Windows 시스템에서만 적용되며 'attrib -h' 명령어를 사용해 파일의 숨김 상태를 해제합니다.
+    Args:
+        directory (str): 파일의 숨김 상태를 해제하고자 하는 디렉토리의 경로.
+        extension (str): 숨김 상태를 해제하고자 하는 파일의 확장자 (예: '.txt').
+        
+    Returns:
+        None
+    """
+    os.chdir(directory)
+    
+    for file in os.listdir(directory):
+        if file.endswith(extension):
+            os.system(f'attrib -h "{os.path.join(directory, file)}"')
+            print(f'"{file}" file has been unhidden.')
