@@ -4,6 +4,7 @@
 현재 구현 상태
 1. 파일 읽기
 2. 파일 쓰기
+3. 파일 내용 추가
 '''
 
 def file_edit():
@@ -19,7 +20,10 @@ def file_edit():
         elif select == "읽기":
             read_file()
         elif select == "파일 생성 및 쓰기":
+            append_to_file()
+        elif select == "파일 내용 추가":
             create_and_write_file()
+
         elif select == '종료':
             print('파일 편집 기능을 종료합니다.')
             finish = True
@@ -37,4 +41,10 @@ def create_and_write_file():
     file_path = input("파일을 생성하고 싶은 디렉토리의 경로를 입력하세요. : ")
     content = input("쓰고 싶은 문장을 입력하세요. : ")
     with open(file_path, 'w') as file:
+        file.write(content)
+
+def append_to_file():
+    file_path = input("내용을 추가할 파일의 경로를 입력하세요. : ")
+    content = input("추가할 내용을 입력하세요. : ")
+    with open(file_path, 'a') as file:
         file.write(content)
