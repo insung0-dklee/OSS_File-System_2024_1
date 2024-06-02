@@ -18,6 +18,7 @@ import hashlib
 import time
 import function
 import zipfile
+import tarfile
 from functools import lru_cache
 import getpass
 from Control import Bookmark
@@ -458,24 +459,36 @@ def read_file(file_path):
     except Exception as e:
         return f"An error occurred: {e}"
 
-def compress_file(file_path):
+def compress_file(file_path, method='zip'):
     """
-    사용자가 파일경로를 입력하면 해당파일을 zip으로 압축합니다.
+    사용자가 파일경로를 입력하면 해당파일을 zip 또는 tar.gz로 압축합니다.
     
-    매개변수 file_path (str): 압축할 파일의 경로
+    매개변수:
+    file_path : 압축할 파일의 경로
+    method : 압축 방식 ('zip' 또는 'tar')
     """
     try:
-        # 압축할 파일의 디렉토리와 파일 이름 추출
         file_dir = os.path.dirname(file_path)
         file_name = os.path.basename(file_path)
-        # 출력 zip 파일 경로 설정
-        output_zip = os.path.join(file_dir, f"{file_name}.zip")
-
-        with zipfile.ZipFile(output_zip, 'w') as zipf:
-            zipf.write(file_path, file_name)
-        print(f"파일이 성공적으로 압축되었습니다: {output_zip}")
+        
+        if method == 'zip':
+            output_zip = os.path.join(file_dir, f"{file_name}.zip")
+            with zipfile.ZipFile(output_zip, 'w') as zipf:
+                zipf.write(file_path, file_name)
+            print(f"파일이 성공적으로 압축되었습니다: {output_zip}")
+        
+        elif method == 'tar':
+            output_tar = os.path.join(file_dir, f"{file_name}.tar.gz")
+            with tarfile.open(output_tar, 'w:gz') as tarf:
+                tarf.add(file_path, arcname=file_name)
+            print(f"파일이 성공적으로 압축되었습니다: {output_tar}")
+        
+        else:
+            print(f"지원하지 않는 압축 방식입니다: {method}")
+    
     except Exception as e:
         print(f"파일 압축 중 오류가 발생했습니다: {e}")
+
 
 
 def list_file_creation_times(directory):
@@ -765,6 +778,12 @@ while not b_is_exit:
         file_path = input("텍스트 파일 경로를 입력하세요: ")
         search_string = input("검색할 문자열을 입력하세요: ")
         count_string_in_file(file_path, search_string)
+
+    elif func=="파일압축":
+        print("파일압축 기능 실행")
+        file_path = input("파일 경로를 입력하세요: ")
+        compression_format = input("압축 형식을 입력하세요 ('zip' 또는 'tar'): ")
+        compress_file(file_path, compression_format)
 
     elif func == "?":
         print("""
