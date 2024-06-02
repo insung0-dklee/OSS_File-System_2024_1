@@ -26,6 +26,7 @@ def file_control():
             print(" '파일복사'           입력시 파일 복사 및 붙여넣기")
             print(" '잘라내기'           입력시 파일 잘라내기 및 붙여넣기")
             print(" '파일색상 변경'      파일이름의 색상을 변경합니다")
+
             print(" '종료'               입력시 프로그램을 종료할 수 있습니다.")
         elif select == '메타데이터 출력':
             manage_metadata()
@@ -49,10 +50,12 @@ def file_control():
             getParentDir()
 
         elif select == '파일복사':
-            copyFile()
+            copy_file()
+
 
         elif select == '잘라내기':
             cut_file()
+
 
         elif select == '파일색상 변경':
             directory = input("파일을 나열할 디렉토리 경로를 입력하세요: ")
@@ -60,7 +63,7 @@ def file_control():
             color_choice = int(input("파일 이름의 색을 선택하세요 (1 또는 2): "))
             list_files(directory, color_choice)
 
-            
+
         elif select == "종료":
             print("중복 관리를 종료합니다.")
             finish = True
@@ -196,6 +199,7 @@ Gets the parent directory of the specified path.
 def getParentDir(path):
     return os.path.dirname(path)
 
+
 def copyFile(src, dest):
     try:
         shutil.copy(src, dest)
@@ -243,3 +247,37 @@ def list_files(directory: str, color_choice: int = None) -> List[str]:
     except Exception as e:
         print(f"Error listing files: {e}")
         return []
+
+def copy_file(src_path, dest_path):
+    if not os.path.exists(src_path):
+        raise FileNotFoundError(f"소스 파일이 존재하지 않습니다: {src_path}")
+
+    if not os.path.exists(os.path.dirname(dest_path)):
+        raise FileNotFoundError(f"대상 디렉토리가 존재하지 않습니다: {os.path.dirname(dest_path)}")
+
+    shutil.copy(src_path, dest_path)
+    print(f"파일이 복사되었습니다: {src_path} -> {dest_path}")
+
+# cut-file 함수 추
+def cut_file(src_path, dest_path):
+    """
+    파일을 잘라내어 다른 위치로 이동합니다.
+    :param src_path: 잘라낼 파일의 경로
+    :param dest_path: 붙여넣을 위치의 경로
+    """
+    try:
+        if not os.path.exists(src_path):
+            print("잘라낼 파일이 존재하지 않습니다.")
+            return
+
+        if not os.path.exists(dest_path):
+            print("붙여넣을 경로가 잘못되었습니다.")
+            return
+
+        shutil.move(src_path, dest_path)
+        print(f"파일이 {dest_path}로 이동되었습니다.")
+    except Exception as e:
+        print(f"파일 이동 중 오류가 발생했습니다: {e}")
+
+# 잘라내기 기능 테스트
+cut_file('source.txt', 'destination_directory/')
