@@ -713,9 +713,3 @@ def share_file(source_file, target_email, subject, message):
     except Exception as e:
         print(f"Error sharing file: {e}")
         return False
-
-# 파일 공유 작업의 성공 여부를 확인
-if share_file(source_file, target_email, subject, message):
-    print("File shared successfully!")
-else:
-    print("Failed to share file.")
