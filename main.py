@@ -676,6 +676,24 @@ def create_file(filename):
     else:
         print("비밀번호가 틀렸습니다.")
 
+def run_file_or_open_folder(path):
+    if os.path.isfile(path):
+        # 파일인 경우 바로 실행
+        if os.name == 'nt':  # Windows인 경우
+            os.startfile(path)
+        elif os.name == 'posix':  # Linux, macOS인 경우
+            subprocess.run(['xdg-open', path])
+    elif os.path.isdir(path):
+        # 폴더인 경우 열기
+        if os.name == 'nt':  # Windows인 경우
+            os.startfile(path)
+        elif os.name == 'posix':  # Linux, macOS인 경우
+            subprocess.run(['xdg-open', path])
+
+def R_file_o_folder():
+        pth = input("실행 혹은 열고자 하는 파일/폴더의 경로를 입력 : ")
+        run_file_or_open_folder(pth)
+        print("파일 혹은 폴더가 실행되었습니다.")
 
 b_is_exit = False
 version = "1.0.0"
@@ -687,6 +705,10 @@ while not b_is_exit:
 
     func = input("원하는 기능을 입력하세요. ('?' 입력시 도움말)")
     
+    if func == "파일열기":
+        print("파일 혹은 폴더의 실행/오픈 기능")
+        R_file_o_folder()
+        continue
 
     if func == "파일편집":
         print("파일 편집 기능 실행")
@@ -716,6 +738,7 @@ while not b_is_exit:
                 '파일관리' 입력시 파일을 관리할 수 있습니다.
                 '가독성'   입력시 파일의 단위를 읽기 좋게 볼 수 있습니다.
                 '중복관리' 입력시 중복 파일을 관리할 수 있습니다.
+                '파일열기' 입력시 해당 파일 혹은 폴더를 바로 열람할 수 있습니다.
                 '종료'     입력시 프로그램을 종료합니다.
             """)
 
