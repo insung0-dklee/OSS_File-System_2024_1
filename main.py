@@ -658,3 +658,26 @@ while not b_is_exit:
 
     else:
         print("잘못 입력하셨습니다. 다시 입력해주세요. : ")
+
+def remove_empty_dir(directory):
+    """
+    주어진 디렉토리 내의 빈 디렉토리를 삭제합니다.
+    
+    Args:
+        directory (str): 탐색할 디렉토리의 경로입니다.
+    """
+
+    empty_dir_found = False 
+
+    for root, dirs, files in os.walk(directory, topdown=False):
+        for dir_name in dirs:
+            dir_path = os.path.join(root, dir_name)
+            # 디렉토리가 비어 있는지 확인합니다.
+            if not os.listdir(dir_path):
+                os.rmdir(dir_path)
+                print(f"빈 디렉토리 '{dir_path}'를 삭제했습니다.")
+                empty_dir_found = True 
+
+    if not empty_dir_found:
+        print("삭제할 빈 디렉토리가 없습니다.") 
+
