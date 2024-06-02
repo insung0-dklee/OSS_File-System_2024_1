@@ -39,30 +39,41 @@ def compare_files(file1_path, file2_path):
         file1_path: 첫 번째 파일 경로
         file2_path: 두 번째 파일 경로
     """
+    # 지원하는 파일 확장자 목록
     supported_extensions = ['.txt', '.md', '.py', '.json']
 
     def check_extension(file_path):
-        _, ext = os.path.splitext(file_path)
+        """
+        파일의 확장자가 지원되는지 확인합니다.
+        
+        @param
+            file_path: 확인할 파일의 경로
+        """
+        _, ext = os.path.splitext(file_path)  # 파일 경로에서 확장자 추출
         if ext not in supported_extensions:
             raise ValueError(f"지원하지 않는 파일 형식입니다: {ext}")
 
     try:
+        # 두 파일의 확장자가 지원되는지 확인
         check_extension(file1_path)
         check_extension(file2_path)
 
+        # 두 파일 열기
         with open(file1_path, 'r') as file1, open(file2_path, 'r') as file2:
-            file1_lines = file1.readlines()
-            file2_lines = file2.readlines()
+            file1_lines = file1.readlines()  # 첫 번째 파일의 모든 줄을 읽음
+            file2_lines = file2.readlines()  # 두 번째 파일의 모든 줄을 읽음
 
-        differences = []
-        max_lines = max(len(file1_lines), len(file2_lines))
+        differences = []  # 차이점을 저장할 리스트
+        max_lines = max(len(file1_lines), len(file2_lines))  # 더 긴 파일의 길이를 구함
 
+        # 두 파일의 각 줄을 비교
         for i in range(max_lines):
             line1 = file1_lines[i] if i < len(file1_lines) else ""
             line2 = file2_lines[i] if i < len(file2_lines) else ""
             if line1 != line2:
-                differences.append((i + 1, line1, line2))
+                differences.append((i + 1, line1, line2))  # 차이가 있는 줄 번호와 내용을 저장
 
+        # 차이점 출력
         if differences:
             print("파일의 내용 차이점:")
             for line_num, line1, line2 in differences:
@@ -73,11 +84,11 @@ def compare_files(file1_path, file2_path):
             print("두 파일의 내용은 동일합니다.")
 
     except FileNotFoundError as e:
-        print(f"파일을 찾을 수 없습니다: {e}")
+        print(f"파일을 찾을 수 없습니다: {e}")  # 파일을 찾을 수 없는 경우 오류 메시지 출력
     except ValueError as e:
-        print(e)
+        print(e)  # 지원하지 않는 파일 형식인 경우 오류 메시지 출력
     except Exception as e:
-        print(f"파일 비교 중 오류가 발생했습니다: {e}")
+        print(f"파일 비교 중 오류가 발생했습니다: {e}")  # 기타 예외 처리
 
 def get_file_system_statistics(directory):
     """
@@ -136,17 +147,17 @@ def print_directory_tree(root_directory, indent=""):
         root_directory: 트리를 출력할 루트 디렉토리
         indent: 들여쓰기 문자열
     """
-    items = os.listdir(root_directory)
-    for index, item in enumerate(items):
-        item_path = os.path.join(root_directory, item)
-        if index == len(items) - 1:
-            print(indent + "└── " + item)
-            new_indent = indent + "    "
+    items = os.listdir(root_directory)  # root_directory에서 항목(디렉토리 및 파일) 목록을 가져옵니다.
+    for index, item in enumerate(items):  # 항목 목록을 순회합니다.
+        item_path = os.path.join(root_directory, item)  # 현재 항목의 전체 경로를 생성합니다.
+        if index == len(items) - 1:  # 현재 항목이 목록의 마지막 항목인 경우
+            print(indent + "└── " + item)  # 마지막 항목을 나타내는 특수 문자와 함께 출력합니다.
+            new_indent = indent + "    "  # 다음 들여쓰기 레벨을 위한 공백을 추가합니다.
         else:
-            print(indent + "├── " + item)
-            new_indent = indent + "│   "
-        if os.path.isdir(item_path):
-            print_directory_tree(item_path, new_indent)
+            print(indent + "├── " + item)  # 마지막이 아닌 항목을 나타내는 특수 문자와 함께 출력합니다.
+            new_indent = indent + "│   "  # 다음 들여쓰기 레벨을 위한 공백과 세로 줄을 추가합니다.
+        if os.path.isdir(item_path):  # 현재 항목이 디렉토리인 경우
+            print_directory_tree(item_path, new_indent)  # 재귀적으로 함수를 호출하여 디렉토리 내용을 출력합니다.
 
 def print_system_info():
     """
@@ -676,6 +687,36 @@ def create_file(filename):
     else:
         print("비밀번호가 틀렸습니다.")
 
+def compressFileOrDir(path, dest):
+    """
+    파일이나 디렉토리를 압축합니다.
+    """
+    try:
+        shutil.make_archive(dest, 'zip', path)
+        print(f"압축이 성공적으로 완료되었습니다: {dest}.zip")
+    except Exception as e:
+        print(f"압축 중 오류가 발생했습니다: {e}")
+
+def file_compression():
+    path = input("압축할 파일 또는 디렉토리의 경로를 입력하세요: ")
+    dest = input("압축 파일을 저장할 경로와 파일명을 입력하세요 (확장자 제외): ")
+    compressFileOrDir(path, dest)
+
+def decompressFile(zip_path, dest):
+    """
+    압축 파일을 해제합니다.
+    """
+    try:
+        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+            zip_ref.extractall(dest)
+        print(f"압축 해제가 성공적으로 완료되었습니다: {dest}")
+    except Exception as e:
+        print(f"압축 해제 중 오류가 발생했습니다: {e}")
+
+def file_decompresion():
+    zip_path = input("압축 해제할 파일의 경로를 입력하세요: ")
+    dest = input("압축 해제될 위치를 입력하세요: ")
+    decompressFile(zip_path, dest)
 
 b_is_exit = False
 version = "1.0.0"
@@ -708,6 +749,14 @@ while not b_is_exit:
         print("중복 관리 기능 실행")
         Duplicates.duplicates()
 
+    elif func == "압축":
+        print("압축 기능 실행")
+        file_compression()
+
+    elif func == "압축해제":
+        print("압축해제 실행")
+        file_decompresion()
+
     elif func == "?":
         print("""
                 [도움말]
@@ -716,6 +765,8 @@ while not b_is_exit:
                 '파일관리' 입력시 파일을 관리할 수 있습니다.
                 '가독성'   입력시 파일의 단위를 읽기 좋게 볼 수 있습니다.
                 '중복관리' 입력시 중복 파일을 관리할 수 있습니다.
+                '압축'     입력시 파일 압축을 실행할 수 있습니다.
+                '압축해제' 입력시 파일 압축된 파일을 압축해제 할 수 있습니다.
                 '종료'     입력시 프로그램을 종료합니다.
             """)
 
