@@ -18,7 +18,6 @@ import hashlib
 import time
 import function
 import zipfile
-from functools import lru_cache
 import getpass
 from Control import Bookmark
 from Control import FileEdit
@@ -440,23 +439,6 @@ Partition_file('test.txt', 2048)
 input_files = [f'test.txt_part{i}' for i in range(분할 파일개수)]
 Merge_files('test.txt', input_files)
 """
-@lru_cache(maxsize=128)
-def read_file(file_path):
-    """
-    기존 read_file 함수는 존재하지 않은 file path일 경우에 대해 버그 야기
-    """
-    try:
-        with open(file_path, 'r', encoding='utf-8') as file:
-            content = file.read()
-        return content
-    except FileNotFoundError:
-        return "존재하지 않은 파일입니다."
-    except PermissionError:
-        return "파일 권한이 없습니다."
-    except IsADirectoryError:
-        return "파일이 아닌 디렉토리 입니다."
-    except Exception as e:
-        return f"An error occurred: {e}"
 
 def compress_file(file_path):
     """

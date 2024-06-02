@@ -6,6 +6,7 @@ import os
 import shutil
 import time
 from typing import List
+from functools import lru_cache
 
 def file_control():
     finish = False
@@ -19,6 +20,7 @@ def file_control():
             print(" '메타데이터 출력'    입력시 해당 파일 메타 데이터 확인")
             print(" '파일삭제'           입력시 해당 파일 삭제")
             print(" '파일검색'           입력시 원하는 파일의 위치 검색")
+            print(" '내용검색'           입력시 특정 파일에 내용이 있는지 검색")
             print(" '파일이동'           입력시 파일을 원하는 디렉토리로 이동")
             print(" '디렉토리 생성'      입력시 원하는 경로에 디렉토리 생성")
             print(" '파일목록'           입력시 해당 디렉토리의 파일의 목록 출력")
@@ -34,6 +36,11 @@ def file_control():
         
         elif select == '파일검색':
             search_file()
+        
+        elif select == '내용검색':
+            file_path = input("파일 경로를 입력하세요: ")
+            content = input("해당 파일에서 찾을 내용을 입력하세요: ")
+            print(search_content_in_file(file_path, content))
 
         elif select == '파일이동':
             move_file()
@@ -61,6 +68,24 @@ def file_control():
             print("잘못 입력하셨습니다. 다시 입력해주세요. : ")
 
 
+@lru_cache(maxsize=128)
+def read_file(file_path):
+    """
+    기존 read_file 함수는 존재하지 않은 file path일 경우에 대해 버그 야기
+    """
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            content = file.read()
+        return content
+    except FileNotFoundError:
+        raise Exception("존재하지 않은 파일입니다.")
+    except PermissionError:
+        raise Exception("파일 권한이 없습니다.")
+    except IsADirectoryError:
+        raise Exception("파일이 아닌 디렉토리 입니다.")
+    except Exception as e:
+        raise Exception(f"An error occurred: {e}")
+
 def search_file(root_directory, target_filename):
     """
     특정 파일을 파일 시스템에서 검색하는 함수입니다.
@@ -76,6 +101,29 @@ def search_file(root_directory, target_filename):
                 matched_files.append(os.path.join(dirpath, filename))
 
     return matched_files
+
+def search_content_in_file(file_path, content):
+    """
+    file path와 검색할 문자열을 입력받아 해당 파일에
+    검색 문자열이 존재하면 해당 라인과 줄 수를 반환하고 없으면
+    empty stirng을 반환하는 메소드
+    :param file_path: 내용을 찾을 파일
+    :param cotent: 찾고 싶은 내용
+    :return: 1. 파일 경로 o, 내용 o -> 줄 번호, 해당 줄
+             2. 파일 경로 o, 내용 x -> empty string
+             3. 파일 경로 x -> error 메세지
+    """
+    
+    try:
+        file = read_file(file_path)
+        content_lines = file.split('\n')
+        
+        for i, line in enumerate(content_lines):
+            if line.find(content) != -1:
+                return f"{i + 1}: {line}"
+        return ""
+    except Exception as e:
+        return e
 
 def create_and_write_file(file_path, content):
     with open(file_path, 'w') as file:
