@@ -381,65 +381,7 @@ def get_file_size(file_path):
         return os.path.getsize(file_path)
     return None
 
-# 파일 분할
-"""
-지정한 파일을 지정된 크기로 분할.
-@Param
-    file_path : 분할할 원본 파일의 경로.
-    setSize : 분할될 파일 한개의 크기 (바이트 단위).
-        
-@Return
-    None
-"""
 
-def Partition_file(file_path, setSize):
-    file_num = 0
-    with open(file_path, 'rb') as infile:
-        while True:
-            size = infile.read(setSize)
-            if not size:
-                break
-            with open(f"{file_path}_part{file_num}", 'wb') as chunk_file:
-                chunk_file.write(size)
-            file_num += 1
-    print(f"File is partitioned to {file_num} parts.")
-
-    # delete original file
-    os.remove(file_path)
-
-
-# 파일 병합
-"""
-분할된 파일들을 하나의 파일로 병합합니다.
-@Param
-    output_path : 병합된 파일을 저장할 위치
-    input_paths : 병합할 분할된 파일들의 경로.
-    
-@Return
-    None
-"""
-
-def Merge_files(output_path, input_paths):
-    with open(output_path, 'wb') as outfile:
-        for file_path in input_paths:
-            with open(file_path, 'rb') as infile:
-                outfile.write(infile.read())
-    print("Files are Merged to =>", output_path)
-
-    # delete partitioned files
-    for file_path in input_paths:
-        os.remove(file_path)
-        print(f"Delete Complete {file_path}.")
-
-
-"""
-Using example
-분할
-Partition_file('test.txt', 2048)
-병합
-input_files = [f'test.txt_part{i}' for i in range(분할 파일개수)]
-Merge_files('test.txt', input_files)
-"""
 @lru_cache(maxsize=128)
 def read_file(file_path):
     """
