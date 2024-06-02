@@ -729,7 +729,7 @@ while not b_is_exit:
 def move_files_with_extensions(src, dest, extensions):
     """
     현재 디렉토리(src)에서 주어진 확장자(extensions)를 가진 파일들을
-    새로운 디렉토리(dest)로 이동시킵니다. 파일이 존재하지 않는 경우, 경고 메시지를 출력합니다.
+    새로운 디렉토리(dest)로 이동시킵니다. 파일이 존재하지 않는 경우, 실패 메시지를 출력합니다.
     
     Args:
         src (str): 파일들이 있는 원본 디렉토리의 경로입니다.
@@ -753,8 +753,3 @@ def move_files_with_extensions(src, dest, extensions):
             else:
                 print(f"'{filename}' 파일은(는) '{src}'에 존재하지 않습니다.")
 
-source_directory = 'C:\\Users\\bjh04\\set_of_txt'  # 현재 작업 디렉토리를 원본 디렉토리로 사용
-target_directory = 'C:\\Users\\bjh04\\set of txt'  # 이동시킬 새로운 디렉토리
-extensions_to_move = ['jpg', 'txt']  # 이동시킬 파일 확장자 리스트
-
-move_files_with_extensions(source_directory, target_directory, extensions_to_move)
