@@ -292,7 +292,64 @@ while not b_is_exit:
     else:
         print("알 수 없는 입력입니다. 다시 시도해주세요.")
 
+# 파일 목록과 고정된 파일을 저장할 리스트 초기화
+file_list = []  # 파일 목록을 저장할 리스트
+pinned_file = None  # 고정된 파일을 저장할 변수
 
+# 파일 추가 함수
+def add_file():
+    global file_list
+    file_path = filedialog.askopenfilename()  # 파일 선택 다이얼로그 열기
+    if file_path:
+        file_list.append(file_path)  # 선택한 파일을 리스트에 추가
+        update_file_listbox()  # 리스트박스를 업데이트
+
+# 파일을 상단에 고정하는 함수
+def pin_file():
+    global pinned_file, file_list
+    selected_file = file_listbox.get(tk.ACTIVE)  # 현재 선택된 파일 가져오기
+    if selected_file:
+        pinned_file = selected_file  # 선택된 파일을 고정 파일로 설정
+        update_file_listbox()  # 리스트박스를 업데이트
+
+# 리스트박스를 업데이트하는 함수
+def update_file_listbox():
+    global pinned_file, file_list
+    file_listbox.delete(0, tk.END)  # 리스트박스 초기화
+    if pinned_file:
+        file_listbox.insert(tk.END, f"[PINNED] {pinned_file}")  # 고정된 파일을 상단에 표시
+    for file in file_list:
+        if file != pinned_file:
+            file_listbox.insert(tk.END, file)  # 고정되지 않은 파일을 나머지에 표시
+
+# 파일 고정을 해제하는 함수
+def unpin_file():
+    global pinned_file
+    pinned_file = None  # 고정된 파일 해제
+    update_file_listbox()  # 리스트박스를 업데이트
+
+# GUI 설정
+root = tk.Tk()
+root.title("파일 고정 앱")  # 윈도우 제목 설정
+
+# 파일 목록을 표시하는 리스트박스
+file_listbox = tk.Listbox(root, width=50, height=15)
+file_listbox.pack(pady=10)
+
+# 파일 추가 버튼
+add_button = tk.Button(root, text="파일 추가", command=add_file)
+add_button.pack(side=tk.LEFT, padx=5)
+
+# 파일 고정 버튼
+pin_button = tk.Button(root, text="파일 고정", command=pin_file)
+pin_button.pack(side=tk.LEFT, padx=5)
+
+# 파일 고정 해제 버튼
+unpin_button = tk.Button(root, text="파일 고정 해제", command=unpin_file)
+unpin_button.pack(side=tk.LEFT, padx=5)
+
+# 메인 루프 실행
+root.mainloop()
 
 def classify_files_by_extension(source_directory, destination_directory):
     """
