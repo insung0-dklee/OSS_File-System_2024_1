@@ -609,6 +609,35 @@ def create_file(filename):
     else:
         print("비밀번호가 틀렸습니다.")
 
+def find_duplicate_files(directory):
+    """
+    주어진 디렉토리에서 중복 파일을 찾습니다.
+    """
+    file_hashes = {}
+    duplicates = []
+    for dirpath, _, filenames in os.walk(directory):
+        for filename in filenames:
+            file_path = os.path.join(dirpath, filename)
+            file_hash = hashlib.md5(open(file_path, 'rb').read()).hexdigest()
+            if file_hash in file_hashes:
+                duplicates.append(file_path)
+            else:
+                file_hashes[file_hash] = file_path
+    return duplicates
+
+def manage_duplicates(directory): 
+    duplicates = find_duplicate_files(directory)
+    if duplicates:
+        print("중복 파일 목록:")
+        for file in duplicates:
+            print(file)
+        # 중복 파일을 관리하는 로직 추가
+    else:
+        print("중복 파일이 없습니다.")
+
+directory_path = input("중복 파일을 탐색할 디렉토리 경로를 입력하세요: ")
+manage_duplicates(directory_path)
+
 
 b_is_exit = False
 version = "1.0.0"
