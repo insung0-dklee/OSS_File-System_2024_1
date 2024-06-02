@@ -609,6 +609,20 @@ def create_file(filename):
     else:
         print("비밀번호가 틀렸습니다.")
 
+def calculate_directory_size(directory): # 폴더크기 측정 기능 함수
+    """
+    주어진 디렉토리의 총 크기를 계산합니다.
+    """
+    total_size = 0
+    for dirpath, _, filenames in os.walk(directory):
+        for f in filenames:
+            fp = os.path.join(dirpath, f)
+            total_size += os.path.getsize(fp)
+    return total_size
+
+directory_path = input("크기를 측정할 디렉토리 경로를 입력하세요: ")
+print(f"디렉토리의 총 크기: {calculate_directory_size(directory_path)} bytes")
+
 
 b_is_exit = False
 version = "1.0.0"
