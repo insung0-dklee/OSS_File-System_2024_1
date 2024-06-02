@@ -290,53 +290,6 @@ def encrypt_file(file_path):
     except Exception as e: #외의 에러 제어
         return f"An error occurred: {e}"
     
-def save_hash(file_path):
-    """
-    경로의 파일의 해시 값을 계산하는 함수
-    
-    @Param
-        file_path : 해시 값을 계산할 파일의 경로
-        
-    @Return
-        생성된 해시 값
-        
-    @Raises
-        FileNotFoundError : 파일 경로가 존재 하지 않을때 발생
-        IOError : 파일 읽기에 실패시 발생
-    """
-    hasher = hashlib.sha256()
-    with open(file_path, 'rb') as f:
-        buf = f.read(4096)
-        while buf:
-            hasher.update(buf)
-            buf = f.read(4096)
-    return hasher.hexdigest()
-
-
-def check_integrity(origin_hash, file_path):
-    """
-    경로상 파일의 저장된 원본 해시값과 현재 해시값을 비교해 무결성을 검사하는 함수
-    
-    @Param
-        origin_hash: 비교할 원본 해시 값
-        file_path: 무결성을 확인할 파일의 경로
-        
-    @Return
-        없음
-        
-    @Raises
-        FileNotFoundError : 파일 경로가 존재 하지 않을때 발생
-        IOError : 파일 읽기에 실패시 발생
-    """
-    current_hash = save_hash(file_path)
-    if current_hash == origin_hash:
-        print(f"{file_path}의 무결성 : 정상")
-    else:
-        print(f"{file_path}의 무결성 : 손상\nCurrent Hash: {current_hash}\nOrigin Hash: {origin_hash}")
-
-
-
-origin_hash = "" #해시값 저장을 위한 변수
 
 # 파일 관리 시스템
 # - 중복 파일 탐지 및 삭제: 주어진 디렉토리에서 중복 파일을 찾아내고, 중복된 파일을 삭제합니다.
