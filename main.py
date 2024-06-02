@@ -225,12 +225,18 @@ def get_last_modified_time(file_path):
         print("Error:", e)
         return None
 
+# 주어진 대상 파일에 대한 심볼릭 링크 생성
+# (링크할 파일의 경로, 심볼릭 링크의 이름)
 def create_symlink(target, link_name):
     os.symlink(target, link_name)
 
+# 주어진 경로가 심볼릭 링크인지 확인
+# (확인할 파일 경로)
 def is_symlink(path):
     return os.path.islink(path)
 
+# 주어진 대상 파일에 대한 하드 링크 선택
+# (링크될 파일의 경로, 하드링크의 이름)
 def create_hardlink(target, link_name):
     os.link(target, link_name)
 
