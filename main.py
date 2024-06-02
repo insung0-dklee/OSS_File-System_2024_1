@@ -658,3 +658,18 @@ while not b_is_exit:
 
     else:
         print("잘못 입력하셨습니다. 다시 입력해주세요. : ")
+
+#파일 이름 수정 기능
+def rename_file(old_path, new_path):
+    try:
+        os.rename(old_path, new_path)
+        print(f"{old_path} renamed to {new_path}.")
+    except FileNotFoundError:
+        print(f"{old_path} not found.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+if __name__ == "__main__":
+    old_path = input("Enter the current file path: ")
+    new_path = input("Enter the new file path: ")
+    rename_file(old_path, new_path)
