@@ -631,6 +631,17 @@ def monitor_directory(directory, interval=5):
     except KeyboardInterrupt:
         print("Directory monitoring stopped.")
 
+def hideFile(path):
+    try:
+        subprocess.call(['attrib', '+H', path])
+        print(f"파일이 성공적으로 숨겨졌습니다: {path}")
+    except Exception as e:
+        print(f"파일 숨기기 중 오류가 발생했습니다: {e}")
+
+def Hide_File():
+    path = input("숨길 파일의 경로와 이름을 입력하세요: ")
+    hideFile(path)
+
 """
 파일에 비밀번호를 부여하고 그 파일의 경로를 만들기 위해선 비밀번호를 입력해야하는 코드입니다.
 import os
@@ -708,6 +719,10 @@ while not b_is_exit:
         print("중복 관리 기능 실행")
         Duplicates.duplicates()
 
+    elif func == "파일숨기기":
+        print("파일 숨기기 기능 실행")
+        Hide_File()
+
     elif func == "?":
         print("""
                 [도움말]
@@ -716,6 +731,7 @@ while not b_is_exit:
                 '파일관리' 입력시 파일을 관리할 수 있습니다.
                 '가독성'   입력시 파일의 단위를 읽기 좋게 볼 수 있습니다.
                 '중복관리' 입력시 중복 파일을 관리할 수 있습니다.
+                '파일숨기기' 입력시 파일 숨기기 기능을 사용 할 수 있습니다.
                 '종료'     입력시 프로그램을 종료합니다.
             """)
 
