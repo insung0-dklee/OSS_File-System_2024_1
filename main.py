@@ -1,3 +1,57 @@
+"""
+import os
+import shutil                                                  -> 파일을 복사하기 위해 shutil라이브러리를 사용하였습니다.
+from datetime import datetime                                  -> 현재 구체적인 날짜와 시간을 표현하기 위해 사용하였습니다.
+
+def backup_file(file_path):                                    -> backup파일을 만드는 함수입니다.
+    back_up = "backup"                                         -> back_up 변수에 backup이라는 문자열을 저장하였습니다.
+    back_up_folder = os.path.join(os.getcwd(),back_up)         -> backup 폴더의 경로를 만드는 코드입니다.
+    if not os.path.exists(back_up_folder):                     -> backup폴더는 하나만 있으면 되므로 '만약 backup 폴더가 존재하지않는다면' 이라는 조건을 걸어주었습니다.
+        os.makedirs(back_up_folder)                            -> 존재하지 않는다면 backup파일의 경로에 backup이라는 파일을 만드는 코드입니다.
+    file_name = os.path.basename(file_path)                    -> 백업 디렉토리에 백업하는 파일명을 나타내기 위해 이름을 따로 빼서 file_name에 저장하였습니다.
+    time_name = datetime.now().strftime("%Y_%m_%d_%H_%M")      -> 수정이 일어난 날짜를 기록하고 싶어서 년, 월, 일, 시, 분 을 파일 이름 앞에 붙이고 싶어서 작성하였습니다.
+    backup_file_path = os.path.join(back_up_folder, f"{time_name}_{file_name}")   -> 백업하려는 파일의 이름과 파일이 수정된 시간을 붙여서 파일명을 만들었습니다.
+    shutil.copy2(file_path, backup_file_path)                  -> 기존의 파일을 backup파일에 복사하는 코드입니다.
+    print(f"백업 파일이 생성되었습니다: {backup_file_path}")        -> 백업파일이 생성된 경로를 알려주기 위해 사용하였습니다.
+
+def modify_file(file_path):                                    -> 파일을 수정하는 함수입니다.
+    backup_file(file_path)                                     -> 수정 전의 파일을 미리 백업해놓기 위해 backup_file함수를 사용하였습니다.
+    with open(file_path, 'w') as file:                         -> file_path를 w모드 즉, 쓰기모드로 불러와 파일을 수정하기 위해 사용하였습니다.
+        append_new = input("수정할 내용을 입력하세요: ")            -> 사용자에게 수정할 내용을 입력하도록 하고, 그 내용을 append_new에 저장하였습니다.
+        file.write(append_new)                                 ->  append_new의 변수에 저장된 내용을 파일에 쓰는 코드입니다.
+    print(f"파일이 수정되었습니다: {file_path}")                   -> 파일이 정상적으로 수정되었음을 알리기 위하여 작성하였습니다.
+    print(f"수정한 내용:  {append_new}")                         -> 수정한 내용이 맞는지 사용자에게 확인시켜주기 위해 작성하였습니다.
+
+file_path = "example.txt"                                      -> 코드 사용예시입니다. 현재 작업중인 파일에 txt문서를 만들고 그 txt문서의 이름을 file_path에 넣습니다.
+modify_file(file_path)                                         -> 수정하고자 하는 txt파일을 저장한 변수를 modify_file()함수에 넣어서 사용합니다.
+"""
+
+import os
+import shutil
+from datetime import datetime
+
+def backup_file(file_path):
+    back_up = "backup"
+    back_up_folder = os.path.join(os.getcwd(),back_up)
+    if not os.path.exists(back_up_folder):
+        os.makedirs(back_up_folder)
+    file_name = os.path.basename(file_path)
+    time_name = datetime.now().strftime("%Y_%m_%d_%H_%M")
+    backup_file_path = os.path.join(back_up_folder, f"{time_name}_{file_name}")
+    shutil.copy2(file_path, backup_file_path)
+    print(f"백업 파일이 생성되었습니다: {backup_file_path}")
+
+def modify_file(file_path):
+    backup_file(file_path)
+    with open(file_path, 'w') as file:
+        append_new = input("수정할 내용을 입력하세요: ")
+        file.write(append_new)
+    print(f"파일이 수정되었습니다: {file_path}")
+    print(f"수정한 내용:  {append_new}")
+
+file_path = "example.txt"
+modify_file(file_path)
+
 
 """
 현재 경로에 특정 파일이나 디렉토리가 존재하는지를 확인하기 위해 import os를 사용
