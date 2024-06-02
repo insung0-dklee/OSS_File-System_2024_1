@@ -695,6 +695,35 @@ def touch(file_path):
 
 
 
+def count_string_in_file(file_path, search_string):
+    """
+    사용자가 입력한 txt파일에서 특정 문자열이 몇 번 등장하는지 세어주는 함수
+    매개변수 file_path: 텍스트 파일의 경로
+            search_string: 검색할 문자열 (공백없는 문자열만 가능)
+
+    띄어쓰기를 기준으로 동작한다.
+    """
+    try:
+        if not file_path.endswith('.txt'):
+            raise ValueError("txt 파일이 아닙니다.")
+
+        with open(file_path, 'r', encoding='utf-8') as file:
+            content = file.read()
+
+        words = content.split()
+        count = words.count(search_string)
+        
+        print(f"파일 '{file_path}'에서 '{search_string}' 문자열은 {count}번 등장합니다.")
+    except FileNotFoundError:
+        print(f"파일 '{file_path}'을 찾을 수 없습니다.")
+    except ValueError as e:
+        print(e)
+    except Exception:
+        print("오류 발생")
+
+
+
+
 b_is_exit = False
 version = "1.0.0"
 print(f"프로그램 버전: {version}")
@@ -730,6 +759,12 @@ while not b_is_exit:
         print("파일의 타임스탬프를 업데이트하는 기능 실행")
         file_path = input("수정할 파일의 경로를 입력하세요: ")
         touch(file_path)
+
+    elif func =="문자열개수세기":
+        print("txt파일에서 특정 문자열 개수를 세는 기능 실행")
+        file_path = input("텍스트 파일 경로를 입력하세요: ")
+        search_string = input("검색할 문자열을 입력하세요: ")
+        count_string_in_file(file_path, search_string)
 
     elif func == "?":
         print("""
