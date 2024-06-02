@@ -366,9 +366,28 @@ def touch(file_path):
         print(f"파일 수정 중 오류가 발생했습니다: {e}")
 
 def hideFile(path):
+    """
+    주어진 파일을 숨기고, 숨긴 파일의 경로를 hide.txt 파일에 저장합니다.
+
+    매개변수:
+        path: 숨길 파일의 경로
+    """
     try:
-        subprocess.call(['attrib', '+H', path])
-        print(f"파일이 성공적으로 숨겨졌습니다: {path}")
+        if not os.path.exists(path):
+            print(f"파일을 찾을 수 없습니다: {path}")
+            return
+        
+        result = subprocess.call(['attrib', '+H', path])
+        if result == 0:
+            print(f"파일이 성공적으로 숨겨졌습니다: {path}")
+            
+            hide_file_path = os.path.join(os.path.dirname(path), 'hide.txt')
+            with open(hide_file_path, 'a') as hide_file:
+                hide_file.write(f"{path}\n")
+            print(f"숨긴 파일의 경로가 {hide_file_path}에 저장되었습니다.")
+        else:
+            print(f"파일을 숨기는 중 오류가 발생했습니다: {path}")
+        
     except Exception as e:
         print(f"파일 숨기기 중 오류가 발생했습니다: {e}")
 
@@ -692,6 +711,11 @@ while not b_is_exit:
         print("파일크기순으로 정렬하여 출력하는 기능 실행")
         dir_path = input("파일크기 순으로 정렬하여 파일들을 출력할 디렉토리 경로 입력:")
         print_files_by_size(dir_path)
+
+    elif func == "파일숨기기":
+        print("파일숨기기 기능 실행")
+        file_path = input("파일숨기기를 할 파일을 경로를 입력:")
+        hideFile(file_path)
 
     elif func == "?":
         print("""
