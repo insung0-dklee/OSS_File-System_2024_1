@@ -609,6 +609,61 @@ def create_file(filename):
     else:
         print("비밀번호가 틀렸습니다.")
 
+def search_files_by_content(directory, keyword):
+    """
+    주어진 디렉토리와 하위 디렉토리에서 특정 키워드가 포함된 파일을 검색합니다.
+    
+    directory (str): 검색을 시작할 디렉토리 경로
+    keyword (str): 검색할 키워드
+    
+    검색 결과로 찾은 파일 경로들의 리스트를 return
+    """
+    results = []  # 검색 결과를 저장할 리스트
+
+    # 디렉토리와 그 하위 디렉토리에서 파일을 검색
+    for root, _, files in os.walk(directory):
+        for file in files:
+            file_path = os.path.join(root, file)
+            # 파일 내용에서 키워드 검색
+            if keyword_in_file(file_path, keyword):
+                results.append(file_path)
+
+    return results
+
+def keyword_in_file(file_path, keyword):
+    """
+    파일 내용에서 특정 키워드를 찾습니다.
+ 
+    file_path (str): 파일 경로
+    keyword (str): 검색할 키워드
+
+    파일 내용에 키워드가 포함되어 있으면 True, 그렇지 않으면 False를 return
+    """
+    try:
+        with open(file_path, 'r') as file:
+            for line in file:
+                if keyword in line:
+                    return True
+    except Exception as e:
+        print(f"파일 읽기 오류: {e}")
+    
+    return False
+
+def search_files_by_keyword():
+    # 사용자로부터 검색을 시작할 디렉토리와 검색할 키워드 입력 받기
+    search_directory = input("검색을 시작할 디렉토리 경로를 입력하세요: ")
+    search_keyword = input("검색할 키워드를 입력하세요: ")
+
+    # 파일 내용으로 검색
+    search_results = search_files_by_content(search_directory, search_keyword)
+
+    # 검색 결과 출력
+    if search_results:
+        print(f"검색 결과:")
+        for file_path in search_results:
+            print(file_path)
+    else:
+        print("검색 결과가 없습니다.")
 
 b_is_exit = False
 version = "1.0.0"
