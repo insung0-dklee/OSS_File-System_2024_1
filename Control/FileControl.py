@@ -6,6 +6,8 @@ import os
 import shutil
 import time
 from typing import List
+from pathlib import Path
+
 
 def file_control():
     finish = False
@@ -25,9 +27,11 @@ def file_control():
             print(" '부모 디렉토리 확인' 입력시 선택한 디렉토리의 부모 디렉토리 출력")
             print(" '파일복사'           입력시 파일 복사 및 붙여넣기")
             print(" '잘라내기'           입력시 파일 잘라내기 및 붙여넣기")
+            print(" '심볼릭링크 생성'    입력시 해당 절대경로의 심볼릭링크 생성")
             print(" '종료'               입력시 프로그램을 종료할 수 있습니다.")
         elif select == '메타데이터 출력':
-            manage_metadata()
+            file_path = input("파일 경로를 입력 : ")
+            manage_metadata(file_path)
         
         elif select == '파일삭제':
             delete_file()
@@ -52,6 +56,12 @@ def file_control():
 
         elif select == '잘라내기':
             cut_file()
+
+        elif select == "심볼릭링크 생성":
+            print("절대 경로를 입력해야합니다. ex) -> C:/test/test.txt")
+            file_path = input("대상 파일의 경로를 입력하세요 : ")
+            link_path = input("링크가 생성될 경로를 입력하세요 : ")
+            create_symLink(file_path,link_path)
 
         elif select == "종료":
             print("중복 관리를 종료합니다.")
@@ -219,5 +229,33 @@ def cut_file(src_path, dest_path):
     except Exception as e:
         print(f"파일 이동 중 오류가 발생했습니다: {e}")
 
-# 잘라내기 기능 테스트
-cut_file('source.txt', 'destination_directory/')
+
+
+def create_symLink(file_path,link_path):
+    """
+    파일 또는 폴더에 대한 심볼릭 링크(symbolic link)를 생성하는 함수
+    @Param
+        file_path: 심볼릭 링크의 대상이 되는 파일 또는 폴더의 절대경로
+        link_path: 생성될 심볼릭 링크의 절대경로
+        
+    @Return
+        None
+        
+    @Raises
+        Exception : If an error occurs while creating the link, an exception is output.
+    """
+
+    target = Path(file_path)
+    link = Path(link_path)
+
+    # link 파일이 이미 경로에 존재할 경우 처리
+    if link.exists():
+        print(f"{link} is already exists.")
+        return
+
+    try:
+        link.symlink_to(target, target.is_dir())
+        print(f"{link} | SymLink is created.")
+    except Exception as e:
+        print(f"Error is occured during creating SymLink : {e}")
+

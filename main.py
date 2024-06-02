@@ -225,11 +225,6 @@ def get_last_modified_time(file_path):
         print("Error:", e)
         return None
 
-def create_symlink(target, link_name):
-    os.symlink(target, link_name)
-
-def is_symlink(path):
-    return os.path.islink(path)
 
 def create_hardlink(target, link_name):
     os.link(target, link_name)
@@ -242,33 +237,6 @@ def is_hardlink(path):
     except FileNotFoundError:
         return False
 
-def create_symLink(file_path,link_path):
-    """
-    파일 또는 폴더에 대한 심볼릭 링크(symbolic link)를 생성하는 함수
-    @Param
-        file_path: 심볼릭 링크의 대상이 되는 파일 또는 폴더의 절대경로
-        link_path: 생성될 심볼릭 링크의 절대경로
-        
-    @Return
-        None
-        
-    @Raises
-        Exception : If an error occurs while creating the link, an exception is output.
-    """
-
-    target = Path(file_path)
-    link = Path(link_path)
-
-    # link 파일이 이미 경로에 존재할 경우 처리
-    if link.exists():
-        print(f"{link} is already exists.")
-        return
-
-    try:
-        link.symlink_to(target, target.is_dir())
-        print(f"{link} | SymLink is created.")
-    except Exception as e:
-        print(f"Error is occured during creating SymLink : {e}")
 
 def encrypt_file(file_path): 
     """
