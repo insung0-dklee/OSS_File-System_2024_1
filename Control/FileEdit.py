@@ -7,7 +7,10 @@
 3. 파일 단어 찾아 바꾸기
 4. 파일 내용 복사 및 붙여넣기
 5. 단어 수 세기
+6. 파일 내용 분리
 '''
+
+import os
 
 def file_edit():
     finish = False
@@ -17,14 +20,15 @@ def file_edit():
 
         if select == '?':
             print(" '읽기'              입력시 해당 파일의 내용을 출력")
-            print(" '파일생성'          입력시 파일을 생성하고 원하는 내용을 작성")
+            print(" '파일 생성'          입력시 파일을 생성하고 원하는 내용을 작성")
             print(" '찾아 바꾸기'       입력시 파일을 불러오고 원하는 단어를 찾아 새 단어로 바꿀 수 있습니다")
             print(" '복사 및 붙여넣기'  입력시 파일을 불러오고 원하는 부분을 찾아 다른 파일에 붙여넣을 수 있습니다")
             print(" '단어 수 세기'      입력시 파일을 불러오고 원하는 단어를 입력해 그 단어의 횟수를 셀 수 있습니다")
+            print(" '파일 내용 분리'     입력시 파일을 불러오고 원하는 부분을 찾아 파일의 내용을 분리할 수 있습니다")
             print(" '종료'             입력시 프로그램을 종료할 수 있습니다.")
         elif select == "읽기":
             read_file()
-        elif select == "파일 생성 및 쓰기":
+        elif select == "파일 생성":
             create_and_write_file()
         elif select == "찾아 바꾸기":
             modify_file()
@@ -32,6 +36,8 @@ def file_edit():
             copy_and_paste_text()
         elif select == "단어 수 세기":
             count_word()
+        elif select == "파일 내용 분리":
+            separation_file()
         elif select == '종료':
             print('파일 편집 기능을 종료합니다.')
             finish = True
@@ -94,3 +100,25 @@ def count_word():
     word_count = content.count(word)
     print(f"{word}는 {word_count}번 나옵니다.")
 
+def separation_file():
+    """
+    이미 만들어진 파일의 내용 중 일부를 잘라내어 새 파일에 붙여넣는 함수
+    하나의 파일 내용을 2개의 파일로 분리한다
+    """
+    source_file_path = input("분리할 내용이 있는 파일의 경로를 입력하세요: ")
+    with open(source_file_path, 'r') as file:
+        content = file.read()
+    print(f"원본 파일 내용:\n{content}")
+    start_index = int(input("잘라낼 부분의 시작 인덱스를 입력하세요(인덱스 0부터 시작): "))
+    end_index = int(input("잘라낼 부분의 끝 인덱스를 입력하세요: "))
+    text_to_cut = content[start_index:end_index+1]
+    # 잘라낸 내용을 담은 새 파일 생성
+    new_file_name = input("새로 생성할 파일의 이름을 입력하세요 : ")
+    new_file_path = os.path.join(os.getcwd(), new_file_name)
+    with open(new_file_path, 'w') as file:
+        file.write(text_to_cut)
+    # 원본 파일에서 잘라낸 부분 제거하고 다시 저장
+    new_content = content[:start_index] + content[end_index+1:]
+    with open(source_file_path, 'w') as file:
+        file.write(new_content)
+    print("파일 내용 분리가 완료되었습니다.")
