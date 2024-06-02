@@ -195,17 +195,22 @@ Gets the parent directory of the specified path.
 """
 
 
+
+
 """
-getParentDir(path) : 주어진 파일 경로 상위 디렉터리 반환하는 함수
-copyFile(src, dest) : src 경로의 파일을 dest 경로로 복사하는 함수
+
+getParentDir(path): 주어진 파일 경로 상위 디렉터리 반환하는 함수
+copyFile(src, dest): src 경로의 파일을 dest 경로로 복사하는 함수
 - 파일 복사 성공시 성공 메세지 출력
 - 오류 발생시 오류 메세지 출력
-cut_file(source, destination) : source 경로의 파일을 destination 경로로 이동하는 함수
-read_file(file_path) : file_path 경로의 파일을 읽어 내용 반환하는 함수
-create_and_write_file(file_path, content) : file_path 경로에 파일을 생성하고, content 파일에 적는 함수
-addFavorite() : 파일 경로를 입력받아 즐겨찾기 목록에 추가하는 함수
-showFavorites() : 즐겨찾기 목록을 출력하는 함수
+cut_file(source, destination): source 경로의 파일을 destination 경로로 이동하는 함수
+read_file(file_path): file_path 경로의 파일을 읽어 내용 반환하는 함수
+create_and_write_file(file_path, content): file_path 경로에 파일을 생성하고, content 파일에 적는 함수
+addFavorite(): 파일 경로를 입력받아 즐겨찾기 목록에 추가하는 함수
+showFavorites(): 즐겨찾기 목록을 출력하는 함수
+
 """
+
 def getParentDir(path):
     return os.path.dirname(path)
 
