@@ -658,3 +658,53 @@ while not b_is_exit:
 
     else:
         print("잘못 입력하셨습니다. 다시 입력해주세요. : ")
+
+def get_files(directory):
+    """주어진 디렉토리 내의 파일 목록을 가져와 파일 이름과 크기를 튜플로 반환"""
+    files = []
+    for entry in os.scandir(directory):
+        if entry.is_file():
+            files.append((entry.name, entry.stat().st_size))
+    return files
+
+def sort_files_by_name(files):
+     """파일 목록을 파일 이름 기준으로 정렬하여 반환"""
+    return sorted(files, key=lambda x: x[0])
+
+def sort_files_by_size(files):
+    """파일 목록을 파일 크기 기준으로 정렬하여 반환"""
+    return sorted(files, key=lambda x: x[1])
+
+def print_files(files, sort_by):
+    """파일 목록을 출력"""
+    print(f"\n파일 목록 ({sort_by}):")
+    for file in files:
+        print(f"Name: {file[0]}, Size: {file[1]} bytes")
+
+def order_arrangement():
+    """사용자 입력을 받아 파일 목록을 정렬 및 출력"""
+    directory = input("정리할 디렉토리 경로를 입력하세요: ")
+
+    # 입력받은 경로가 유효한 디렉토리인지 확인
+    if not os.path.isdir(directory):
+        print("유효한 디렉토리 경로를 입력하세요.")
+        return
+
+    # 파일 목록을 가져옴
+    files = get_files(directory)
+
+    # 파일 목록이 비어 있거나 디렉토리에 접근할 수 없는 경우 처리
+    if not files:
+        print("디렉토리에 파일이 없거나 디렉토리에 접근할 수 없습니다.")
+        return
+
+    # 파일 이름별 정렬 및 출력
+    sorted_by_name = sort_files_by_name(files)
+    print_files(sorted_by_name, "이름 순")
+
+    # 파일 크기별 정렬 및 출력
+    sorted_by_size = sort_files_by_size(files)
+    print_files(sorted_by_size, "크기 순")
+
+if __name__ == "__main__":
+    order_arrangement()
