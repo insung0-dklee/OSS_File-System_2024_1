@@ -32,6 +32,12 @@ import platform
 from Control import AutoFileManage
 import subprocess
 import ctypes
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email import encoders
+from email.mime.multipart import MIMEMultipart
+from email.mime.application import MIMEApplication
 
 def defragment_file_system(path):
     """주어진 경로에 대해 파일 시스템 조각 모음을 수행합니다."""
@@ -658,3 +664,58 @@ while not b_is_exit:
 
     else:
         print("잘못 입력하셨습니다. 다시 입력해주세요. : ")
+
+
+
+def share_file(source_file, target_email, subject, message):
+    """
+    지정된 파일을 이메일로 공유하는 함수
+    
+    Args:
+        source_file (str): 공유할 파일의 경로
+        target_email (str): 파일을 공유할 이메일 주소
+        subject (str): 이메일 제목
+        message (str): 이메일 본문 메시지
+    
+    Returns:
+        bool: 파일 공유 성공 여부
+    """
+    """
+    * 'your_email@example.com'과 'your_password'에 실제 구글 계정 정보를 사용 해야합니다.
+    *구글 계정 정보를 사용해야 합니다. 구글 계정의 "보안 수준이 낮은 앱 허용" 옵션을 "사용함"으로 변경해야 합니다.
+    그렇지 않으면 SMTP 연결이 허용되지 않습니다.
+    """
+    try:
+        # 이메일 메시지 생성
+        msg = MIMEMultipart()
+        msg['Subject'] = subject
+        msg['From'] = 'your_email@example.com'
+        msg['To'] = target_email
+        
+        # 본문 메시지 추가
+        msg.attach(MIMEText(message))
+        
+        # 파일 첨부
+        attachment = MIMEBase('application', 'octet-stream')
+        with open(source_file, 'rb') as file:
+            attachment.set_payload(file.read())
+        encoders.encode_base64(attachment)
+        attachment.add_header('Content-Disposition', f'attachment; filename="{os.path.basename(source_file)}"')
+        msg.attach(attachment)
+        
+        # 이메일 전송
+        with smtplib.SMTP('smtp.gmail.com', 587) as smtp:
+            smtp.starttls()
+            smtp.login('your_email@example.com', 'your_password')
+            smtp.send_message(msg)
+        
+        return True
+    except Exception as e:
+        print(f"Error sharing file: {e}")
+        return False
+
+# 파일 공유 작업의 성공 여부를 확인
+if share_file(source_file, target_email, subject, message):
+    print("File shared successfully!")
+else:
+    print("Failed to share file.")
