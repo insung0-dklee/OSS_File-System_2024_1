@@ -18,6 +18,7 @@ import time
 import function
 import zipfile
 import tarfile
+import py7zr
 import getpass
 import hashlib
 from Control import Bookmark
@@ -377,6 +378,7 @@ def compress_file(file_path, method='zip'):
     사용자가 파일경로를 입력하면 해당파일을 zip으로 압축합니다.
     
     매개변수 file_path (str): 압축할 파일의 경로
+    method (str): 압축형식의 구분(zip, tar, 7z)
     """
     try:
         # 압축할 파일의 디렉토리와 파일 이름 추출
@@ -394,19 +396,39 @@ def compress_file(file_path, method='zip'):
                 tarf.add(file_path, arcname=file_name)
             print(f"파일이 성공적으로 압축되었습니다: {output_tar}")
 
+        elif method == '7z':
+            output_7z = os.path.join(file_dir, f"{file_name}.7z")
+            with py7zr.SevenZipFile(output_7z, 'w') as _7zf:
+                _7zf.write(file_path, file_name)
+            print(f"파일이 성공적으로 압축되었습니다: {output_7z}")
+
         else:
             print(f"지원하지 않는 압축 방식입니다: {method}")
     except Exception as e:
         print(f"파일 압축 중 오류가 발생했습니다: {e}")
 
-def decompressFile(zip_path, dest):
+def decompressFile(archive_path, dest):
     """
     압축 파일을 해제합니다.
+
+    매개변수 archive_path (str): 압축 파일의 경로
+    매개변수 dest (str): 압축을 해제할 경로
     """
     try:
-        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-            zip_ref.extractall(dest)
-        print(f"압축 해제가 성공적으로 완료되었습니다: {dest}")
+        if archive_path.endswith('.zip'):
+            with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+                zip_ref.extractall(dest)
+            print(f"압축 해제가 성공적으로 완료되었습니다: {dest}")
+        elif archive_path.endswith('.tar.gz'):
+            with tarfile.open(archive_path, 'r:gz') as tar_ref:
+                tar_ref.extractall(dest)
+            print(f"압축 해제가 성공적으로 완료되었습니다: {dest}")
+        elif archive_path.endswith('.7z'):
+            with py7zr.SevenZipFile(archive_path, mode='r') as _7zf:
+                _7zf.extractall(path=dest)
+            print(f"압축 해제가 성공적으로 완료되었습니다: {dest}")
+        else:
+            print(f"지원하지 않는 압축 파일 형식입니다: {archive_path}")
     except Exception as e:
         print(f"압축 해제 중 오류가 발생했습니다: {e}")
 
