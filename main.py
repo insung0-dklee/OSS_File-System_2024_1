@@ -31,6 +31,10 @@ import datetime
 from collections import defaultdict
 import platform
 
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad, unpad
+from Crypto.Random import get_random_bytes
+
 def compare_files(file1_path, file2_path):
     """
     두 텍스트 파일을 비교하여 차이점을 출력합니다.
@@ -676,6 +680,64 @@ def create_file(filename):
     else:
         print("비밀번호가 틀렸습니다.")
 
+def encrypt_file_aes(file_path, key):
+    """
+    파일을 AES 방식으로 암호화하는 함수
+    
+    @param
+        file_path: 암호화할 파일 경로
+        param key: 암호화 키 (16, 24, 32 바이트 중 하나)
+    """
+    try:
+        if not os.path.isfile(file_path):
+            print("파일 경로가 올바르지 않습니다.")
+            return
+        
+        with open(file_path, 'rb') as file:
+            plaintext = file.read()
+
+        cipher = AES.new(key, AES.MODE_CBC)
+        iv = cipher.iv
+        ciphertext = cipher.encrypt(pad(plaintext, AES.block_size))
+
+        with open(file_path + '.enc', 'wb') as enc_file:
+            enc_file.write(iv + ciphertext)
+
+        print(f"파일이 성공적으로 암호화되었습니다: {file_path}.enc")
+
+    except Exception as e:
+        print(f"파일 암호화 중 오류가 발생했습니다: {e}")
+
+def decrypt_file_aes(enc_file_path, key):
+    """
+    AES 방식으로 암호화된 파일을 복호화하는 함수
+    
+    @param
+        enc_file_path: 복호화할 암호화된 파일 경로
+        key: 복호화 키 (암호화에 사용된 것과 동일한 키)
+    """
+    try:
+        if not os.path.isfile(enc_file_path):
+            print("파일 경로가 올바르지 않습니다.")
+            return
+        
+        with open(enc_file_path, 'rb') as enc_file:
+            iv = enc_file.read(16)
+            ciphertext = enc_file.read()
+
+        cipher = AES.new(key, AES.MODE_CBC, iv)
+        plaintext = unpad(cipher.decrypt(ciphertext), AES.block_size)
+
+        with open(enc_file_path.replace('.enc', ''), 'wb') as dec_file:
+            dec_file.write(plaintext)
+
+        print(f"파일이 성공적으로 복호화되었습니다: {enc_file_path.replace('.enc', '')}")
+
+    except ValueError as e:
+        print(f"파일 복호화 중 오류가 발생했습니다: {e}")
+    except Exception as e:
+        print(f"파일 복호화 중 오류가 발생했습니다: {e}")
+
 
 b_is_exit = False
 version = "1.0.0"
@@ -708,6 +770,34 @@ while not b_is_exit:
         print("중복 관리 기능 실행")
         Duplicates.duplicates()
 
+    elif func == "AES Enc":
+        file_path = input("암호화할 파일 경로를 입력하세요: ")
+        if not os.path.isfile(file_path):
+            print("파일 경로가 올바르지 않습니다.")
+            continue
+        
+        key = get_random_bytes(16)  # 16 바이트 키 생성
+        encrypt_file_aes(file_path, key)
+        print(f"암호화 키 (복호화를 위해 저장하세요): {key.hex()}")
+
+    elif func == "AES Dec":
+        enc_file_path = input("복호화할 파일 경로를 입력하세요: ")
+        if not os.path.isfile(enc_file_path):
+            print("파일 경로가 올바르지 않습니다.")
+            continue
+        
+        key_hex = input("암호화에 사용된 키를 입력하세요 (16, 24, 32 바이트의 16진수 문자열): ")
+        try:
+            key = bytes.fromhex(key_hex)
+            if len(key) not in (16, 24, 32):
+                print("키 길이가 올바르지 않습니다. 16, 24, 32 바이트 중 하나여야 합니다.")
+                continue
+        except ValueError:
+            print("올바르지 않은 키 형식입니다. 16진수 문자열을 입력하세요.")
+            continue
+
+        decrypt_file_aes(enc_file_path, key)
+
     elif func == "?":
         print("""
                 [도움말]
@@ -716,6 +806,8 @@ while not b_is_exit:
                 '파일관리' 입력시 파일을 관리할 수 있습니다.
                 '가독성'   입력시 파일의 단위를 읽기 좋게 볼 수 있습니다.
                 '중복관리' 입력시 중복 파일을 관리할 수 있습니다.
+                'AES Enc' 입력시 파일을 AES 방식으로 암호화를 합니다.
+                'AES Dec' 입력시 AES 방식으로 암호화된 파일을 복호화를 합니다.
                 '종료'     입력시 프로그램을 종료합니다.
             """)
 
