@@ -17,6 +17,7 @@ def bookmark(bookmark : List):
         if select == '?':
             print(" '목록' 입력시 현재 즐겨찾기 목록을 볼 수 있습니다.")
             print(" '추가' 입력시 즐겨찾기를 목록에 추가할 수 있습니다.")
+	    print(" '삭제' 입력시 즐겨찾기를 목록에서 삭제할 수 있습니다.") # '삭제' 기능을 메뉴에 추가
             print(" '종료' 입력시 프로그램을 종료할 수 있습니다.")
 
         elif select == '목록':
@@ -24,6 +25,9 @@ def bookmark(bookmark : List):
 
         elif select == '추가':
             addFavorite(bookmark)
+
+	elif select == '삭제':
+	    removeFavorite(bookmark)
 
         elif select == "종료":
             print("즐겨찾기를 종료합니다.")
@@ -45,8 +49,9 @@ def addFavorite(bookmark: List):
     bookmark.append(path)
     print("즐겨찾기에 추가되었습니다.")
 
-def removeFavorite():
+def removeFavorite(favorite: List):
     """
+    '삭제'를 입력하면 removeFaorite()로 이동
     즐겨찾기 목록에 파일이 존재한다면 파일 번호를 포함한 즐겨찾기 목록을 출력
     제거할 파일의 번호를 입력받은 후, 해당 파일을 제거
     """
