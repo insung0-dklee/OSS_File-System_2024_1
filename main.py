@@ -658,3 +658,31 @@ while not b_is_exit:
 
     else:
         print("잘못 입력하셨습니다. 다시 입력해주세요. : ")
+
+def move_files_with_extensions(src, dest, extensions):
+    """
+    현재 디렉토리(src)에서 주어진 확장자(extensions)를 가진 파일들을
+    새로운 디렉토리(dest)로 이동시킵니다. 파일이 존재하지 않는 경우, 실패 메시지를 출력합니다.
+    
+    Args:
+        src (str): 파일들이 있는 원본 디렉토리의 경로입니다.
+        dest (str): 파일들을 이동시킬 목표 디렉토리의 경로입니다.
+        extensions (list): 이동시킬 파일의 확장자들을 나열한 리스트입니다. 예: ['jpg', 'txt']
+    """
+
+    if not os.path.exists(dest):
+        os.makedirs(dest)
+    
+    for filename in os.listdir(src):
+        ext = filename.split('.')[-1]
+        if ext in extensions:
+            source_path = os.path.join(src, filename)
+            target_path = os.path.join(dest, filename)
+
+            if os.path.exists(source_path):
+                shutil.move(source_path, target_path)
+                print(f"'{filename}'을(를) '{src}'에서 '{dest}'로 이동했습니다.")
+
+            else:
+                print(f"'{filename}' 파일은(는) '{src}'에 존재하지 않습니다.")
+
