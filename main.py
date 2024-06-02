@@ -676,6 +676,24 @@ def create_file(filename):
     else:
         print("비밀번호가 틀렸습니다.")
 
+def touch(file_path):
+    """
+    사용자로부터 파일의 경로를 입력받아서 타임스탬프를 업데이트
+    파일이 존재하면 마지막 수정 시간을 갱신한다.
+    파일이 존재하지 않으면 에러 출력
+
+    매개변수 file_path: 사용자로부터 입력받은 타임스탬프를 업데이트할 파일의 경로
+    """
+    try:
+        if os.path.exists(file_path):
+            os.utime(file_path, None)
+            print(f"'{file_path}' 파일의 타임스탬프가 업데이트 되었습니다.")
+        else:
+            raise FileNotFoundError(f"'{file_path}' 파일을 찾을 수 없습니다.")
+    except Exception as e:
+        print(f"파일 수정 중 오류가 발생했습니다: {e}")
+
+
 
 b_is_exit = False
 version = "1.0.0"
@@ -707,6 +725,11 @@ while not b_is_exit:
     elif func == "중복관리":
         print("중복 관리 기능 실행")
         Duplicates.duplicates()
+
+    elif func == "수정시간갱신":
+        print("파일의 타임스탬프를 업데이트하는 기능 실행")
+        file_path = input("수정할 파일의 경로를 입력하세요: ")
+        touch(file_path)
 
     elif func == "?":
         print("""
