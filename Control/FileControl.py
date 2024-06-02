@@ -27,34 +27,54 @@ def file_control():
             print(" '잘라내기'           입력시 파일 잘라내기 및 붙여넣기")
             print(" '종료'               입력시 프로그램을 종료할 수 있습니다.")
         elif select == '메타데이터 출력':
-            manage_metadata()
+            path = input("파일의 경로를 입력 : ")
+            manage_metadata(path)
+            continue
         
         elif select == '파일삭제':
-            delete_file()
+            path = input("파일의 경로를 입력 : ")
+            delete_file(path)
+            continue
         
         elif select == '파일검색':
-            search_file()
+            root_directory = input("파일의 경로를 입력 : ")
+            target_filename = input("파일의 이름을 입력 : ")
+            result = search_file(root_directory, target_filename)
+            if not result:
+                print(f"{target_filename}과 매칭되는 파일이 없습니다.")
+            else:
+                print(f"검색된 파일(총 {len(result)}개):", *result, sep="\n")
+            continue
 
         elif select == '파일이동':
-            move_file()
+            source = input("파일의 현재 경로를 입력 : ")
+            destination = input("파일이 이동할 경로를 입력 : ")
+            move_file(source, destination)
         
         elif select == '디렉토리 생성':
-            create_directory()
+            directory_path = input("생생할 디렉토리 입력 : ")
+            create_directory(directory_path)
 
         elif select == '파일목록':
-            list_files()
+            directory = input("파일 목록을 볼 경로 입력 : ")
+            list_files(directory)
 
         elif select == '부모 디렉토리 확인':
-            getParentDir()
+            path = input("부모 디렉토리를 볼 경로 입력 : ")
+            print(getParentDir(path))
 
         elif select == '파일복사':
-            copy_file()
+            src_path = input("파일의 현재 경로를 입력 : ")
+            dest_path = input("파일을 복사할 경로를 입력 : ")
+            copy_file(src_path,dest_path)
 
         elif select == '잘라내기':
-            cut_file()
+            src_path = input("파일의 현재 경로를 입력 : ")
+            dest_path = input("파일을 이동할 경로를 입력 : ")
+            cut_file(src_path,dest_path)
 
         elif select == "종료":
-            print("중복 관리를 종료합니다.")
+            print("파일 관리를 종료합니다.")
             finish = True
 
         else:
@@ -65,14 +85,14 @@ def search_file(root_directory, target_filename):
     """
     특정 파일을 파일 시스템에서 검색하는 함수입니다.
     :param root_directory: 검색을 시작할 루트 디렉토리
-    :param target_filename: 검색할 파일의 이름
+    :param target_filename: 검색할 파일의 이름 혹은 일부
     :return: 파일의 경로 리스트 (파일이 여러 개일 경우)
     """
     matched_files = []
 
     for dirpath, dirnames, filenames in os.walk(root_directory):
         for filename in filenames:
-            if filename == target_filename:
+            if target_filename in filename:  # 검색하고자 하는 이름의 일부만 포함되어 있어도 검색하게끔 함
                 matched_files.append(os.path.join(dirpath, filename))
 
     return matched_files
