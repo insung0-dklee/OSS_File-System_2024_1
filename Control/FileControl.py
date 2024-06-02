@@ -2,13 +2,13 @@
 파일 자체를 컨트롤 하는 기능들의 패키지 입니다.
 '''
 
+import hashlib
 import os
 import shutil
 import time
-from typing import List
-import hashlib
 from functools import lru_cache
 from pathlib import Path
+from typing import List
 
 def file_control():
     finish = False
@@ -19,16 +19,17 @@ def file_control():
 
         if select == '?':
             print("도움말")
-            print(" '메타데이터 출력'    입력시 해당 파일 메타 데이터 확인")
+            print(" '메타데이터 출력'     입력시 해당 파일 메타 데이터 확인")
             print(" '파일삭제'           입력시 해당 파일 삭제")
             print(" '파일검색'           입력시 원하는 파일의 위치 검색")
             print(" '파일이동'           입력시 파일을 원하는 디렉토리로 이동")
-            print(" '디렉토리 생성'      입력시 원하는 경로에 디렉토리 생성")
+            print(" '백업'              입력시 파일 백업")
+            print(" '디렉토리 생성'       입력시 원하는 경로에 디렉토리 생성")
             print(" '파일목록'           입력시 해당 디렉토리의 파일의 목록 출력")
-            print(" '부모 디렉토리 확인' 입력시 선택한 디렉토리의 부모 디렉토리 출력")
+            print(" '부모 디렉토리 확인'  입력시 선택한 디렉토리의 부모 디렉토리 출력")
             print(" '파일복사'           입력시 파일 복사 및 붙여넣기")
             print(" '잘라내기'           입력시 파일 잘라내기 및 붙여넣기")
-            print(" '종료'               입력시 프로그램을 종료할 수 있습니다.")
+            print(" '종료'              입력시 프로그램을 종료할 수 있습니다.")
         elif select == '메타데이터 출력':
             manage_metadata()
         
@@ -49,7 +50,12 @@ def file_control():
 
         elif select == '부모 디렉토리 확인':
             getParentDir()
-
+            
+        elif select == '백업':
+            file_path = input("백업할 파일 경로를 입력하세요: ")
+            backup_dir = input("백업 디렉토리 경로를 입력하세요: ")
+            versioned_backup(file_path, backup_dir)
+        
         elif select == '파일복사':
             copy_file()
 
@@ -63,6 +69,8 @@ def file_control():
         else:
             print("잘못 입력하셨습니다. 다시 입력해주세요. : ")
 
+        
+    
 @lru_cache(maxsize=128)
 def read_file(file_path):
     """
@@ -440,3 +448,24 @@ def delete_directory(directory_path):
         print(f"Directory not found: {directory_path}")
     except OSError as e:
         print(f"Error deleting directory: {e}")
+
+def versioned_backup(file_path, backup_dir=None):
+    try:
+        if backup_dir is None:
+            backup_dir = os.path.expanduser("~/backups")
+
+        if not os.path.exists(backup_dir):
+            os.makedirs(backup_dir)
+
+        timestamp = time.strftime("%Y%m%d%H%M%S")
+        backup_file_path = os.path.join(backup_dir, f"{os.path.basename(file_path)}_{timestamp}")
+        shutil.copy2(file_path, backup_file_path)
+        print(f"Backup created: {backup_file_path}")
+    except PermissionError:
+        print("Permission denied: You do not have permission to write to this directory.")
+    except FileNotFoundError:
+        print("File not found: The specified file does not exist.")
+    except OSError as e:
+        print(f"OS error: {e}")
+    except Exception as e:
+        print(f"Unexpected error: {e}")
