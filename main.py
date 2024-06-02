@@ -609,6 +609,32 @@ def create_file(filename):
     else:
         print("비밀번호가 틀렸습니다.")
 
+def search_files_by_keyword(directory, keyword):
+    """
+    디렉토리 내의 파일 내용을 검색하여 키워드를 포함하는 파일을 찾습니다.
+    """
+    matched_files = []
+    for root, _, files in os.walk(directory):
+        for file in files:
+            file_path = os.path.join(root, file)
+            try:
+                with open(file_path, 'r') as f:
+                    if keyword in f.read():
+                        matched_files.append(file_path)
+            except:
+                pass
+    return matched_files
+
+def search_files_by_extension(directory, extension):
+    """
+    디렉토리 내에서 특정 확장자를 가진 파일을 검색합니다.
+    """
+    matched_files = []
+    for root, _, files in os.walk(directory):
+        for file in files:
+            if file.endswith(extension):
+                matched_files.append(os.path.join(root, file))
+    return matched_files
 
 b_is_exit = False
 version = "1.0.0"
