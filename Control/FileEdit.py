@@ -18,8 +18,11 @@ def file_edit():
 
         if select == '?':
             print("""   
-    '읽기'      입력시 해당 파일의 내용을 출력")
-    '파일생성'  입력시 파일을 생성하고 원하는 내용을 작성")
+    '읽기'      입력시 해당 파일의 내용을 출력
+    '파일생성'  입력시 파일을 생성하고 원하는 내용을 작성
+    '파일비교'  입력시 두 파일의 차이점을 비교할 수 있습니다.
+    '확장자변경'입력시 원하는 파일의 확장자를 변경할 수 있습니다.
+    '한줄씩읽기'입력시 텍스트 파일을 한줄씩 읽을 수 있습니다.
     '종료'      입력시 프로그램을 종료할 수 있습니다.
                 """)
 
@@ -29,6 +32,11 @@ def file_edit():
             create_and_write_file()
         elif select == "파일비교":
             compare_files()
+        elif select == "확장자변경":
+            change_extenion()
+        elif select == "한줄씩읽기":
+            read_txt_oneline()
+
         elif select == '종료':
             print('파일 편집 기능을 종료합니다.')
             finish = True
@@ -169,3 +177,54 @@ def create_symLink(file_path,link_path):
         print(f"{link} | SymLink is created.")
     except Exception as e:
         print(f"Error is occured during creating SymLink : {e}")
+
+
+
+def change_extenion():
+    '''
+    파일을 선택해서 그 파일의 확장자를 변경하는 함수
+    target_file : 변경할 파일의 경로
+    extention   : 변경할 확장자
+    '''
+    target_file = input("변경할 파일의 경로 : ")
+    extention = input("변경할 확장자 : ")
+
+    new_file_extention = os.path.splitext(target_file)[0] + '.' + extention
+    os.rename(target_file, new_file_extention)
+    print(f"{target_file} >> {new_file_extention}")
+
+def read_txt_oneline():
+    '''
+    원하는 파일을 한 줄씩 읽을 수 있는 함수
+    target_file : 텍스트 파일 경로
+    '''
+
+    target_file = input("텍스트 파일의 경로 : ")
+    try:
+        with open(target_file, "r") as txt:
+            txt_list = txt.readlines()
+            
+    except:
+        with open(target_file, "r", encoding='utf-8') as txt:
+            txt_list = txt.readlines()
+
+    stop = False
+    i = 0
+    while not stop:
+        direction = input('''
+        원하는 페이지를 입력하거나 
+        이전 페이지로 읽고 싶으면 'a'를,
+        다음 페이지를 읽고 싶으면 'b'를 입력하세요.
+        종료를 원하면 '종료'를 입력해주세요.''')
+        print(txt_list[i])
+        if direction == 'a':
+            i -= 1
+        elif direction =='b':
+            i += 1
+        elif direction in range(len(txt_list)):
+            i = direction
+        elif direction == '종료':
+            print("편집을 종료합니다.")
+            stop = True
+        else:
+            print('잘못 입력하셨습니다. 다시 입력해주세요.')
