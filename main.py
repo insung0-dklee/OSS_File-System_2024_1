@@ -738,6 +738,28 @@ def decrypt_file_aes(enc_file_path, key):
     except Exception as e:
         print(f"파일 복호화 중 오류가 발생했습니다: {e}")
 
+def sort_files(directory, criterion, reverse=False):
+    """
+    주어진 디렉토리의 파일을 정렬합니다.
+    
+    @param
+        directory: 파일들이 있는 디렉토리 경로
+        criterion: 정렬 기준('name', 'size', 'extension')
+        reverse: 내림차순 정렬 여부(기본값: False, 오름차순)
+    """
+    def sort_key(file):
+        file_path = os.path.join(directory, file)
+        if criterion == 'name':
+            return file.lower()
+        elif criterion == 'size':
+            return os.path.getsize(file_path)
+        elif criterion == 'extension':
+            return os.path.splitext(file)[1].lower()
+        else:
+            raise ValueError("Invalid sorting criterion specified.")
+    
+    files = [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))]
+    return sorted(files, key=sort_key, reverse=reverse)
 
 b_is_exit = False
 version = "1.0.0"
@@ -798,6 +820,24 @@ while not b_is_exit:
 
         decrypt_file_aes(enc_file_path, key)
 
+    elif func == "sort":
+        directory = input("정렬할 디렉토리 경로를 입력하세요: ")
+        if not os.path.isdir(directory):
+            print("유효한 디렉토리 경로를 입력하세요.")
+            continue
+
+        criterion = input("정렬 기준을 선택하세요('name', 'size', 'extension'): ").strip().lower()
+        order = input("정렬 순서를 선택하세요(기본값 오름차순, 'asc' for 오름차순, 'desc' for 내림차순): ").strip().lower()
+        reverse = True if order == 'desc' else False
+
+        try:
+            sorted_files = sort_files(directory, criterion, reverse)
+            print(f"정렬된 파일 목록 ({criterion} 기준, {'내림차순' if reverse else '오름차순'}):")
+            for file in sorted_files:
+                print(file)
+        except ValueError as e:
+            print(f"오류: {e}")
+
     elif func == "?":
         print("""
                 [도움말]
@@ -808,6 +848,7 @@ while not b_is_exit:
                 '중복관리' 입력시 중복 파일을 관리할 수 있습니다.
                 'AES Enc' 입력시 파일을 AES 방식으로 암호화를 합니다.
                 'AES Dec' 입력시 AES 방식으로 암호화된 파일을 복호화를 합니다.
+                'sort'    입력시 정렬 기준과 정렬 순서에 따라 파일이 정렬됩니다.
                 '종료'     입력시 프로그램을 종료합니다.
             """)
 
