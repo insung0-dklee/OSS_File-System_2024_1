@@ -153,25 +153,46 @@ def print_file_system_statistics(directory):
     for file_type, count in stats['file_type_counts'].items():
         print(f"  {file_type if file_type else 'No Extension'}: {count} files")
 
+
 def print_directory_tree(root_directory, indent=""):
     """
-    주어진 디렉토리의 트리 구조를 출력합니다.
-    @param
-        root_directory: 트리를 출력할 루트 디렉토리
-        indent: 들여쓰기 문자열
+    사용자가 입력한 디렉토리의 트리 구조를 출력하고 결과를 바탕화면에 텍스트 파일로 저장한다.
+    매개변수 root_directory: 트리를 출력할 루트 디렉토리
+            indent: 들여쓰기 문자열
     """
-    items = os.listdir(root_directory)
-    for index, item in enumerate(items):
-        item_path = os.path.join(root_directory, item)
-        if index == len(items) - 1:
-            print(indent + "└── " + item)
-            new_indent = indent + "    "
-        else:
-            print(indent + "├── " + item)
-            new_indent = indent + "│   "
-        if os.path.isdir(item_path):
-            print_directory_tree(item_path, new_indent)
+    def get_desktop_path():
+        return os.path.join(os.path.expanduser("~"), "Desktop")
 
+    lines = []
+
+    def add_to_lines(directory, indent):
+        items = os.listdir(directory)
+        for index, item in enumerate(items):
+            item_path = os.path.join(directory, item)
+            if index == len(items) - 1:
+                lines.append(indent + "└── " + item)
+                new_indent = indent + "    "
+            else:
+                lines.append(indent + "├── " + item)
+                new_indent = indent + "│   "
+            if os.path.isdir(item_path):
+                add_to_lines(item_path, new_indent)
+    
+    try:
+        add_to_lines(root_directory, indent)
+
+        for line in lines:
+            print(line)
+        
+        desktop_path = get_desktop_path()
+        output_file = os.path.join(desktop_path, 'directory_tree.txt')
+        with open(output_file, 'w', encoding='utf-8') as f:
+            for line in lines:
+                f.write(line + "\n")
+        print(f"디렉토리 트리 구조가 {output_file}에 저장되었습니다.")
+
+    except Exception as e:
+        print(f"디렉토리 트리 출력 중 오류가 발생했습니다: {e}")
 def print_system_info():
     """
     현재 시스템의 운영체제 및 컴퓨터 정보를 출력한다.
@@ -640,6 +661,13 @@ while not b_is_exit:
     elif func == "중복관리":
         print("중복 관리 기능 실행")
         Duplicates.duplicates()
+    
+    elif func == "트리출력":
+        print("트리 출력 기능 실행")
+        tree_path = input("트리를 출력할 경로를 입력: ")
+        print_directory_tree(tree_path)
+
+    
 
     elif func == "?":
         print("""
