@@ -748,6 +748,3 @@ def remove_empty_dir(directory):
     if not empty_dir_found:
         print("삭제할 빈 디렉토리가 없습니다.") 
 
-        
-dir = 'C:\\Users\\bjh04\\empty'
-remove_empty_dir(dir)
