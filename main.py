@@ -32,6 +32,8 @@ import platform
 from Control import AutoFileManage
 import subprocess
 import ctypes
+import json
+import random
 
 def defragment_file_system(path):
     """주어진 경로에 대해 파일 시스템 조각 모음을 수행합니다."""
@@ -207,6 +209,79 @@ def print_files_by_mtime(directory):
 
     except Exception as e:
         print(f"파일 목록 출력 중 오류 발생: {e}")
+
+
+def random_relocation(directory):
+    """
+    디렉토리 내 파일을 랜덤하게 재배치하는 함수.
+    @param directory: 파일을 재배치할 디렉토리
+    """
+    original_positions = {}
+    file_paths = []
+
+    for root, dirs, files in os.walk(directory):
+        for file in files:
+            file_path = os.path.join(root, file)
+            if 'file_positions.json' not in file_path:  # 파일 위치 기록 파일은 제외
+                file_paths.append(file_path)
+                original_positions[file_path] = root
+
+    random.shuffle(file_paths)
+
+    for file_path in file_paths:
+        new_dir = random.choice(list(original_positions.values()))
+        if new_dir != os.path.dirname(file_path):  # 이동할 디렉토리가 현재 디렉토리가 아닌 경우에만 이동
+            new_path = os.path.join(new_dir, os.path.basename(file_path))
+
+            # 충돌 방지를 위한 새로운 경로 설정
+            if os.path.exists(new_path):
+                base, ext = os.path.splitext(new_path)
+                count = 1
+                while os.path.exists(new_path):
+                    new_path = f"{base}_{count}{ext}"
+                    count += 1
+
+            try:
+                shutil.move(file_path, new_path)
+            except Exception as e:
+                print(f"Error moving {file_path} to {new_path}: {e}")
+
+    with open(os.path.join(directory, 'file_positions.json'), 'w') as f:
+        json.dump(original_positions, f)
+    print("파일이 랜덤하게 재배치되었습니다.")
+
+def restore_original_positions(directory):
+    """
+    파일을 원래 위치로 복원하는 함수.
+    @param directory: 파일을 복원할 디렉토리
+    """
+    try:
+        with open(os.path.join(directory, 'file_positions.json'), 'r') as f:
+            original_positions = json.load(f)
+    except FileNotFoundError:
+        print("복원할 위치 정보를 찾을 수 없습니다. 파일이 이미 복원되었거나 기록된 정보가 없습니다.")
+        return
+
+    for file_path, original_dir in original_positions.items():
+        if os.path.exists(file_path):
+            new_path = os.path.join(original_dir, os.path.basename(file_path))
+
+            # 충돌 방지를 위한 새로운 경로 설정
+            if os.path.exists(new_path):
+                base, ext = os.path.splitext(new_path)
+                count = 1
+                while os.path.exists(new_path):
+                    new_path = f"{base}_{count}{ext}"
+                    count += 1
+
+            try:
+                shutil.move(file_path, new_path)
+            except Exception as e:
+                print(f"Error moving {file_path} to {new_path}: {e}")
+        else:
+            print(f"파일이 존재하지 않습니다: {file_path}")
+
+    print("파일이 원래 위치로 복원되었습니다.")
 
 def classify_files_by_extension(source_directory, destination_directory):
     """
