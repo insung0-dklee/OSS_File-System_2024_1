@@ -39,7 +39,12 @@ def file_control():
             move_file()
         
         elif select == '디렉토리 생성':
-            create_directory()
+            directory_path = input("생성할 디렉토리 경로 : ")
+            create_directory(directory_path)
+
+        elif select == '디렉토리 삭제':
+            directory_path = input("삭제할 디렉토리 경로를 입력하세요 : ")
+            delete_directory(directory_path)
 
         elif select == '파일목록':
             list_files()
@@ -110,10 +115,10 @@ def manage_metadata(file_path):
 def delete_file(path):
     """
     파일의 경로를 받아 해당 파일을 삭제
-    
+
     Args:
         path (str): 삭제할 파일의 경로
-    
+
     Returns:
         None
     """
@@ -159,6 +164,24 @@ def create_directory(directory_path):
         print(f"Created directory {directory_path}")
     except Exception as e:
         print(f"Error creating directory: {e}")
+
+"""
+Deletes a directory at the specified path.
+@Param
+    directory_path : The path where the directory should be deleted.
+@Return
+    None
+@Raises
+    Prints an error message if the operation fails.
+"""
+def delete_directory(directory_path):
+    try:
+        os.rmdir(directory_path)
+        print(f"Directory {directory_path} deleted successfully")
+    except FileNotFoundError:
+        print(f"Directory not found: {directory_path}")
+    except OSError as e:
+        print(f"Error deleting directory: {e}")
 
 """
 Lists all files in the specified directory.
