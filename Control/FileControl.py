@@ -6,6 +6,9 @@ import os
 import shutil
 import time
 from typing import List
+import hashlib
+from functools import lru_cache
+from pathlib import Path
 
 def file_control():
     finish = False
@@ -60,6 +63,23 @@ def file_control():
         else:
             print("잘못 입력하셨습니다. 다시 입력해주세요. : ")
 
+@lru_cache(maxsize=128)
+def read_file(file_path):
+    """
+    기존 read_file 함수는 존재하지 않은 file path일 경우에 대해 버그 야기
+    """
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            content = file.read()
+        return content
+    except FileNotFoundError:
+        raise Exception("존재하지 않은 파일입니다.")
+    except PermissionError:
+        raise Exception("파일 권한이 없습니다.")
+    except IsADirectoryError:
+        raise Exception("파일이 아닌 디렉토리 입니다.")
+    except Exception as e:
+        raise Exception(f"An error occurred: {e}")
 
 def search_file(root_directory, target_filename):
     """
@@ -76,6 +96,29 @@ def search_file(root_directory, target_filename):
                 matched_files.append(os.path.join(dirpath, filename))
 
     return matched_files
+
+def search_content_in_file(file_path, content):
+    """
+    file path와 검색할 문자열을 입력받아 해당 파일에
+    검색 문자열이 존재하면 해당 라인과 줄 수를 반환하고 없으면
+    empty stirng을 반환하는 메소드
+    :param file_path: 내용을 찾을 파일
+    :param cotent: 찾고 싶은 내용
+    :return: 1. 파일 경로 o, 내용 o -> 줄 번호, 해당 줄
+             2. 파일 경로 o, 내용 x -> empty string
+             3. 파일 경로 x -> error 메세지
+    """
+
+    try:
+        file = read_file(file_path)
+        content_lines = file.split('\n')
+
+        for i, line in enumerate(content_lines):
+            if line.find(content) != -1:
+                return f"{i + 1}: {line}"
+        return ""
+    except Exception as e:
+        return e
 
 def create_and_write_file(file_path, content):
     with open(file_path, 'w') as file:
@@ -188,6 +231,7 @@ Gets the parent directory of the specified path.
 def getParentDir(path):
     return os.path.dirname(path)
 
+
 def copy_file(src_path, dest_path):
     if not os.path.exists(src_path):
         raise FileNotFoundError(f"소스 파일이 존재하지 않습니다: {src_path}")
@@ -219,5 +263,180 @@ def cut_file(src_path, dest_path):
     except Exception as e:
         print(f"파일 이동 중 오류가 발생했습니다: {e}")
 
-# 잘라내기 기능 테스트
-cut_file('source.txt', 'destination_directory/')
+def create_symLink(file_path,link_path):
+    """
+    파일 또는 폴더에 대한 심볼릭 링크(symbolic link)를 생성하는 함수
+    @Param
+        file_path: 심볼릭 링크의 대상이 되는 파일 또는 폴더의 절대경로
+        link_path: 생성될 심볼릭 링크의 절대경로
+        
+    @Return
+        None
+        
+    @Raises
+        Exception : If an error occurs while creating the link, an exception is output.
+    """
+
+    target = Path(file_path)
+    link = Path(link_path)
+
+    # link 파일이 이미 경로에 존재할 경우 처리
+    if link.exists():
+        print(f"{link} is already exists.")
+        return
+
+    try:
+        link.symlink_to(target, target.is_dir())
+        print(f"{link} | SymLink is created.")
+    except Exception as e:
+        print(f"Error is occured during creating SymLink : {e}")
+
+# 파일 분할
+"""
+지정한 파일을 지정된 크기로 분할.
+@Param
+    file_path : 분할할 원본 파일의 경로.
+    setSize : 분할될 파일 한개의 크기 (바이트 단위).
+        
+@Return
+    None
+"""
+
+def Partition_file(file_path, setSize):
+    file_num = 0
+    with open(file_path, 'rb') as infile:
+        while True:
+            size = infile.read(setSize)
+            if not size:
+                break
+            with open(f"{file_path}_part{file_num}", 'wb') as chunk_file:
+                chunk_file.write(size)
+            file_num += 1
+    print(f"File is partitioned to {file_num} parts.")
+
+    # delete original file
+    os.remove(file_path)
+
+
+# 파일 병합
+"""
+분할된 파일들을 하나의 파일로 병합합니다.
+@Param
+    output_path : 병합된 파일을 저장할 위치
+    input_paths : 병합할 분할된 파일들의 경로.
+    
+@Return
+    None
+"""
+
+def Merge_files(output_path, input_paths):
+    with open(output_path, 'wb') as outfile:
+        for file_path in input_paths:
+            with open(file_path, 'rb') as infile:
+                outfile.write(infile.read())
+    print("Files are Merged to =>", output_path)
+
+    # delete partitioned files
+    for file_path in input_paths:
+        os.remove(file_path)
+        print(f"Delete Complete {file_path}.")
+
+
+"""
+Using example
+분할
+Partition_file('test.txt', 2048)
+병합
+input_files = [f'test.txt_part{i}' for i in range(분할 파일개수)]
+Merge_files('test.txt', input_files)
+"""
+
+def save_hash(file_path,hash_file_path):
+    """
+    파일의 해시 값을 계산하여 지정된 경로의 텍스트 파일에 저장합니다.
+    @Param
+        file_path: 해시 값을 계산할 파일의 경로
+        hash_file_path: 해시 값을 저장할 텍스트 파일의 경로
+    @Return
+        없음
+    """
+    hasher = hashlib.sha256()
+    with open(file_path, 'rb') as f:
+        buf = f.read(4096)
+        while buf:
+            hasher.update(buf)
+            buf = f.read(4096)
+    # 해시 값을 텍스트 파일에 저장
+    with open(hash_file_path, 'w') as hash_file:
+        hash_file.write(hasher.hexdigest())
+    print("해시값이 저장되었습니다.")
+
+
+def load_hash(hash_file_path):
+    """
+    지정된 텍스트 파일로부터 해시 값을 불러옵니다.
+    @Param
+        hash_file_path: 해시 값을 저장하고 있는 텍스트 파일의 경로
+    @Return
+        파일로부터 읽은 해시 값
+    """
+    with open(hash_file_path, 'r') as hash_file:
+        return hash_file.read()
+
+
+
+def calculate_hash(file_path):
+    """
+    파일의 해시 값을 계산하여 반환합니다.
+    @Param
+        file_path: 해시 값을 계산할 파일의 경로
+    @Return
+        계산된 해시 값
+    """
+    hasher = hashlib.sha256()
+    with open(file_path, 'rb') as f:
+        buf = f.read(4096)
+        while buf:
+            hasher.update(buf)
+            buf = f.read(4096)
+    return hasher.hexdigest()
+
+def check_integrity(hash_path, file_path):
+    """
+    경로상 파일의 저장된 원본 해시값과 현재 해시값을 비교해 무결성을 검사하는 함수
+    
+    @Param
+        hash_path: 비교할 해시값이 저장된 텍스트 파일의 경로
+        file_path: 무결성을 확인할 파일의 경로
+        
+    @Return
+        없음
+        
+    @Raises
+        FileNotFoundError : 파일 경로가 존재 하지 않을때 발생
+        IOError : 파일 읽기에 실패시 발생
+    """
+    origin_hash = load_hash(hash_path)  # 해시 파일로부터 해시값을 불러옴
+    current_hash = calculate_hash(file_path)  # 현재 파일의 해시값을 계산
+    if current_hash == origin_hash:
+        print(f"{file_path}의 무결성 : 정상")
+    else:
+        print(f"{file_path}의 무결성 : 손상\nCurrent Hash: {current_hash}\nOrigin Hash: {origin_hash}")
+
+"""
+Deletes a directory at the specified path.
+@Param
+    directory_path : The path where the directory should be deleted.
+@Return
+    None
+@Raises
+    Prints an error message if the operation fails.
+"""
+def delete_directory(directory_path):
+    try:
+        os.rmdir(directory_path)
+        print(f"Directory {directory_path} deleted successfully")
+    except FileNotFoundError:
+        print(f"Directory not found: {directory_path}")
+    except OSError as e:
+        print(f"Error deleting directory: {e}")
