@@ -17,6 +17,7 @@ def bookmark(bookmark : List):
         if select == '?':
             print(" '목록' 입력시 현재 즐겨찾기 목록을 볼 수 있습니다.")
             print(" '추가' 입력시 즐겨찾기를 목록에 추가할 수 있습니다.")
+            print(" '리셋' 입력시 즐겨찾기 목록을 리셋할 수 있습니다.")
             print(" '종료' 입력시 프로그램을 종료할 수 있습니다.")
 
         elif select == '목록':
@@ -24,6 +25,9 @@ def bookmark(bookmark : List):
 
         elif select == '추가':
             addFavorite(bookmark)
+
+        elif select == '리셋':
+            resetFavorites(bookmark)
 
         elif select == "종료":
             print("즐겨찾기를 종료합니다.")
@@ -64,3 +68,19 @@ def removeFavorite():
             print(f"{removed_favorite} 가 즐겨찾기에서 제거되었습니다.")
         else:
             print("해당 번호의 파일이 존재하지 않습니다. 제거할 파일의 번호를 다시 입력해주세요.")
+
+def resetFavorites(bookmark: List):
+    """
+    즐겨찾기 목록을 비우는 리셋 함수
+    """
+
+    if not bookmark:
+        print("현재 즐겨찾기 목록이 비어있습니다.")
+    else:
+        confirm = input("정말로 즐겨찾기 목록을 비우시겠습니까? (y/n): ")
+        if confirm.lower() == 'y':
+            bookmark.clear()
+            print("즐겨찾기 목록이 비워졌습니다.")
+        else:
+            print("즐겨찾기 목록 비우기를 취소했습니다.")
+            
