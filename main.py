@@ -608,6 +608,37 @@ def create_file(filename):
         print(f"'{filename}' 파일이 생성되었습니다.")
     else:
         print("비밀번호가 틀렸습니다.")
+def get_directory_size(directory):
+    total_size = 0
+    for dirpath, dirnames, filenames in os.walk(directory):
+        for f in filenames:
+            fp = os.path.join(dirpath, f)
+            total_size += os.path.getsize(fp)
+    return total_size
+
+def get_disk_usage(directory):
+    usage = {}
+    for dirpath, dirnames, filenames in os.walk(directory):
+        for dirname in dirnames:
+            dir_full_path = os.path.join(dirpath, dirname)
+            usage[dir_full_path] = get_directory_size(dir_full_path)
+        for filename in filenames:
+            file_full_path = os.path.join(dirpath, filename)
+            usage[file_full_path] = os.path.getsize(file_full_path)
+    return usage
+
+def display_disk_usage(usage, top_n=10):
+    sorted_usage = sorted(usage.items(), key=lambda item: item[1], reverse=True)[:top_n]
+    for item, size in sorted_usage:
+        print(f"{item}: {size} bytes")
+
+def analyze_disk_usage():
+    directory = input("분석할 디렉토리 경로를 입력하세요: ")
+    if not os.path.isdir(directory):
+        print("유효한 디렉토리 경로가 아닙니다.")
+        return
+    usage = get_disk_usage(directory)
+    display_disk_usage(usage, top_n=10)
 
 
 b_is_exit = False
@@ -640,6 +671,9 @@ while not b_is_exit:
     elif func == "중복관리":
         print("중복 관리 기능 실행")
         Duplicates.duplicates()
+    elif func == "디스크분석":
+        print("디스크 공간 분석 기능 실행")
+        analyze_disk_usage()
 
     elif func == "?":
         print("""
@@ -649,6 +683,7 @@ while not b_is_exit:
                 '파일관리' 입력시 파일을 관리할 수 있습니다.
                 '가독성'   입력시 파일의 단위를 읽기 좋게 볼 수 있습니다.
                 '중복관리' 입력시 중복 파일을 관리할 수 있습니다.
+                '디스크분석' 입력 시 디스크 공간 분석 기능을 사용할 수 있습니다.
                 '종료'     입력시 프로그램을 종료합니다.
             """)
 
