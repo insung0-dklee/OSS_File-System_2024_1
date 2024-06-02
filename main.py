@@ -726,3 +726,48 @@ while not b_is_exit:
     else:
         print("잘못 입력하셨습니다. 다시 입력해주세요. : ")
         
+def analyze_directory_usage(directory):
+    """
+    특정 디렉토리의 사용량을 분석하여, 디렉토리 내의 파일 크기 및 사용 빈도에 대한 통계를 제공합니다.
+    
+    Args:
+        directory (str): 분석할 디렉토리의 경로.
+    """
+
+    if not os.path.exists(directory):
+        print(f"지정된 경로 '{directory}'가 존재하지 않습니다.")
+        return
+    
+    total_size = 0
+    file_count = 0
+    access_times = []
+
+    for root, dirs, files in os.walk(directory):
+        for file_name in files:
+            file_path = os.path.join(root, file_name)
+            try:
+                file_size = os.path.getsize(file_path)
+                total_size += file_size
+                file_count += 1
+
+                access_time = os.path.getatime(file_path)
+                access_times.append(access_time)
+            except Exception as e: #예외처리
+                print(f"오류: {file_path} 처리 중 문제가 발생했습니다. {e}")
+                continue
+
+    if file_count == 0:
+        print("디렉토리에 파일이 없습니다.")
+        return
+
+    average_access_time = sum(access_times) / file_count
+    average_access_time_str = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(average_access_time))
+
+    print(f"디렉토리: {directory}")
+    print(f"파일 총 개수: {file_count}")
+    print(f"파일 총 크기: {total_size} 바이트")
+    print(f"평균 파일 크기: {total_size // file_count} 바이트")
+    print(f"평균 마지막 접근 시간: {average_access_time_str}")
+
+
+analyze_directory_usage('C:\\Users\\bjh04\\set of txt')
