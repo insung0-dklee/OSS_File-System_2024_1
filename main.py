@@ -631,6 +631,27 @@ def create_file(filename):
         print("비밀번호가 틀렸습니다.")
 
 
+def print_files_by_size(directory):
+    """
+    사용자가 입력한 디렉토리 내에서 파일을 크기 순으로 정렬하여 출력한다.
+    매개변수:
+        directory (str): 디렉토리 경로
+    """
+    try:
+        files = [os.path.join(directory, f) for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))]
+
+        files.sort(key=lambda x: os.path.getsize(x), reverse=True)
+
+        for file in files:
+            mtime = os.path.getmtime(file)
+            mtime_readable = time.ctime(mtime)
+            size = os.path.getsize(file)
+            print(f"{file}: 크기 - {size} bytes, 수정 시간 - {mtime_readable}")
+
+    except Exception as e:
+        print(f"파일 목록 출력 중 오류 발생: {e}")
+
+
 b_is_exit = False
 version = "1.0.0"
 print(f"프로그램 버전: {version}")
@@ -667,7 +688,10 @@ while not b_is_exit:
         tree_path = input("트리를 출력할 경로를 입력: ")
         print_directory_tree(tree_path)
 
-    
+    elif func == "파일크기정렬":
+        print("파일크기순으로 정렬하여 출력하는 기능 실행")
+        dir_path = input("파일크기 순으로 정렬하여 파일들을 출력할 디렉토리 경로 입력:")
+        print_files_by_size(dir_path)
 
     elif func == "?":
         print("""
