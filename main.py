@@ -34,6 +34,7 @@ import platform
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
 from Crypto.Random import get_random_bytes
+import requests
 
 def compare_files(file1_path, file2_path):
     """
@@ -761,6 +762,31 @@ def sort_files(directory, criterion, reverse=False):
     files = [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))]
     return sorted(files, key=sort_key, reverse=reverse)
 
+def download_file(url, destination_folder):
+    """
+    주어진 URL에서 파일을 다운로드하여 지정된 폴더에 저장합니다.
+    
+    @param
+        url: 파일을 다운로드할 URL
+        destination_folder: 다운로드한 파일을 저장할 폴더 경로
+    """
+    local_filename = os.path.join(destination_folder, url.split('/')[-1])
+    
+    if not os.path.exists(destination_folder):
+        os.makedirs(destination_folder)
+    
+    try:
+        with requests.get(url, stream=True) as r:
+            r.raise_for_status()
+            with open(local_filename, 'wb') as f:
+                for chunk in r.iter_content(chunk_size=8192):
+                    f.write(chunk)
+    except requests.exceptions.RequestException as e:
+        print(f"파일 다운로드 중 오류가 발생했습니다: {e}")
+        return None
+    
+    return local_filename
+
 b_is_exit = False
 version = "1.0.0"
 print(f"프로그램 버전: {version}")
@@ -820,7 +846,7 @@ while not b_is_exit:
 
         decrypt_file_aes(enc_file_path, key)
 
-    elif func == "sort":
+    elif func == "Sort":
         directory = input("정렬할 디렉토리 경로를 입력하세요: ")
         if not os.path.isdir(directory):
             print("유효한 디렉토리 경로를 입력하세요.")
@@ -837,6 +863,20 @@ while not b_is_exit:
                 print(file)
         except ValueError as e:
             print(f"오류: {e}")
+
+    elif func == "Download":
+        url = input("다운로드할 파일의 URL을 입력하세요: ")
+        destination_folder = input("파일을 저장할 디렉토리 경로를 입력하세요: ")
+        if not os.path.isdir(destination_folder):
+            print("유효한 디렉토리 경로를 입력하세요.")
+            continue
+        
+        try:
+            downloaded_file = download_file(url, destination_folder)
+            if downloaded_file:
+                print(f"파일이 성공적으로 다운로드 되었습니다: {downloaded_file}")
+        except Exception as e:
+            print(f"파일 다운로드 중 오류가 발생했습니다: {e}")
 
     elif func == "?":
         print("""
