@@ -278,9 +278,9 @@ class UI(QWidget):
         # 복사할 파일, 폴더의 경로 저장
         copyAction.triggered.connect(lambda: setattr(self, 'copyItem', os.path.join(os.getcwd(), self.current.list_widget.currentItem().text())))
         # 복사한 파일, 폴더 붙여넣기
-        pasteAction.triggered.connect(lambda: FileControl.copy_file(self.copyItem, os.getcwd()))
+        pasteAction.triggered.connect(lambda: function.copyFile(self.copyItem, os.getcwd()))
         # 선택한 파일 삭제
-        deleteAction.triggered.connect(lambda: FileControl.delete_file(os.path.join(os.getcwd(), self.current.list_widget.currentItem().text())))
+        deleteAction.triggered.connect(lambda: function.delFile(os.path.join(os.getcwd(), self.current.list_widget.currentItem().text())))
         # 메뉴 표시
         contextMenu.exec_(self.current.list_widget.mapToGlobal(position))
     

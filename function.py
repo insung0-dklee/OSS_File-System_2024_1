@@ -1,5 +1,5 @@
 # flake8: noqa
-import os, re
+import os, re, shutil
 import winreg
 
 """
@@ -124,3 +124,34 @@ def get_default_program(extension):
             return winreg.QueryValueEx(key, value[0])[0]
     except FileNotFoundError:
         return None
+    
+"""
+예외처리가 이루어진 복사, 삭제하는 함수
+작성자 : 권혁준
+학번 : 22311905
+일자 : 2024-06-03
+기능 : 예외처리를 해당 함수에서 수행해서 복사, 삭제한다.
+"""
+
+def copyFile(src_path, dest_path):
+    if not os.path.exists(src_path):
+        print(f"소스 파일이 존재하지 않습니다: {src_path}")
+
+    if not os.path.exists(os.path.dirname(dest_path)):
+        print(f"대상 디렉토리가 존재하지 않습니다: {os.path.dirname(dest_path)}")
+
+    try:
+        shutil.copy(src_path, dest_path)
+        print(f"파일이 복사되었습니다")
+    except:
+        print(f"예상치 못한 오류가 발생했습니다.")
+
+def delFile(src_path):
+    if not os.path.exists(src_path):
+        print(f"소스 파일이 존재하지 않습니다: {src_path}")
+
+    try:
+        os.remove(src_path)
+        print(f"파일이 삭제되었습니다")
+    except:
+        print(f"예상치 못한 오류가 발생했습니다.")
