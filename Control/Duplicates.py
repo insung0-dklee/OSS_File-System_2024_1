@@ -14,7 +14,7 @@ def duplicates():
         if select == '?':
             print(" '탐색'      입력시 중복이 있는지 확인할 수 있습니다. ")
             print(" '중복 제거' 입력시 중복되는 파일을 제거할 수 있습니다. ")
-            print(" '종료'      입력시 프로그램을 종료할 수 있습니다.")
+            print(" '돌아가기'      입력시 메인페이지로 돌아갑니다.")
 
         elif select == "탐색":
             find_duplicates()
@@ -22,7 +22,7 @@ def duplicates():
         elif select == "중복 제거":
             remove_duplicates()
 
-        elif select == "종료":
+        elif select == "돌아가기":
             print("중복 관리를 종료합니다.")
             finish = True
 

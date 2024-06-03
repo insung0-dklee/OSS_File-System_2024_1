@@ -28,7 +28,7 @@ def file_control():
             print(" '부모 디렉토리 확인' 입력시 선택한 디렉토리의 부모 디렉토리 출력")
             print(" '파일복사'           입력시 파일 복사 및 붙여넣기")
             print(" '잘라내기'           입력시 파일 잘라내기 및 붙여넣기")
-            print(" '종료'               입력시 프로그램을 종료할 수 있습니다.")
+            print(" '돌아가기'               입력시 메인페이지로 돌아갑니다.")
         elif select == '메타데이터 출력':
             manage_metadata()
         
@@ -56,7 +56,7 @@ def file_control():
         elif select == '잘라내기':
             cut_file()
 
-        elif select == "종료":
+        elif select == "돌아가기":
             print("중복 관리를 종료합니다.")
             finish = True
 

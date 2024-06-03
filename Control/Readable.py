@@ -17,7 +17,7 @@ def readable():
             print("도움말")
             print(" '단순변환'      입력시 bytes를 읽기 쉽게 변환해줍니다.")
             print(" '디렉토리 탐색' 입력시 해당 디렉토리의 파일들의 크기를 보기 좋게 표시합니다. ")
-            print(" '종료'          입력시 프로그램을 종료할 수 있습니다.")
+            print(" '돌아가기'          입력시 메인페이지로 돌아갑니다.")
 
         elif select == '단순변환':
             path = input("파일 경로를 입력하세요.")
@@ -26,7 +26,7 @@ def readable():
         elif select == '디렉토리 탐색':
             display_file_sizes()
 
-        elif select == "종료":
+        elif select == "돌아가기":
             print("중복 관리를 종료합니다.")
             finish = True
 

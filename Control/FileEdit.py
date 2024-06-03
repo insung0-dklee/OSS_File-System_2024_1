@@ -19,7 +19,7 @@ def file_edit():
             print(" '파일생성'          입력시 파일을 생성하고 원하는 내용을 작성")
             print(" '찾아 바꾸기'       입력시 파일을 불러오고 원하는 단어를 찾아 새 단어로 바꿀 수 있습니다")
             print(" '복사 및 붙여넣기'  입력시 파일을 불러오고 원하는 부분을 찾아 다른 파일에 붙여넣을 수 있습니다")
-            print(" '종료'             입력시 프로그램을 종료할 수 있습니다.")
+            print(" '돌아가기'             입력시 메인페이지로 돌아갑니다.")
         elif select == "읽기":
             read_file()
         elif select == "파일 생성 및 쓰기":
@@ -28,7 +28,7 @@ def file_edit():
             modify_file()
         elif select == "복사 및 붙여넣기":
             copy_and_paste_text()
-        elif select == '종료':
+        elif select == '돌아가기':
             print('파일 편집 기능을 종료합니다.')
             finish = True
         else:

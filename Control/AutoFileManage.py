@@ -41,7 +41,7 @@ def AutoFileManager():
 '추가' : 파일 자동 관리를 위한 규칙을 추가합니다.
 '삭제' : 파일 자동 관리를 위한 규칙을 삭제합니다.
 '실행' : 규칙에 맞는 파일 관리를 임의 실행합니다.
-'종료' : 프로그램을 종료합니다.""")
+'돌아가기' : 메인페이지로 돌아갑니다.""")
 
         elif select == '추가':
             src = input("규칙을 적용할 폴더의 경로를 입력하세요 : ")
@@ -66,7 +66,7 @@ def AutoFileManager():
         elif select == '실행':
             managerExecute()
 
-        elif select == "종료":
+        elif select == "돌아가기":
             print("자동 파일 관리자를 종료합니다.")
             end = True
 
