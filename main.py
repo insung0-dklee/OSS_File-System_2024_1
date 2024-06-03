@@ -610,6 +610,29 @@ def create_file(filename):
         print("비밀번호가 틀렸습니다.")
 
 
+def backup_directory_files(file_path, backup_directory):
+    """
+    지정된 디렉토리의 파일들을 백업 디렉토리로 복사합니다.
+
+    :param file_path: 백업할 소스 디렉토리의 경로
+    :param backup_directory: 백업 파일을 저장할 디렉토리의 경로
+    """
+     
+    # 백업 디렉토리 생성
+    os.makedirs(backup_directory, exist_ok=True)
+
+    # 디렉토리 내 파일들의 리스트 가져오기
+    file_list = os.listdir(file_path)
+
+    # 디렉토리 내 파일들을 백업 디렉토리로 복사
+    for file_name in file_list:
+        file_path = os.path.join(file_path, file_name)
+        backup_path = os.path.join(backup_directory, file_name)
+        shutil.copy2(file_path, backup_path)
+
+    print("파일 백업 완료!")
+
+
 b_is_exit = False
 version = "1.0.0"
 print(f"프로그램 버전: {version}")
@@ -640,6 +663,13 @@ while not b_is_exit:
     elif func == "중복관리":
         print("중복 관리 기능 실행")
         Duplicates.duplicates()
+   
+    elif func == "파일백업":
+        print("파일 백업 기능 실행")
+        file_path = input("백업할 파일 디렉토리의 경로를 입력하세요 ")
+        backup_directory = input("백업 파일을 저장할 디렉토리의 경로를 입력하세요 ")
+        backup_directory_files(file_path, backup_directory)
+
 
     elif func == "?":
         print("""
@@ -649,6 +679,7 @@ while not b_is_exit:
                 '파일관리' 입력시 파일을 관리할 수 있습니다.
                 '가독성'   입력시 파일의 단위를 읽기 좋게 볼 수 있습니다.
                 '중복관리' 입력시 중복 파일을 관리할 수 있습니다.
+                '파일백업' 입력시 파일을 백업할 수 있습니다.
                 '종료'     입력시 프로그램을 종료합니다.
             """)
 
