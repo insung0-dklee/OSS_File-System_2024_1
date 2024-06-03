@@ -11,7 +11,7 @@ favorites : 즐겨찾기 목록
 addFavorite() : 원하는 파일을 즐겨찾기에 추가하는 함수
 showFavorites() : 즐겨찾기 안의 파일 목록을 순서대로 출력하는 함수
 """
-
+ㅁㅇㄴㄹ
 import os
 import shutil
 import time
