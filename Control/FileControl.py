@@ -21,6 +21,7 @@ def file_control():
             print("도움말")
             print(" '메타데이터 출력'    입력시 해당 파일 메타 데이터 확인")
             print(" '파일삭제'           입력시 해당 파일 삭제")
+            print(" '파일생성'           입력시 해당 파일 생성")
             print(" '파일검색'           입력시 원하는 파일의 위치 검색")
             print(" '파일이동'           입력시 파일을 원하는 디렉토리로 이동")
             print(" '디렉토리 생성'      입력시 원하는 경로에 디렉토리 생성")
@@ -55,6 +56,11 @@ def file_control():
 
         elif select == '잘라내기':
             cut_file()
+
+        elif select == '파일생성':
+            file_path = input("파일을 생성할 경로 : ")
+            content = input("내용 입력 : ")
+            create_and_write_file(file_path, content, encoding='utf-8')
 
         elif select == "종료":
             print("중복 관리를 종료합니다.")
@@ -120,9 +126,34 @@ def search_content_in_file(file_path, content):
     except Exception as e:
         return e
 
-def create_and_write_file(file_path, content):
-    with open(file_path, 'w') as file:
-        file.write(content)
+
+def create_and_write_file(file_path, content, encoding='utf-8'):
+    """
+    Creates a file at the specified path and writes the given content to it.
+    @Param
+        file_path : The file path where the file will be created.
+        content : The content to write to the file.
+        encoding : The encoding to use for writing the content. Default is 'utf-8'.
+    @Return
+        None
+    @Raises
+        Prints an error message if the file creation or writing operation fails.
+    """
+    # 파일 존재 여부 확인
+    if os.path.exists(file_path):
+        print(f"{file_path} 파일이 이미 존재합니다. 덮어쓰시겠습니까? (y/n): ", end='')
+        response = input()
+        if response.lower() != 'y':
+            print("작업이 취소되었습니다.")
+            return
+
+    try:
+        with open(file_path, 'w', encoding=encoding) as file:
+            file.write(content)
+        print(f"{file_path}에 내용을 성공적으로 작성하였습니다.")
+    except Exception as e:
+        print(f"파일 작성 중 오류가 발생하였습니다: {e}")
+
 
 
 def manage_metadata(file_path):
