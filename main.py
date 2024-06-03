@@ -376,38 +376,54 @@ def compress_file(file_path, method='zip'):
     """
     사용자가 파일경로를 입력하면 해당파일을 zip으로 압축합니다.
     
-    매개변수 file_path (str): 압축할 파일의 경로
+    매개변수 file_path(str) : 압축할 파일의 경로\
+    매개변수 method(str) : 압축방법('zip' 또는 'tar', 기본값은 'zip')
     """
     try:
         # 압축할 파일의 디렉토리와 파일 이름 추출
         file_dir = os.path.dirname(file_path)
+	# 압축할 파일의 이름 추출
         file_name = os.path.basename(file_path)
         if method == 'zip':
+	    # zip 파일의 출력 경로 설정
             output_zip = os.path.join(file_dir, f"{file_name}.zip")
+	    # zip 파일을 쓰기 모드로 열기
             with zipfile.ZipFile(output_zip, 'w') as zipf:
+		# 원본 파일을 zip 파일에 추가
                 zipf.write(file_path, file_name)
             print(f"파일이 성공적으로 압축되었습니다: {output_zip}")
 
         elif method == 'tar':
+	    # tar.gz 파일의 출력 경로 설정
             output_tar = os.path.join(file_dir, f"{file_name}.tar.gz")
+	    # tar.gz 파일을 쓰기 모드로 열기
             with tarfile.open(output_tar, 'w:gz') as tarf:
+		# 원본 파일을 tar.gz 파일에 추가
                 tarf.add(file_path, arcname=file_name)
             print(f"파일이 성공적으로 압축되었습니다: {output_tar}")
 
         else:
+	    # 지원하지 않는 압축 방법인 경우 오류 메세지 출력
             print(f"지원하지 않는 압축 방식입니다: {method}")
     except Exception as e:
+	# 예외 발생시 오류 메세지 출력
         print(f"파일 압축 중 오류가 발생했습니다: {e}")
 
 def decompressFile(zip_path, dest):
     """
     압축 파일을 해제합니다.
+
+    매개변수 zip_path(str) : 해제할 zip 파일의 경로
+    매개변수 dest(str) : 파일을 추출할 목적지 디렉토리
     """
     try:
+	# zip 파일을 읽기 모드로 열기
         with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+	    # 지정된 목적지 디렉토리에 모든 파일 추출
             zip_ref.extractall(dest)
         print(f"압축 해제가 성공적으로 완료되었습니다: {dest}")
     except Exception as e:
+	# 예외 발생 시 오류 메세지 출력
         print(f"압축 해제 중 오류가 발생했습니다: {e}")
 
 
