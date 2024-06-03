@@ -1,4 +1,3 @@
-
 """
 현재 경로에 특정 파일이나 디렉토리가 존재하는지를 확인하기 위해 import os를 사용
 파일을 이동이나 복사하기 위해 shutil 모듈을 사용하였음
@@ -585,6 +584,27 @@ if __name__ == "__main__":
     create_file(file_path)                               -> create_file함수를 통과하면서 코드가 마무리됩니다.
 """
 
+def preview_text_file(file_path):
+    """
+    주어진 파일 경로의 텍스트 파일을 미리보기합니다.
+    
+    Args:
+        file_path (str): 미리보기할 텍스트 파일의 경로
+    """
+    try:
+        # 파일을 열고 내용을 읽습니다.
+        with open(file_path, 'r', encoding='utf-8') as file:
+            content = file.read()
+            print(content)
+    except FileNotFoundError:
+        print(f"{file_path} 파일을 찾을 수 없습니다.")
+    except Exception as e:
+        print(f"파일을 읽는 중 오류가 발생했습니다: {e}")
+
+def preview_tfile():
+    file_path = input("미리보기할 텍스트 파일의 경로를 입력하세요: ")
+    preview_text_file(file_path)
+
 def change_permissions(path, mode):
     """
     파일 또는 디렉토리의 권한을 변경합니다.
@@ -641,6 +661,10 @@ while not b_is_exit:
         print("중복 관리 기능 실행")
         Duplicates.duplicates()
 
+    elif func == "텍스트미리보기":
+        print("텍스트 미리보기 기능 실행")
+        preview_tfile()
+
     elif func == "?":
         print("""
                 [도움말]
@@ -649,6 +673,7 @@ while not b_is_exit:
                 '파일관리' 입력시 파일을 관리할 수 있습니다.
                 '가독성'   입력시 파일의 단위를 읽기 좋게 볼 수 있습니다.
                 '중복관리' 입력시 중복 파일을 관리할 수 있습니다.
+                '텍스트미리보기' 입력시 경로를 입력하면 텍스트 파일을 미리볼 수 있습니다.
                 '종료'     입력시 프로그램을 종료합니다.
             """)
 
