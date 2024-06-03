@@ -609,6 +609,63 @@ def create_file(filename):
     else:
         print("비밀번호가 틀렸습니다.")
 
+# 파일 시그니처 목록(파일 형식과 해당 시그니처 바이트)
+FILE_SIGNATURES = {
+    "jpg": [b'\xFF\xD8\xFF'],
+    "png": [b'\x89\x50\x4E\x47\x0D\x0A\x1A\x0A'],
+    "pdf": [b'\x25\x50\x44\x46'],
+}
+
+def get_file_signature(file_path, num_bytes=8):
+    """
+    파일의 시그니처(헤더)를 읽어 반환합니다.
+
+    @param
+        file_path: 시그니처를 확인할 파일 경로
+        num_bytes: 읽을 바이트 수 (기본값은 8)
+    """
+    try:
+        with open(file_path, 'rb') as file:
+            return file.read(num_bytes)
+    except Exception as e:
+        print(f"파일 시그니처를 읽는 중 오류가 발생했습니다: {e}")
+        return None
+
+def identify_file_type(file_path):
+    """
+    파일 시그니처를 기반으로 파일 형식을 식별합니다.
+
+    @param
+        file_path: 파일 경로
+    """
+    file_signature = get_file_signature(file_path)
+    if file_signature:
+        for file_type, signatures in FILE_SIGNATURES.items():
+            for signature in signatures:
+                if file_signature.startswith(signature):
+                    return file_type
+    return None
+
+def check_file_signature(file_path):
+    """
+    파일의 시그니처를 확인하여 파일 형식이 선언된 형식과 일치하는지 확인합니다.
+
+    @param
+        file_path: 확인할 파일 경로
+    """
+    _, file_extension = os.path.splitext(file_path)
+    file_extension = file_extension.lower().lstrip('.')
+
+    identified_type = identify_file_type(file_path)
+
+    if identified_type:
+        if identified_type == file_extension:
+            print(f"파일 확장자와 파일 형식이 일치합니다: {file_path} ({identified_type} 파일 입니다.)")
+        else:
+            print(f"파일 확장자와 파일 형식이 일치하지 않습니다: {file_path}")
+            print(f"원래 형식인 {identified_type} 가 {file_extension} 형식으로 선언되었습니다.")
+    else:
+        print(f"원본 파일 형식이 .jgp, .png, .pdf가 아닙니다.")
 
 b_is_exit = False
 version = "1.0.0"
@@ -641,6 +698,12 @@ while not b_is_exit:
         print("중복 관리 기능 실행")
         Duplicates.duplicates()
 
+    elif func == "Check":
+        print("파일 확장자와 파일 형식이 일치하는지 검사합니다.")
+        print("검사할 수 있는 원본 파일 대상은 .jgp, .png, .pdf 입니다.")
+        file_path = input("파일 경로를 입력하세요: ")
+        check_file_signature(file_path)
+
     elif func == "?":
         print("""
                 [도움말]
@@ -649,6 +712,7 @@ while not b_is_exit:
                 '파일관리' 입력시 파일을 관리할 수 있습니다.
                 '가독성'   입력시 파일의 단위를 읽기 좋게 볼 수 있습니다.
                 '중복관리' 입력시 중복 파일을 관리할 수 있습니다.
+                'Check'   입력시 해당 파일 확장자와 원래의 파일 확장자를 비교합니다.
                 '종료'     입력시 프로그램을 종료합니다.
             """)
 
