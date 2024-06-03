@@ -669,7 +669,7 @@ def check_file_signature(file_path):
             print(f"파일 확장자와 파일 형식이 일치하지 않습니다: {file_path}")
             print(f"원래 형식인 {identified_type} 가 {file_extension} 형식으로 선언되었습니다.")
     else:
-        print(f"원본 파일 형식이 .jgp, .png, .pdf가 아닙니다.")
+        print(f"원본 파일 형식이 .jpg, .png, .pdf가 아닙니다.")
 
 def generate_rsa_key_pair(key_size=2048):
     """
