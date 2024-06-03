@@ -608,7 +608,63 @@ def create_file(filename):
         print(f"'{filename}' 파일이 생성되었습니다.")
     else:
         print("비밀번호가 틀렸습니다.")
+        
+def move_to_trash(file_path):
+    """
+    파일을 휴지통으로 이동합니다.
+    :param file_path: 삭제할 파일의 경로
+    """
+    trash_dir = os.path.join(os.path.expanduser("~"), ".trash")
+    if not os.path.exists(trash_dir):
+        os.makedirs(trash_dir)
+    
+    try:
+        shutil.move(file_path, trash_dir)
+        print(f"{file_path}가 휴지통으로 이동되었습니다.")
+    except Exception as e:
+        print(f"파일을 휴지통으로 이동하는 중 오류가 발생했습니다: {e}")
 
+### 휴지통에서 파일을 복구하는 함수
+def restore_from_trash(file_name):
+    """
+    휴지통에서 파일을 복구합니다.
+    :param file_name: 복구할 파일의 이름
+    """
+    trash_dir = os.path.join(os.path.expanduser("~"), ".trash")
+    if not os.path.exists(trash_dir):
+        print("휴지통이 비어 있습니다.")
+        return
+
+    file_path = os.path.join(trash_dir, file_name)
+    if not os.path.exists(file_path):
+        print(f"{file_name}이(가) 휴지통에 없습니다.")
+        return
+
+    try:
+        restored_path = os.path.join(os.path.expanduser("~"), "Desktop", file_name)  # 복구할 경로 지정
+        shutil.move(file_path, restored_path)
+        print(f"{file_name}이(가) {restored_path}로 복구되었습니다.")
+    except Exception as e:
+        print(f"파일을 복구하는 중 오류가 발생했습니다: {e}")
+
+### 휴지통 내 파일 목록을 출력하는 함수
+def list_trash():
+    """
+    휴지통 내의 파일 목록을 출력합니다.
+    """
+    trash_dir = os.path.join(os.path.expanduser("~"), ".trash")
+    if not os.path.exists(trash_dir):
+        print("휴지통이 비어 있습니다.")
+        return
+
+    files = os.listdir(trash_dir)
+    if not files:
+        print("휴지통이 비어 있습니다.")
+        return
+
+    print("휴지통 내 파일 목록:")
+    for file in files:
+        print(f"  - {file}")
 
 b_is_exit = False
 version = "1.0.0"
@@ -641,6 +697,19 @@ while not b_is_exit:
         print("중복 관리 기능 실행")
         Duplicates.duplicates()
 
+    elif func == "휴지통":
+        trash_func = input("휴지통 기능을 선택하세요. (목록: '목록', 복구: '복구', 삭제: '삭제')")
+        if trash_func == "목록":
+            list_trash()
+        elif trash_func == "복구":
+            file_name = input("복구할 파일의 이름을 입력하세요: ")
+            restore_from_trash(file_name)
+        elif trash_func == "삭제":
+            file_path = input("삭제할 파일의 경로를 입력하세요: ")
+            move_to_trash(file_path)
+        else:
+            print("잘못 입력하셨습니다. 다시 입력해주세요.")
+
     elif func == "?":
         print("""
                 [도움말]
@@ -649,6 +718,7 @@ while not b_is_exit:
                 '파일관리' 입력시 파일을 관리할 수 있습니다.
                 '가독성'   입력시 파일의 단위를 읽기 좋게 볼 수 있습니다.
                 '중복관리' 입력시 중복 파일을 관리할 수 있습니다.
+                '휴지통'   입력시 휴지통 기능을 사용할 수 있습니다.
                 '종료'     입력시 프로그램을 종료합니다.
             """)
 
