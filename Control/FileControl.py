@@ -302,20 +302,33 @@ def create_symLink(file_path,link_path):
     None
 """
 
-def Partition_file(file_path, setSize):
-    file_num = 0
-    with open(file_path, 'rb') as infile:
-        while True:
-            size = infile.read(setSize)
-            if not size:
-                break
-            with open(f"{file_path}_part{file_num}", 'wb') as chunk_file:
-                chunk_file.write(size)
-            file_num += 1
-    print(f"File is partitioned to {file_num} parts.")
+def partition_file(file_path, set_size):
+    try:
+        # 파일 경로와 setSize 유효성 검사
+        if not os.path.isfile(file_path):
+            raise FileNotFoundError(f"파일 경로가 유효하지 않습니다: {file_path}")
+        if not isinstance(set_size, int) or set_size <= 0:
+            raise ValueError("setSize는 양의 정수여야 합니다.")
 
-    # delete original file
-    os.remove(file_path)
+        with open(file_path, 'rb') as file:
+            part_num = 1
+            while True:
+                chunk = file.read(set_size)
+                if not chunk:
+                    break
+                part_file_name = f"{file_path}_part_{part_num}"
+                try:
+                    with open(part_file_name, 'wb') as part_file:
+                        part_file.write(chunk)
+                except IOError as e:
+                    print(f"파일 쓰기 오류: {e}")
+                    return
+                part_num += 1
+        print("파일 분할이 완료되었습니다.")
+    except (FileNotFoundError, ValueError) as e:
+        print(f"입력 오류: {e}")
+    except IOError as e:
+        print(f"파일 읽기 오류: {e}")
 
 
 # 파일 병합
@@ -329,27 +342,41 @@ def Partition_file(file_path, setSize):
     None
 """
 
-def Merge_files(output_path, input_paths):
-    with open(output_path, 'wb') as outfile:
-        for file_path in input_paths:
-            with open(file_path, 'rb') as infile:
-                outfile.write(infile.read())
-    print("Files are Merged to =>", output_path)
+def merge_files(file_path, num_parts):
+    try:
+        with open(file_path, 'wb') as output_file:
+            for part_num in range(1, num_parts + 1):
+                part_file_name = f"{file_path}_part_{part_num}"
+                try:
+                    with open(part_file_name, 'rb') as part_file:
+                        while True:
+                            chunk = part_file.read(1024)  # 작은 청크로 읽기
+                            if not chunk:
+                                break
+                            output_file.write(chunk)
+                except FileNotFoundError:
+                    print(f"분할 파일을 찾을 수 없습니다: {part_file_name}")
+                    return
+                except IOError as e:
+                    print(f"파일 읽기/쓰기 오류: {e}")
+                    return
 
-    # delete partitioned files
-    for file_path in input_paths:
-        os.remove(file_path)
-        print(f"Delete Complete {file_path}.")
-
+                # Merge 후 분할 파일 삭제
+                try:
+                    os.remove(part_file_name)
+                except OSError as e:
+                    print(f"파일 삭제 오류: {e}")
+        print("파일 병합이 완료되었습니다.")
+    except IOError as e:
+        print(f"출력 파일 생성 오류: {e}")
 
 """
-Using example
-분할
-Partition_file('test.txt', 2048)
-병합
-input_files = [f'test.txt_part{i}' for i in range(분할 파일개수)]
-Merge_files('test.txt', input_files)
+파일 분할/병합 사용 예제
+
+# partition_file('example.txt', 1024)
+# merge_files('example.txt', 5)
 """
+
 
 def save_hash(file_path,hash_file_path):
     """
