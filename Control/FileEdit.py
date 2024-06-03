@@ -11,6 +11,7 @@ from markdown import markdown
 import os
 import xmltodict
 import json
+import pandas as pd
 
 
 def file_edit():
@@ -125,5 +126,18 @@ def change_xml_to_json():
             Json.write(target_json)
         
         print(f"{target_file} >> {target_json}")
+    except:
+        print('잘못된 입력입니다.')
+
+def change_xlsx_to_csv():
+    try:
+        xlsx_file = input("변환할 xlsx 파일의 경로 : ")
+
+        name = os.path.splitext(xlsx_file)[0]
+        csv_name = name + '.csv'
+
+        data = pd.read_excel(xlsx_file, engine='utf-8')
+        data.to_csv(csv_name, encoding='utf-8',index=False)
+
     except:
         print('잘못된 입력입니다.')
