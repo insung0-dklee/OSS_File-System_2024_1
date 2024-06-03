@@ -33,7 +33,8 @@ def file_control():
             manage_metadata()
         
         elif select == '파일삭제':
-            delete_file()
+            path = input("삭제할 파일의 경로를 입력 : ")
+            delete_file(path)
         
         elif select == '파일검색':
             search_file()
@@ -147,26 +148,28 @@ def manage_metadata(file_path):
     print(f"Size: {file_size} bytes")
 
 
-
-
-# 지정한 파일을 삭제하는 함수
+#파일 삭제
 def delete_file(path):
     """
     파일의 경로를 받아 해당 파일을 삭제
-    
-    Args:
+
+    @Param
         path (str): 삭제할 파일의 경로
-    
-    Returns:
-        None
+
+    @Returns:
+        true or false(파일삭제 성공여부)
     """
-    if os.path.exists(path):
-        os.remove(path)
-        print(f"{path} 파일이 삭제되었습니다.")
+    if os.path.isfile(path):
+        try:
+            os.remove(path)
+            print(f"{path} 파일이 삭제되었습니다.")
+            return True
+        except OSError as e:
+            print(f"파일 {path} 삭제 중 오류가 발생했습니다: {e}")
+            return False
     else:
-        print(f"{path} 파일이 존재하지 않습니다.")
-
-
+        print(f"{path}는 파일이 아닙니다.")
+        return False
 
 
 
@@ -261,7 +264,7 @@ def cut_file(src_path, dest_path):
         shutil.move(src_path, dest_path)
         print(f"파일이 {dest_path}로 이동되었습니다.")
     except Exception as e:
-        print(f"파일 이동 중 오류가 발생했습니다: {e}")
+        print(f"파일 이동 중 오류가 발생했습니다: {e}") 
 
 def create_symLink(file_path,link_path):
     """

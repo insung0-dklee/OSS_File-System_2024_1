@@ -655,6 +655,6 @@ while not b_is_exit:
     elif func.lower() == "종료":
         b_is_exit = True
         print("프로그램을 종료합니다.")
-
+        
     else:
         print("잘못 입력하셨습니다. 다시 입력해주세요. : ")
