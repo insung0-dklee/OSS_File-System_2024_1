@@ -658,3 +658,33 @@ while not b_is_exit:
 
     else:
         print("잘못 입력하셨습니다. 다시 입력해주세요. : ")
+
+def get_not_selected(excluded_list):
+    """
+    지정된 파일들을 제외하고, 해당 파일들이 위치한 같은 디렉토리 내의 모든 파일과 디렉토리의 경로를 제공합니다.
+    Args:
+        excluded_list (list of str): 제외할 파일들의 경로.
+    
+    Returns:
+        list: 지정된 파일들을 제외한 같은 디렉토리 내의 파일과 디렉토리 경로의 리스트.
+    """
+    if not excluded_list:
+        print("제외할 파일 경로 리스트가 비어 있습니다.")
+        return []
+
+    base_dir = os.path.dirname(excluded_list[0])
+
+    for path in excluded_list:
+        if os.path.dirname(path) != base_dir:
+            print("모든 파일은 같은 디렉토리에 있어야 합니다.")
+            return []
+
+    excluded_files = {os.path.basename(path) for path in excluded_list}
+    items_in_directory = os.listdir(base_dir)
+
+    selected = [
+        os.path.join(base_dir, item) for item in items_in_directory 
+        if item not in excluded_files
+    ]
+
+    return selected
