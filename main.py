@@ -35,6 +35,7 @@ import ctypes
 
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_OAEP
+import py7zr
 
 def defragment_file_system(path):
     """주어진 경로에 대해 파일 시스템 조각 모음을 수행합니다."""
@@ -814,6 +815,48 @@ def decrypt_file_rsa(enc_file_path, private_key_path):
     except Exception as e:
         print(f"파일 복호화 중 오류가 발생했습니다: {e}")
 
+def compress_7z_file(file_path, method='7z'):
+    """
+    사용자가 파일경로를 입력하면 해당파일을 지정된 형식으로 압축합니다.
+
+    @param
+        file_path: 압축할 파일의 경로
+        method: 압축 방법('7z')
+    """
+    try:
+        file_dir = os.path.dirname(file_path)
+        file_name = os.path.basename(file_path)
+
+        if method == '7z':
+            output_7z = os.path.join(file_dir, f"{file_name}.7z")
+            with py7zr.SevenZipFile(output_7z, 'w') as archive:
+                archive.write(file_path, arcname=file_name)
+            print(f"파일이 성공적으로 압축되었습니다: {output_7z}")
+        else:
+            print(f"지원하지 않는 압축 방식입니다: {method}")
+
+    except Exception as e:
+        print(f"파일 압축 중 오류가 발생했습니다: {e}")
+
+def decompress_7z_file(file_path, dest):
+    """
+    압축 파일을 해제합니다.
+
+    @param
+        file_path: 압축 해제할 파일의 경로
+        dest: 압축 해제할 위치
+    """
+    try:
+        if file_path.endswith('.7z'):
+            with py7zr.SevenZipFile(file_path, 'r') as archive:
+                archive.extractall(path=dest)
+            print(f"압축 해제가 성공적으로 완료되었습니다: {dest}")
+        else:
+            print(f"지원하지 않는 압축 형식입니다: {file_path}")
+
+    except Exception as e:
+        print(f"압축 해제 중 오류가 발생했습니다: {e}")
+
 b_is_exit = False
 version = "1.0.0"
 print(f"프로그램 버전: {version}")
@@ -824,7 +867,6 @@ while not b_is_exit:
 
     func = input("원하는 기능을 입력하세요. ('?' 입력시 도움말)")
     
-
     if func == "파일편집":
         print("파일 편집 기능 실행")
         FileEdit.file_edit()
@@ -887,6 +929,15 @@ while not b_is_exit:
 
         decrypt_file_rsa(enc_file_path, private_key_path)
 
+    elif func == "7zComp":
+        file_path = input("압축할 파일 경로를 입력하세요: ")
+        compress_7z_file(file_path, '7z')
+
+    elif func == "7zDecomp":
+        file_path = input("압축 해제할 파일 경로를 입력하세요: ")
+        dest = input("압축 해제할 위치를 입력하세요: ")
+        decompress_7z_file(file_path, dest)
+
     elif func == "?":
         print("""
                 [도움말]
@@ -899,6 +950,8 @@ while not b_is_exit:
                 'RSA Keygen' 입력시 공개키와 비밀키가 생성됩니다.
                 'RSA Enc'    입력시 RSA 알고리즘으로 파일을 암호화 합니다.
                 'RSA Dec'    입력시 RSA 알고리즘으로 암호화 된 파일을 복호화 합니다.
+                '7zComp'     입력시 파일을 7z 형식으로 압축합니다.
+                '7zDecomp'   입력시 7z 형식의 압축 파일을 해제합니다.
                 '종료'       입력시 프로그램을 종료합니다.
             """)
 
