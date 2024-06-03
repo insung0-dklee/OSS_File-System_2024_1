@@ -231,6 +231,28 @@ def classify_files_by_extension(source_directory, destination_directory):
                 shutil.move(item_path, os.path.join(extension_dir, item))
                 print(f"Moved: {item} -> {extension_dir}")
 
+import winreg as reg
+import os
+
+def toggle_file_extensions(show=True):
+    # 레지스트리 키 열기
+    key_path = r"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
+    try:
+        key = reg.OpenKey(reg.HKEY_CURRENT_USER, key_path, 0, reg.KEY_WRITE)
+        # 파일 확장자 표시 설정 변경
+        # 0이면 표시, 1이면 숨김
+        reg.SetValueEx(key, "HideFileExt", 0, reg.REG_DWORD, 0 if show else 1)
+    finally:
+        reg.CloseKey(key)
+    # 변경 사항 적용을 위해 탐색기 재시작
+    os.system("taskkill /f /im explorer.exe & start explorer")
+
+# 파일 확장자 표시
+toggle_file_extensions(show=True)
+
+# 파일 확장자 숨기기를 원할 경우 아래 코드 주석 해제 후 사용
+# toggle_file_extensions(show=False)
+
 def get_last_modified_time(file_path):
     """
     파일의 최종 수정시간을 출력하는 함수
