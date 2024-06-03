@@ -7,6 +7,9 @@
 3. 파일 단어 찾아 바꾸기
 4. 파일 내용 복사 및 붙여넣기
 '''
+import tkinter as tk
+from tkinter import filedialog
+
 
 def file_edit():
     finish = False
@@ -36,22 +39,39 @@ def file_edit():
 
 
 def read_file():
-    file_path = input("읽고 싶은 파일의 경로를 입력하세요. : ")
+    root = tk.Tk()
+    root.withdraw()
+    file_path = filedialog.askopenfilename(title="읽고 싶은 파일의 경로를 선택하세요.")
+    if not file_path:
+        print("파일이 선택되지 않았습니다.")
+        return
     with open(file_path, 'r') as file:
         content = file.read()
+    print(f"파일 내용:\n{content}")
     return content
 
 def create_and_write_file():
-    file_path = input("파일을 생성하고 싶은 디렉토리의 경로를 입력하세요. : ")
-    content = input("쓰고 싶은 문장을 입력하세요. : ")
+    root = tk.Tk()
+    root.withdraw()
+    file_path = filedialog.asksaveasfilename(title="파일을 생성할 위치를 선택하세요.")
+    if not file_path:
+        print("파일 경로가 선택되지 않았습니다.")
+        return
+    content = input("쓰고 싶은 문장을 입력하세요: ")
     with open(file_path, 'w') as file:
         file.write(content)
+    print("파일이 생성되었습니다.")
 
 def modify_file():
     """
     이미 만들어진 파일의 내용을 읽고, 특정 문자열을 찾아 새 문자열로 바꿔주는 함수
     """
-    file_path = input("찾아 바꾸기를 하고 싶은 파일의 경로를 입력하세요. : ")
+    root = tk.Tk()
+    root.withdraw()
+    file_path = filedialog.askopenfilename(title="찾아 바꾸기를 하고 싶은 파일의 경로를 선택하세요.")
+    if not file_path:
+        print("파일이 선택되지 않았습니다.")
+        return
     with open(file_path, 'r') as file:
         content = file.read()
     print(f"현재 파일 내용:\n{content}")
@@ -66,14 +86,22 @@ def copy_and_paste_text():
     """
     이미 만들어진 파일의 내용 중 일부를 복사하여 다른 파일에 붙여넣는 함수
     """
-    source_file_path = input("복사할 내용이 있는 파일의 경로를 입력하세요: ")
+    root = tk.Tk()
+    root.withdraw()
+    source_file_path = filedialog.askopenfilename(title="복사할 내용이 있는 파일의 경로를 선택하세요.")
+    if not source_file_path:
+        print("원본 파일이 선택되지 않았습니다.")
+        return
     with open(source_file_path, 'r') as file:
         content = file.read()
     print(f"원본 파일 내용:\n{content}")
-    start_index = int(input("복사할 부분의 시작 인덱스를 입력하세요(인덱스 0부터 시작) : "))
-    end_index = int(input("복사할 부분의 끝 인덱스를 입력하세요 : "))
+    start_index = int(input("복사할 부분의 시작 인덱스를 입력하세요(인덱스 0부터 시작): "))
+    end_index = int(input("복사할 부분의 끝 인덱스를 입력하세요: "))
     text_to_copy = content[start_index:end_index+1]
-    target_file_path = input("붙여넣을 파일의 경로를 입력하세요: ")
+    target_file_path = filedialog.asksaveasfilename(title="붙여넣을 파일의 경로를 선택하세요.")
+    if not target_file_path:
+        print("대상 파일이 선택되지 않았습니다.")
+        return
     with open(target_file_path, 'a') as file:
         file.write(text_to_copy)
     print("복사 및 붙여넣기가 완료되었습니다.")

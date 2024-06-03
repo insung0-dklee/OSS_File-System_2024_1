@@ -640,6 +640,9 @@ while not b_is_exit:
     elif func == "중복관리":
         print("중복 관리 기능 실행")
         Duplicates.duplicates()
+        
+    elif func == "시스템정보확인":
+        print_system_info() 
 
     elif func == "?":
         print("""
@@ -649,6 +652,7 @@ while not b_is_exit:
                 '파일관리' 입력시 파일을 관리할 수 있습니다.
                 '가독성'   입력시 파일의 단위를 읽기 좋게 볼 수 있습니다.
                 '중복관리' 입력시 중복 파일을 관리할 수 있습니다.
+                '시스템정보확인' 입력시 내 컴퓨터의 시스템 정보를 확인할 수 있습니다.
                 '종료'     입력시 프로그램을 종료합니다.
             """)
 
