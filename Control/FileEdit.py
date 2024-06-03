@@ -7,6 +7,9 @@
 3. 파일 단어 찾아 바꾸기
 4. 파일 내용 복사 및 붙여넣기
 '''
+from markdown import markdown
+import os
+
 
 def file_edit():
     finish = False
@@ -28,6 +31,8 @@ def file_edit():
             modify_file()
         elif select == "복사 및 붙여넣기":
             copy_and_paste_text()
+        elif select == "html":
+            change_md_to_html()
         elif select == '종료':
             print('파일 편집 기능을 종료합니다.')
             finish = True
@@ -77,3 +82,29 @@ def copy_and_paste_text():
     with open(target_file_path, 'a') as file:
         file.write(text_to_copy)
     print("복사 및 붙여넣기가 완료되었습니다.")
+
+
+def change_md_to_html():
+    '''
+    markdown 파일을 html로 변환하는 함수
+    
+    # 입력값
+    target_file : html로 변환할 txt 파일
+
+    # 출력값
+    target_html : 변환한 html 파일
+    '''
+    try:
+        target_file = input("변환할 txt 파일의 경로 : ")
+
+        name = os.path.splitext(target_file)[0]
+        html_name = name + '.html'
+
+        with open(target_file,'r',encoding='utf-8') as mdfile:
+            target_html = markdown(mdfile.read())
+        with open(html_name,'w',encoding='utf-8') as htmlfile:
+            htmlfile.write(target_html)
+        
+        print(f"{target_file} >> {target_html}")
+    except:
+        print('잘못된 입력입니다.')
