@@ -609,6 +609,27 @@ def create_file(filename):
     else:
         print("비밀번호가 틀렸습니다.")
 
+def get_recently_used_files(directory, n=10):
+    """
+    주어진 디렉토리에서 최근에 사용한 파일 목록을 출력합니다.
+    
+    @param
+        directory: 탐색할 디렉토리 경로
+        n: 출력할 파일 개수 (기본값: 10)
+    """
+    try:
+        files = [os.path.join(directory, f) for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))]
+
+        files.sort(key=lambda x: os.path.getmtime(x), reverse=True)
+
+        print(f"최근 사용한 파일 {n}개 목록:")
+        for file in files[:n]:
+            mtime = os.path.getmtime(file)
+            mtime_readable = time.ctime(mtime)
+            print(f"{file}: 마지막 수정 시간 - {mtime_readable}")
+
+    except Exception as e:
+        print(f"최근 사용한 파일 목록을 출력하는 중 오류 발생: {e}")
 
 b_is_exit = False
 version = "1.0.0"
@@ -641,6 +662,10 @@ while not b_is_exit:
         print("중복 관리 기능 실행")
         Duplicates.duplicates()
 
+    elif func.lower() == "최근사용":
+        directory = input("탐색할 디렉토리 경로를 입력하세요: ")
+        get_recently_used_files(directory)
+
     elif func == "?":
         print("""
                 [도움말]
@@ -649,6 +674,7 @@ while not b_is_exit:
                 '파일관리' 입력시 파일을 관리할 수 있습니다.
                 '가독성'   입력시 파일의 단위를 읽기 좋게 볼 수 있습니다.
                 '중복관리' 입력시 중복 파일을 관리할 수 있습니다.
+                '최근사용' 입력시 최근에 사용한 파일 목록을 출력합니다.
                 '종료'     입력시 프로그램을 종료합니다.
             """)
 
