@@ -1,3 +1,6 @@
+from PIL import Image
+import os
+
 '''
 파일 편집 패키지 (vim 생각하면 편합니다.)
 
@@ -77,3 +80,46 @@ def copy_and_paste_text():
     with open(target_file_path, 'a') as file:
         file.write(text_to_copy)
     print("복사 및 붙여넣기가 완료되었습니다.")
+
+def create_gif(image_folder, output_path, gif_name, duration=500, size=None, looption=0):
+    """
+    여러 이미지를 애니메이션 GIF로 변환하는 함수
+
+    :param image_folder: gif로 만들 이미지들이 있는 폴더 경로
+    :param output_path: 출력 GIF 파일 경로
+    :param gif_name: 출력 GIF 파일의 이름. (예 : img001)
+    :param duration: 각 프레임의 지속 시간(밀리초)
+    :param size: GIF로 생성할 이미지 크기. 예: (너비, 높이)
+    :param looption: gif가 루프하는 횟수(기본 0이면 무한반복)
+    """
+    # 이미지 파일 목록 가져오기
+    images = []
+    for file_name in os.listdir(image_folder):
+        # 이미지 확장자인 파일의 크기를 조정해서 images에 저장
+        if file_name.lower().endswith(('png', 'jpg', 'jpeg', 'bmp', 'gif')):
+            file_path = os.path.join(image_folder, file_name)
+            img = Image.open(file_path)
+            if size:
+                img = img.resize(size)
+            images.append(img)
+
+    if not images:
+        print("변환할 이미지 파일이 없습니다.")
+        return
+
+    # 첫 번째 이미지와 나머지 이미지 분리
+    first_image = images[0]
+    other_images = images[1:]
+
+    try:
+        # GIF 파일 생성
+        first_image.save(
+            output_path+gif_name+'.gif',
+            save_all=True,
+            append_images=other_images,
+            duration=duration,
+            loop=looption
+        )
+        print(f"GIF가 성공적으로 생성되었습니다: {output_path}")
+    except Exception as e:
+        print(f"GIF 생성 중 오류 발생: {e}")
