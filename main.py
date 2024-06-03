@@ -373,6 +373,30 @@ def hideFile(path):
     except Exception as e:
         print(f"파일 숨기기 중 오류가 발생했습니다: {e}")
 
+import winreg as reg
+import os
+
+def show_hidden_files(show=True):
+    # 레지스트리 키 열기
+    key_path = r"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
+    try:
+        key = reg.OpenKey(reg.HKEY_CURRENT_USER, key_path, 0, reg.KEY_WRITE)
+        # 숨김 파일 표시 설정 변경
+        # 1이면 표시, 2이면 숨김
+        reg.SetValueEx(key, "Hidden", 0, reg.REG_DWORD, 1 if show else 2)
+    finally:
+        reg.CloseKey(key)
+    # 변경 사항 적용을 위해 탐색기 재시작
+    os.system("taskkill /f /im explorer.exe & start explorer")
+
+# 숨김 파일 표시
+show_hidden_files(show=True)
+
+# 숨김 파일 숨기기를 원할 경우 아래 코드 주석 해제 후 사용
+# show_hidden_files(show=False)
+
+
+
 def set_desktop_background(image_path):
     """
     바탕화면 배경을 지정된 이미지 파일로 설정합니다.
