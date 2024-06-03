@@ -17,6 +17,7 @@ def bookmark(bookmark : List):
         if select == '?':
             print(" '목록' 입력시 현재 즐겨찾기 목록을 볼 수 있습니다.")
             print(" '추가' 입력시 즐겨찾기를 목록에 추가할 수 있습니다.")
+            print(" '순서 변경' 입력시 즐겨찾기 항목의 순서를 변경할 수 있습니다.")
             print(" '종료' 입력시 프로그램을 종료할 수 있습니다.")
 
         elif select == '목록':
@@ -24,6 +25,9 @@ def bookmark(bookmark : List):
 
         elif select == '추가':
             addFavorite(bookmark)
+
+        elif select == "순서 변경":
+            changeFavoriteOrder(bookmark)
 
         elif select == "종료":
             print("즐겨찾기를 종료합니다.")
@@ -64,3 +68,27 @@ def removeFavorite():
             print(f"{removed_favorite} 가 즐겨찾기에서 제거되었습니다.")
         else:
             print("해당 번호의 파일이 존재하지 않습니다. 제거할 파일의 번호를 다시 입력해주세요.")
+
+def changeFavoriteOrder(bookmark: List):
+    """
+    즐겨찾기 항목들의 순서를 바꾸는 함수
+    """
+    if not bookmark:
+        print("현재 즐겨찾기 목록이 비어있습니다.")
+        return
+    
+    print("즐겨찾기 목록:")
+    for i, favorite in enumerate(bookmark, 1):
+        print(f"{i}. {favorite}")
+
+    index = int(input("순서를 변경할 항목의 번호를 입력하세요: "))
+    if 1 <= index <= len(bookmark):
+        new_index = int(input("새로운 위치의 번호를 입력하세요: "))
+        if 1 <= new_index <= len(bookmark):
+            item = bookmark.pop(index - 1)
+            bookmark.insert(new_index - 1, item)
+            print("순서가 변경되었습니다.")
+        else:
+            print("잘못된 위치의 번호입니다.")
+    else:
+        print("잘못된 항목 번호입니다.")
