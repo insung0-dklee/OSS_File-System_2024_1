@@ -22,7 +22,7 @@ def file_edit():
             print(" '종료'             입력시 프로그램을 종료할 수 있습니다.")
         elif select == "읽기":
             read_file()
-        elif select == "파일 생성 및 쓰기":
+        elif select == "파일생성":
             create_and_write_file()
         elif select == "찾아 바꾸기":
             modify_file()
