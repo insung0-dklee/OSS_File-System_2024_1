@@ -14,22 +14,46 @@ showFavorites() : 즐겨찾기 안의 파일 목록을 순서대로 출력하는
 
 import os
 import shutil
-import hashlib
 import time
 import function
 import zipfile
-from functools import lru_cache
+import tarfile
 import getpass
+import hashlib
 from Control import Bookmark
 from Control import FileEdit
 from Control import FileControl
 from Control import Duplicates
 from Control import Readable
 from Control.FileControl import search_file
-from pathlib import Path
 import datetime
 from collections import defaultdict
 import platform
+from Control import AutoFileManage
+import subprocess
+import ctypes
+
+def defragment_file_system(path):
+    """주어진 경로에 대해 파일 시스템 조각 모음을 수행합니다."""
+    try:
+        result = subprocess.run(["e4defrag", path], check=True, capture_output=True, text=True)
+        print(result.stdout)
+    except subprocess.CalledProcessError as e:
+        print(f"조각 모음 중 오류 발생: {e.stderr}")
+
+def run_file_or_open_folder(path):
+    if os.path.isfile(path):
+        # 파일인 경우 바로 실행
+        if os.name == 'nt':  # Windows인 경우
+            os.startfile(path)
+        elif os.name == 'posix':  # Linux, macOS인 경우
+            subprocess.run(['xdg-open', path])
+    elif os.path.isdir(path):
+        # 폴더인 경우 열기
+        if os.name == 'nt':  # Windows인 경우
+            os.startfile(path)
+        elif os.name == 'posix':  # Linux, macOS인 경우
+            subprocess.run(['xdg-open', path])
 
 def compare_files(file1_path, file2_path):
     """
@@ -225,9 +249,6 @@ def get_last_modified_time(file_path):
         print("Error:", e)
         return None
 
-def create_symlink(target, link_name):
-    os.symlink(target, link_name)
-
 def is_symlink(path):
     return os.path.islink(path)
 
@@ -242,33 +263,6 @@ def is_hardlink(path):
     except FileNotFoundError:
         return False
 
-def create_symLink(file_path,link_path):
-    """
-    파일 또는 폴더에 대한 심볼릭 링크(symbolic link)를 생성하는 함수
-    @Param
-        file_path: 심볼릭 링크의 대상이 되는 파일 또는 폴더의 절대경로
-        link_path: 생성될 심볼릭 링크의 절대경로
-        
-    @Return
-        None
-        
-    @Raises
-        Exception : If an error occurs while creating the link, an exception is output.
-    """
-
-    target = Path(file_path)
-    link = Path(link_path)
-
-    # link 파일이 이미 경로에 존재할 경우 처리
-    if link.exists():
-        print(f"{link} is already exists.")
-        return
-
-    try:
-        link.symlink_to(target, target.is_dir())
-        print(f"{link} | SymLink is created.")
-    except Exception as e:
-        print(f"Error is occured during creating SymLink : {e}")
 
 def encrypt_file(file_path): 
     """
@@ -290,53 +284,6 @@ def encrypt_file(file_path):
     except Exception as e: #외의 에러 제어
         return f"An error occurred: {e}"
     
-def save_hash(file_path):
-    """
-    경로의 파일의 해시 값을 계산하는 함수
-    
-    @Param
-        file_path : 해시 값을 계산할 파일의 경로
-        
-    @Return
-        생성된 해시 값
-        
-    @Raises
-        FileNotFoundError : 파일 경로가 존재 하지 않을때 발생
-        IOError : 파일 읽기에 실패시 발생
-    """
-    hasher = hashlib.sha256()
-    with open(file_path, 'rb') as f:
-        buf = f.read(4096)
-        while buf:
-            hasher.update(buf)
-            buf = f.read(4096)
-    return hasher.hexdigest()
-
-
-def check_integrity(origin_hash, file_path):
-    """
-    경로상 파일의 저장된 원본 해시값과 현재 해시값을 비교해 무결성을 검사하는 함수
-    
-    @Param
-        origin_hash: 비교할 원본 해시 값
-        file_path: 무결성을 확인할 파일의 경로
-        
-    @Return
-        없음
-        
-    @Raises
-        FileNotFoundError : 파일 경로가 존재 하지 않을때 발생
-        IOError : 파일 읽기에 실패시 발생
-    """
-    current_hash = save_hash(file_path)
-    if current_hash == origin_hash:
-        print(f"{file_path}의 무결성 : 정상")
-    else:
-        print(f"{file_path}의 무결성 : 손상\nCurrent Hash: {current_hash}\nOrigin Hash: {origin_hash}")
-
-
-
-origin_hash = "" #해시값 저장을 위한 변수
 
 # 파일 관리 시스템
 # - 중복 파일 탐지 및 삭제: 주어진 디렉토리에서 중복 파일을 찾아내고, 중복된 파일을 삭제합니다.
@@ -381,84 +328,51 @@ def get_file_size(file_path):
         return os.path.getsize(file_path)
     return None
 
-# 파일 분할
-"""
-지정한 파일을 지정된 크기로 분할.
-@Param
-    file_path : 분할할 원본 파일의 경로.
-    setSize : 분할될 파일 한개의 크기 (바이트 단위).
-        
-@Return
-    None
-"""
-
-def Partition_file(file_path, setSize):
-    file_num = 0
-    with open(file_path, 'rb') as infile:
-        while True:
-            size = infile.read(setSize)
-            if not size:
-                break
-            with open(f"{file_path}_part{file_num}", 'wb') as chunk_file:
-                chunk_file.write(size)
-            file_num += 1
-    print(f"File is partitioned to {file_num} parts.")
-
-    # delete original file
-    os.remove(file_path)
-
-
-# 파일 병합
-"""
-분할된 파일들을 하나의 파일로 병합합니다.
-@Param
-    output_path : 병합된 파일을 저장할 위치
-    input_paths : 병합할 분할된 파일들의 경로.
-    
-@Return
-    None
-"""
-
-def Merge_files(output_path, input_paths):
-    with open(output_path, 'wb') as outfile:
-        for file_path in input_paths:
-            with open(file_path, 'rb') as infile:
-                outfile.write(infile.read())
-    print("Files are Merged to =>", output_path)
-
-    # delete partitioned files
-    for file_path in input_paths:
-        os.remove(file_path)
-        print(f"Delete Complete {file_path}.")
-
-
-"""
-Using example
-분할
-Partition_file('test.txt', 2048)
-병합
-input_files = [f'test.txt_part{i}' for i in range(분할 파일개수)]
-Merge_files('test.txt', input_files)
-"""
-@lru_cache(maxsize=128)
-def read_file(file_path):
+def touch(file_path):
     """
-    기존 read_file 함수는 존재하지 않은 file path일 경우에 대해 버그 야기
+    사용자로부터 파일의 경로를 입력받아서 타임스탬프를 업데이트
+    파일이 존재하면 마지막 수정 시간을 갱신한다.
+    파일이 존재하지 않으면 에러 출력
+    매개변수 file_path: 사용자로부터 입력받은 타임스탬프를 업데이트할 파일의 경로
     """
     try:
-        with open(file_path, 'r', encoding='utf-8') as file:
-            content = file.read()
-        return content
-    except FileNotFoundError:
-        return "존재하지 않은 파일입니다."
-    except PermissionError:
-        return "파일 권한이 없습니다."
-    except IsADirectoryError:
-        return "파일이 아닌 디렉토리 입니다."
+        if os.path.exists(file_path):
+            os.utime(file_path, None)
+            print(f"'{file_path}' 파일의 타임스탬프가 업데이트 되었습니다.")
+        else:
+            raise FileNotFoundError(f"'{file_path}' 파일을 찾을 수 없습니다.")
     except Exception as e:
-        return f"An error occurred: {e}"
+        print(f"파일 수정 중 오류가 발생했습니다: {e}")
 
-def compress_file(file_path):
+def hideFile(path):
+    try:
+        subprocess.call(['attrib', '+H', path])
+        print(f"파일이 성공적으로 숨겨졌습니다: {path}")
+    except Exception as e:
+        print(f"파일 숨기기 중 오류가 발생했습니다: {e}")
+
+def set_desktop_background(image_path):
+    """
+    바탕화면 배경을 지정된 이미지 파일로 설정합니다.
+    
+    @param
+        image_path: 바탕화면 배경으로 설정할 이미지 파일의 경로
+    """
+    try:
+        # SPI_SETDESKWALLPAPER 상수를 사용하여 바탕화면 배경 이미지 설정
+        ctypes.windll.user32.SystemParametersInfoW(20, 0, image_path, 0)
+        print("바탕화면 배경이 설정되었습니다.")
+    except Exception as e:
+        print(f"바탕화면 배경 설정 중 오류가 발생했습니다: {e}")
+
+def get_desktop_files():
+    """
+    바탕화면의 파일 목록을 반환합니다.
+    """
+    desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
+    return os.listdir(desktop_path)
+
+def compress_file(file_path, method='zip'):
     """
     사용자가 파일경로를 입력하면 해당파일을 zip으로 압축합니다.
     
@@ -468,14 +382,33 @@ def compress_file(file_path):
         # 압축할 파일의 디렉토리와 파일 이름 추출
         file_dir = os.path.dirname(file_path)
         file_name = os.path.basename(file_path)
-        # 출력 zip 파일 경로 설정
-        output_zip = os.path.join(file_dir, f"{file_name}.zip")
+        if method == 'zip':
+            output_zip = os.path.join(file_dir, f"{file_name}.zip")
+            with zipfile.ZipFile(output_zip, 'w') as zipf:
+                zipf.write(file_path, file_name)
+            print(f"파일이 성공적으로 압축되었습니다: {output_zip}")
 
-        with zipfile.ZipFile(output_zip, 'w') as zipf:
-            zipf.write(file_path, file_name)
-        print(f"파일이 성공적으로 압축되었습니다: {output_zip}")
+        elif method == 'tar':
+            output_tar = os.path.join(file_dir, f"{file_name}.tar.gz")
+            with tarfile.open(output_tar, 'w:gz') as tarf:
+                tarf.add(file_path, arcname=file_name)
+            print(f"파일이 성공적으로 압축되었습니다: {output_tar}")
+
+        else:
+            print(f"지원하지 않는 압축 방식입니다: {method}")
     except Exception as e:
         print(f"파일 압축 중 오류가 발생했습니다: {e}")
+
+def decompressFile(zip_path, dest):
+    """
+    압축 파일을 해제합니다.
+    """
+    try:
+        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+            zip_ref.extractall(dest)
+        print(f"압축 해제가 성공적으로 완료되었습니다: {dest}")
+    except Exception as e:
+        print(f"압축 해제 중 오류가 발생했습니다: {e}")
 
 
 def list_file_creation_times(directory):
