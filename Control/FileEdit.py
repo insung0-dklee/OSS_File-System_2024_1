@@ -9,6 +9,8 @@
 '''
 from markdown import markdown
 import os
+import xmltodict
+import json
 
 
 def file_edit():
@@ -22,6 +24,7 @@ def file_edit():
             print(" '파일생성'          입력시 파일을 생성하고 원하는 내용을 작성")
             print(" '찾아 바꾸기'       입력시 파일을 불러오고 원하는 단어를 찾아 새 단어로 바꿀 수 있습니다")
             print(" '복사 및 붙여넣기'  입력시 파일을 불러오고 원하는 부분을 찾아 다른 파일에 붙여넣을 수 있습니다")
+            print(" 'html'             입력시 md파일을 html파일로 변환할 수 있습니다.")
             print(" '종료'             입력시 프로그램을 종료할 수 있습니다.")
         elif select == "읽기":
             read_file()
@@ -106,5 +109,21 @@ def change_md_to_html():
             htmlfile.write(target_html)
         
         print(f"{target_file} >> {target_html}")
+    except:
+        print('잘못된 입력입니다.')
+
+def change_xml_to_json():
+    try:
+        target_file = input("변환할 xml 파일의 경로 : ")
+
+        name = os.path.splitext(target_file)[0]
+        json_name = name + '.json'
+        with open(target_file,'r',encoding='utf-8') as xml:
+            xml_file = xmltodict.parse(xml.read())
+        target_json = json.loads(json.dumps(xml_file))
+        with open(json_name,'w',encoding='utf-8') as Json:
+            Json.write(target_json)
+        
+        print(f"{target_file} >> {target_json}")
     except:
         print('잘못된 입력입니다.')
