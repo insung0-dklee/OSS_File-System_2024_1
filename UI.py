@@ -1,11 +1,12 @@
 # flake8: noqa
 import subprocess
-from PyQt5.QtWidgets import QPushButton, QDialog, QDesktopWidget, QVBoxLayout, QWidget, QTabWidget, QVBoxLayout, QHBoxLayout, QLabel, QListWidget, QListWidgetItem, QScrollArea, QLineEdit, QMessageBox
+from PyQt5.QtWidgets import QPushButton, QDialog, QVBoxLayout, QWidget, QTabWidget, QVBoxLayout, QHBoxLayout, QLabel, QListWidget, QListWidgetItem, QScrollArea, QLineEdit, QMessageBox, QMenu, QAction
 from PyQt5.QtCore import Qt, QSize
 import function
 import main
 import sys, os
 from PyQt5.QtWidgets import QApplication
+from Control import FileControl
 """
 display : 경로를 표시하는 라벨
 list_widget : 파일, 폴더 목록을 표시하는 위젯
@@ -15,7 +16,8 @@ CutDialog : 잘라내기 기능을 실행하기 위한 새 메세지 창을 생�
 MoveDialog : 이동 기능을 실행하기 위한 새 메세지 창을 생성하는 클래스
 DelDialog : 삭제 기능을 실행하기 위한 새 메세지 창을 생성하는 클래스
 
-refresh(files) : 파일 목록을 입력받아 리스트 위젯을 새로고침하는 함수
+showContextMenu : 파일 우클릭 시 커스텀 메뉴를 실행하는 코드
+refresh((files, path)) : 파일 목록과 경로를 입력받아 리스트 위젯을 새로고침하는 함수
 """
 class CopyDialog(QDialog):
     def __init__(self):
@@ -171,6 +173,7 @@ class UI(QWidget):
 
     #UI 구성
     def initUI(self):
+        self.copyItem = ""
         self.resize(1000, 750)
         # 각 탭 생성
         self.tabs = QTabWidget()
@@ -202,6 +205,9 @@ class UI(QWidget):
         # 디렉토리의 파일 목록을 출력할 리스트 위젯 생성
         list_widget = QListWidget()
         list_widget.itemDoubleClicked.connect(self.double_clicked)
+        # 우클릭 시의 컨텍스트 메뉴 설정
+        list_widget.setContextMenuPolicy(Qt.CustomContextMenu)
+        list_widget.customContextMenuRequested.connect(self.showContextMenu)
         current.list_widget = list_widget
 
         scroll = QScrollArea()
@@ -214,6 +220,8 @@ class UI(QWidget):
 
         # 상위 폴더로 돌아가는 버튼
         parent_dir = self.create_button('<-', button_size, lambda: display.setText(UI.refresh(self, function.moveDir(os.path.dirname(function.currentDir())))))
+        # 현재 폴더를 새로고침하는 버튼
+        refresh = self.create_button('@', button_size, lambda: display.setText(UI.refresh(self, function.moveDir(function.currentDir()))))
 
         # 각각 복사, 잘라내기, 이동, 삭제 버튼 생성
         copy = self.create_button('복사', button_size, lambda: self.copy_clicked())
@@ -226,6 +234,7 @@ class UI(QWidget):
         head = QHBoxLayout()
         head.addWidget(parent_dir)
         head.addWidget(display)
+        head.addWidget(refresh)
 
         functions = QHBoxLayout()
         functions.addWidget(copy)
@@ -242,14 +251,47 @@ class UI(QWidget):
         vbox.addLayout(functions)
         current.setLayout(vbox)
 
-        self.tabs.addTab(current, '현재 디렉토리')
+        self.tabs.addTab(current, '현재 디렉토리') 
+
+    # 우클릭 시 켜질 커스텀 메뉴 설정 함수
+    def showContextMenu(self, position):
+        contextMenu = QMenu(self)
+
+        # 우클릭 시 생성되는 메뉴 아이템 생성
+        openAction = QAction('열기', self)
+        propertiesAction = QAction('속성', self)
+        copyAction = QAction('복사', self)
+        pasteAction = QAction('붙여넣기', self)
+        deleteAction = QAction('삭제', self)
+
+
+        contextMenu.addAction(openAction)
+        contextMenu.addAction(propertiesAction)
+        contextMenu.addAction(copyAction)
+        contextMenu.addAction(pasteAction)
+        contextMenu.addAction(deleteAction)
+
+        # 더블 클릭과 같은 역할로 열기 기능 수행
+        openAction.triggered.connect(lambda: self.double_clicked(self.current.list_widget.currentItem()))
+        # 메타데이터 관리 함수를 이용해 속성 출력
+        propertiesAction.triggered.connect(lambda: main.manage_metadata(os.path.join(os.getcwd(), self.current.list_widget.currentItem().text())))
+        # 복사할 파일, 폴더의 경로 저장
+        copyAction.triggered.connect(lambda: setattr(self, 'copyItem', os.path.join(os.getcwd(), self.current.list_widget.currentItem().text())))
+        # 복사한 파일, 폴더 붙여넣기
+        pasteAction.triggered.connect(lambda: FileControl.copy_file(self.copyItem, os.getcwd()))
+        # 선택한 파일 삭제
+        deleteAction.triggered.connect(lambda: FileControl.delete_file(os.path.join(os.getcwd(), self.current.list_widget.currentItem().text())))
+        # 메뉴 표시
+        contextMenu.exec_(self.current.list_widget.mapToGlobal(position))
     
     # 파일 목록을 새로고침하는 함수
-    def refresh(self, files):
+    def refresh(self, get):
+        files, path = get
         self.current.list_widget.clear()
         for file in files:
             item = QListWidgetItem(file)
             self.current.list_widget.addItem(item)
+        return path
 
     # 리스트 위젯의 목록이 더블클릭되면 폴더인지 확인하고 경로를 변경하는 함수
     def double_clicked(self, item):

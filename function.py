@@ -79,7 +79,7 @@ def fileNamer():
 def moveDir(path):
     try:
         os.chdir(path)
-        return os.listdir('.')
+        return os.listdir('.'), path
     except:
         print(f"경로가 존재하지 않거나, 폴더가 아니거나, 권한이 없습니다.")
 
