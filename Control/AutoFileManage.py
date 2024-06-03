@@ -3,7 +3,6 @@ import json
 import re
 import os
 import shutil
-import time
 
 """
 파일 자동 관리 코드
@@ -12,7 +11,7 @@ import time
 일자: 2024-06-01
 기능: 폴더를 선택해, 해당 폴더의 데이터를 규칙과 대조하고
       자동으로 관리하는 코드
-      각 조건은 개별적으로 적용됩니다.
+      크기 기준으로 관리
 변수:
     src: 규칙에 따라 자동으로 관리할 파일이 있는 '폴더'
     dest: 규칙에 따라 파일을 이동할 '폴더'
@@ -22,8 +21,8 @@ import time
     rulepath : 규칙 파일을 생성하고 읽어들이는 경로
 """
 
-condition = ['크기', '확장자', '접근시간']
-behaviors = ['이동', '삭제']
+condition = ['크기']
+behaviors = ['이동']
 rulepath = os.path.join('.\Control', 'Rule.txt')
 
 
@@ -32,17 +31,13 @@ def AutoFileManager():
     파일 자동 관리자를 실행하는 메인 함수
     """
     end = False
-    managerExecute()
+
     while not end:
-        
         select = input("원하는 기능을 입력하세요. ('?' 입력시 도움말)")
 
         if select == '?':
             print("""
 도움말
-파일 자동 관리를 위해 규칙을 지정하고, 실행할 수 있습니다.
-규칙의 각 조건은 개별적으로 적용됩니다.
-                  
 '추가' : 파일 자동 관리를 위한 규칙을 추가합니다.
 '삭제' : 파일 자동 관리를 위한 규칙을 삭제합니다.
 '실행' : 규칙에 맞는 파일 관리를 임의 실행합니다.
@@ -50,17 +45,14 @@ def AutoFileManager():
 
         elif select == '추가':
             src = input("규칙을 적용할 폴더의 경로를 입력하세요 : ")
-            rList = input(f"""
-규칙을 공백으로 구분해서 입력해주세요.(ex : 이동 크기 >20 확장자 .txt)
-가능한 행동 : 이동, 삭제
-가능한 규칙 : 크기(MB), 확장자, 접근시간(접근 이후부터의 시간)
+            rList = input("""
+규칙을 공백으로 구분해서 입력해주세요.(ex : 이동 크기 >20)
+가능한 행동 : 이동
+가능한 규칙 : 크기(MB)
 """).split()
             dest = ""
             if rList[0] == "이동":
                 dest = input("규칙에 의해 이동할 폴더의 경로를 입력하세요 : ")
-            if len(rList)<3:
-                print("올바른 규칙이 입력되지 않았습니다.")
-                continue
             rule = {rList[i+1]: rList[i+2] for i in range(0, len(rList)-1, 2)}
             print(rule)
             if Rintegrity(src, dest, rList[0], rule):
@@ -86,22 +78,13 @@ def AutoFileManager():
 def Rintegrity(src, dest, behave, rule):
     
     try:
-        if os.path.exists(src) and (os.path.exists(dest) if dest!="" else True):
+        if os.path.exists(src) and os.path.exists(dest):
             if behave in behaviors:
                 for key, value in rule.items():
                     if key =='크기':
                         if re.match(r'[<>]=?\d*\.?\d+', value):
                             print("규칙을 성공적으로 추가했습니다.")
                             return True
-                    if key =='확장자':
-                        if re.match(r'[a-zA-Z]{0,3}$', value):
-                            print("규칙을 성공적으로 추가했습니다.")
-                            return True
-                    if key =='접근시간':
-                        if re.match(r'[<>]=?\d+', value):
-                            print("규칙을 성공적으로 추가했습니다.")
-                            return True
-                    
         print("규칙을 추가하던 도중 오류가 발생했습니다.")
         return False
     except:
@@ -136,7 +119,7 @@ def printRule():
     try:
         with open(rulepath, 'r') as file:
             for index, line in enumerate(file.readlines(), 1):
-                print(f"{index}. {line[:-1]}")
+                print(f"{index}. {line[:-2]}")
     except:
         print("규칙 파일을 열 수 없거나 권한이 없습니다.")
 
@@ -182,42 +165,16 @@ def managerExecute():
 
                 # 지정된 경로에서 파일 목록을 가져와 조건에 따라 필터링
                 files = [os.path.join(src, f) for f in (os.listdir(src))]
-                result = set()
-
                 if '크기' in rule:
                     if re.match(r'([<>]=?\d+|==\d+)', rule.get('크기', 0)):
-                        # 파일을 불러와 조건에 따라 파일을 필터링
+
+                        # 조건에 따라 파일을 필터링하고, dest로 이동합니다.
                         for file in files:
                             file_path = os.path.join(src, file)
                             size = os.path.getsize(file_path) / (1024 * 1024)  # 파일 크기를 MB로 변환
 
                             if eval(f"{size}{rule['크기']}"):
-                                result.add(file_path)
-
-                if '확장자' in rule:
-                    if re.match(r'[a-zA-Z]{0,3}$', rule.get('확장자', 0)):
-                        # 파일을 불러와 조건에 따라 파일을 필터링
-                        for file in files:
-                            file_path = os.path.join(src, file)
-                            _, extension = os.path.splitext(file_path) # 확장자 추출
-                            if eval(f"'{extension}'=='.{rule['확장자']}'"):
-                                result.add(file_path)
-
-                if '접근시간' in rule:
-                    if re.match(r'[<>]=?\d+', rule.get('접근시간', 0)):
-                        # 파일을 불러와 조건에 따라 파일을 필터링
-                        for file in files:
-                            file_path = os.path.join(src, file)
-                            abandon = int(re.findall(r'\d+', rule['접근시간'])[0]) * 24 * 60 * 60  # 삭제할 시간 설정
-                            if eval(f"{time.time()-os.path.getatime(file_path)}{re.findall(r'[<>]=?', rule.get('접근시간', 0))[0]}{abandon}"):
-                                result.add(file_path)
-
-                # 설정된 행동에 따라 이동 혹은 삭제
-                if behave=="이동":
-                    for file_path in list(result):
-                        shutil.move(file_path, dest)
-                elif behave=="삭제":
-                    for file_path in list(result):
-                        os.remove(file_path)
+                                if behave=="이동":
+                                    shutil.move(file_path, dest)
     except:
         print("오류가 발생했습니다.")

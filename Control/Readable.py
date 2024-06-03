@@ -20,7 +20,8 @@ def readable():
             print(" '종료'          입력시 프로그램을 종료할 수 있습니다.")
 
         elif select == '단순변환':
-            get_human_readable_size()
+            path = input("파일 경로를 입력하세요.")
+            print(get_human_readable_size(os.path.getsize(path)))
 
         elif select == '디렉토리 탐색':
             display_file_sizes()
