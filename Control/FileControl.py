@@ -28,6 +28,7 @@ def file_control():
             print(" '부모 디렉토리 확인' 입력시 선택한 디렉토리의 부모 디렉토리 출력")
             print(" '파일복사'           입력시 파일 복사 및 붙여넣기")
             print(" '잘라내기'           입력시 파일 잘라내기 및 붙여넣기")
+            print(" '파일 합치기'        입력시 2개의 파일을 합친 새로운 파일 생성")
             print(" '종료'               입력시 프로그램을 종료할 수 있습니다.")
         elif select == '메타데이터 출력':
             manage_metadata()
@@ -55,6 +56,9 @@ def file_control():
 
         elif select == '잘라내기':
             cut_file()
+
+        elif select == "파일 합치기":
+            merge_files()
 
         elif select == "종료":
             print("중복 관리를 종료합니다.")
@@ -440,3 +444,25 @@ def delete_directory(directory_path):
         print(f"Directory not found: {directory_path}")
     except OSError as e:
         print(f"Error deleting directory: {e}")
+
+
+def merge_files():
+    """
+    두 개의 파일 내용을 합쳐 새로운 파일을 생성하는 함수
+    """
+    file1_path = input("첫 번째 파일 경로를 입력하세요: ")
+    file2_path = input("두 번째 파일 경로를 입력하세요: ")
+    merged_file_path = input("합쳐진 파일을 저장할 경로를 입력하세요: ")
+    try:
+        with open(file1_path, 'r', encoding='utf-8') as file1, \
+             open(file2_path, 'r', encoding='utf-8') as file2, \
+             open(merged_file_path, 'w', encoding='utf-8') as merged_file:
+            content1 = file1.read()
+            content2 = file2.read()
+            merged_content = content1 + '\n' + content2
+            merged_file.write(merged_content)
+        print(f"{merged_file_path} 파일이 생성되었습니다.")
+    except FileNotFoundError:
+        print("파일을 찾을 수 없습니다.")
+    except Exception as e:
+        print(f"오류가 발생했습니다: {e}")
