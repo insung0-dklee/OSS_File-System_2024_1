@@ -30,31 +30,33 @@ def file_control():
             print(" '잘라내기'           입력시 파일 잘라내기 및 붙여넣기")
             print(" '종료'               입력시 프로그램을 종료할 수 있습니다.")
         elif select == '메타데이터 출력':
-            manage_metadata()
+            manage_metadata(input("속성을 출력할 경로를 입력하세요 : "))
         
         elif select == '파일삭제':
-            delete_file()
+            delete_file(input("삭제할 파일의 경로를 입력하세요 : "))
         
         elif select == '파일검색':
-            search_file()
+            search_file(input("파일을 검색할 디렉토리 경로를 입력하세요 : "), input("파일의 이름을 입력하세요 : "))
 
         elif select == '파일이동':
-            move_file()
+            file = input("이동할 파일의 이름을 입력하세요 : ")
+            path = input("파일을 이동할 디렉토리 경로를 입력하세요 : ")
+            move_file(file, path)
         
         elif select == '디렉토리 생성':
-            create_directory()
+            create_directory(input("폴더를 생성할 디렉토리 경로를 입력하세요 : "))
 
         elif select == '파일목록':
-            list_files()
+            list_files(input("파일 목록을 출력할 디렉토리 경로를 입력하세요 : "))
 
         elif select == '부모 디렉토리 확인':
-            getParentDir()
+            getParentDir(input("부모 디렉토리를 확인할 디렉토리의 경로를 입력하세요 : "))
 
         elif select == '파일복사':
-            copy_file()
+            copy_file(input("복사할 파일의 경로를 입력하세요 : "), input("파일을 붙여넣을 디렉토리를 입력하세요 : "))
 
         elif select == '잘라내기':
-            cut_file()
+            cut_file(input("잘라낼 파일의 경로를 입력하세요 : "), input("파일을 붙여넣을 디렉토리를 입력하세요 : "))
 
         elif select == "종료":
             print("중복 관리를 종료합니다.")
@@ -159,15 +161,19 @@ def delete_file(path):
     
     Returns:
         None
+
+    6/3 파일의 권한이 없거나 다른 이유로 오류가 발생하는 문제 해결
     """
-    if os.path.exists(path):
-        os.remove(path)
-        print(f"{path} 파일이 삭제되었습니다.")
-    else:
-        print(f"{path} 파일이 존재하지 않습니다.")
-
-
-
+    try:
+        if os.path.exists(path):
+            os.remove(path)
+            print(f"{path} 파일이 삭제되었습니다.")
+        else:
+            print(f"{path} 파일이 존재하지 않습니다.")
+    except PermissionError:
+        print(f"{path}에 접근할 권한이 없습니다.")
+    except Exception as e:
+        return f"예상치 못한 오류가 발생했습니다: {str(e)}"
 
 
 """
@@ -239,10 +245,15 @@ def copy_file(src_path, dest_path):
     if not os.path.exists(os.path.dirname(dest_path)):
         raise FileNotFoundError(f"대상 디렉토리가 존재하지 않습니다: {os.path.dirname(dest_path)}")
 
-    shutil.copy(src_path, dest_path)
-    print(f"파일이 복사되었습니다: {src_path} -> {dest_path}")
+    try:
+        shutil.copy(src_path, dest_path)
+        print(f"파일이 복사되었습니다: {src_path} -> {dest_path}")
+    except PermissionError:
+        print(f"파일을 복사할 권한이 없습니다.")
+    except Exception as e:
+        print(f"예상치 못한 오류가 발생했습니다: {str(e)}")
 
-# cut-file 함수 추
+# cut-file 함수 추가
 def cut_file(src_path, dest_path):
     """
     파일을 잘라내어 다른 위치로 이동합니다.
