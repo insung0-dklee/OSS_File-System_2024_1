@@ -34,13 +34,26 @@ import subprocess
 import ctypes
 
 def defragment_file_system(path):
-    """주어진 경로에 대해 파일 시스템 조각 모음을 수행합니다."""
+    """
+    주어진 경로에 대해 파일 시스템 조각 모음을 수행합니다.
+    주어진 경로에 대해 e4defrag 유틸리티를 실행하여 파일 시스템을 조각 모음합니다.
+    매개변수:
+    - path: 파일 시스템 조각 모음을 수행할 디렉토리 또는 파일의 경로
+    """
     try:
+        # e4defrag 명령을 subprocess를 통해 실행하고 결과를 캡처합니다.
         result = subprocess.run(["e4defrag", path], check=True, capture_output=True, text=True)
         print(result.stdout)
     except subprocess.CalledProcessError as e:
+        # 오류가 발생한 경우 에러 메시지를 출력합니다.
         print(f"조각 모음 중 오류 발생: {e.stderr}")
-
+        
+    """
+    파일 또는 폴더를 실행하거나 엽니다.
+    주어진 경로가 파일인 경우 해당 파일을 실행하고, 폴더인 경우 해당 폴더를 엽니다.
+    매개변수:
+     - path: 실행하거나 열 파일 또는 폴더의 경로
+    """
 def run_file_or_open_folder(path):
     if os.path.isfile(path):
         # 파일인 경우 바로 실행
@@ -599,10 +612,19 @@ def change_permissions(path, mode):
 
 
 def check_password(input_password):
+    """
+    입력한 비밀번호가 정확한지 확인하는 함수
+    :param input_password: 사용자가 입력한 비밀번호
+    :return: 입력한 비밀번호가 올바르면 True, 그렇지 않으면 False를 반환
+    """
     correct_password = "1234"
     return input_password == correct_password
 
 def create_file(filename):
+    """
+    사용자로부터 비밀번호를 입력받아 파일을 생성하는 함수
+    :param filename: 생성할 파일의 이름
+    """
     password = getpass.getpass("비밀번호를 입력하세요: ")
     if check_password(password):
         print(f"'{filename}' 파일이 생성되었습니다.")
