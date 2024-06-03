@@ -33,6 +33,9 @@ from Control import AutoFileManage
 import subprocess
 import ctypes
 
+from Crypto.PublicKey import RSA
+from Crypto.Cipher import PKCS1_OAEP
+
 def defragment_file_system(path):
     """주어진 경로에 대해 파일 시스템 조각 모음을 수행합니다."""
     try:
@@ -667,6 +670,150 @@ def check_file_signature(file_path):
     else:
         print(f"원본 파일 형식이 .jgp, .png, .pdf가 아닙니다.")
 
+def generate_rsa_key_pair(key_size=2048):
+    """
+    RSA 키 쌍을 생성하는 함수
+
+    @param
+        key_size: 생성할 RSA 키의 크기(기본값: 2048)
+    """
+    key = RSA.generate(key_size)
+    private_key = key.export_key()
+    public_key = key.publickey().export_key()
+    return private_key, public_key
+
+def save_key_to_file(key, file_name):
+    """
+    키를 파일에 저장하는 함수
+
+    @param
+        key: 저장할 키
+        file_name: 키를 저장할 파일 경로
+    """
+    with open(file_name, 'wb') as file:
+        file.write(key)
+
+def load_key_from_file(file_name):
+    """
+    파일에서 키를 로드하는 함수
+
+    @param
+        file_name: 키를 로드할 파일 경로
+    """
+    with open(file_name, 'rb') as file:
+        key = file.read()
+    return key
+
+def verify_public_key(public_key_path):
+    """
+    공개 키의 유효성을 검증하는 함수
+
+    @param
+        public_key_path: 검증할 공개 키의 파일 경로
+    """
+    try:
+        public_key = load_key_from_file(public_key_path)
+        rsa_key = RSA.import_key(public_key)
+        if rsa_key.has_private():
+            print("입력한 키는 공개 키가 아닙니다.")
+            return False
+        return True
+    except (ValueError, IndexError, TypeError) as e:
+        print(f"공개 키 검증 중 오류가 발생했습니다: {e}")
+        return False
+
+def verify_private_key(private_key_path):
+    """
+    비밀 키의 유효성을 검증하는 함수
+
+    @param
+        private_key_path: 검증할 비밀 키의 파일 경로
+    """
+    try:
+        private_key = load_key_from_file(private_key_path)
+        rsa_key = RSA.import_key(private_key)
+        if not rsa_key.has_private():
+            print("입력한 키는 비밀 키가 아닙니다.")
+            return False
+        return True
+    except (ValueError, IndexError, TypeError) as e:
+        print(f"비밀 키 검증 중 오류가 발생했습니다: {e}")
+        return False
+
+def encrypt_file_rsa(file_path, public_key_path):
+    """
+    파일을 RSA로 암호화하는 함수
+
+    @param
+        file_path: 암호화할 파일 경로
+        public_key_path: 공개 키의 파일 경로
+    """
+    try:
+        if not os.path.isfile(file_path):
+            print("파일 경로가 올바르지 않습니다.")
+            return
+
+        if os.path.getsize(file_path) > 245:
+            print("파일 크기가 245바이트를 초과합니다. RSA로 암호화할 수 없습니다.")
+            return
+
+        if not verify_public_key(public_key_path):
+            print("공개 키가 유효하지 않습니다.")
+            return
+
+        public_key = load_key_from_file(public_key_path)
+        rsa_key = RSA.import_key(public_key)
+        cipher_rsa = PKCS1_OAEP.new(rsa_key)
+
+        with open(file_path, 'rb') as file:
+            plaintext = file.read()
+
+        ciphertext = cipher_rsa.encrypt(plaintext)
+
+        with open(file_path + '.enc', 'wb') as enc_file:
+            enc_file.write(ciphertext)
+
+        print(f"파일이 성공적으로 암호화되었습니다: {file_path}.enc")
+
+    except Exception as e:
+        print(f"파일 암호화 중 오류가 발생했습니다: {e}")
+
+def decrypt_file_rsa(enc_file_path, private_key_path):
+    """
+    RSA로 암호화된 파일을 복호화하는 함수
+
+    @param
+        enc_file_path: 복호화할 암호화된 파일 경로
+        private_key_path: 비밀 키의 파일 경로
+    """
+    try:
+        if not os.path.isfile(enc_file_path):
+            print("파일 경로가 올바르지 않습니다.")
+            return
+
+        if not verify_private_key(private_key_path):
+            print("비밀 키가 유효하지 않습니다.")
+            return
+
+        private_key = load_key_from_file(private_key_path)
+        rsa_key = RSA.import_key(private_key)
+        cipher_rsa = PKCS1_OAEP.new(rsa_key)
+
+        with open(enc_file_path, 'rb') as enc_file:
+            ciphertext = enc_file.read()
+
+        plaintext = cipher_rsa.decrypt(ciphertext)
+
+        with open(enc_file_path.replace('.enc', ''), 'wb') as dec_file:
+            dec_file.write(plaintext)
+
+        print(f"파일이 성공적으로 복호화되었습니다: {enc_file_path.replace('.enc', '')}")
+
+    except ValueError as e:
+        print(f"파일 복호화 중 오류가 발생했습니다: {e}")
+    except Exception as e:
+        print(f"파일 복호화 중 오류가 발생했습니다: {e}")
+
 b_is_exit = False
 version = "1.0.0"
 print(f"프로그램 버전: {version}")
@@ -704,16 +851,55 @@ while not b_is_exit:
         file_path = input("파일 경로를 입력하세요: ")
         check_file_signature(file_path)
 
+    elif func == "RSA Keygen":
+        private_key, public_key = generate_rsa_key_pair()
+        save_key_to_file(private_key, 'private_key.pem')
+        save_key_to_file(public_key, 'public_key.pem')
+        print("RSA 키 쌍이 생성되었습니다. 'private_key.pem'과 'public_key.pem' 파일이 저장되었습니다.")
+
+    elif func == "RSA Enc":
+        file_path = input("암호화할 파일 경로를 입력하세요: ")
+        if not os.path.isfile(file_path):
+            print("파일 경로가 올바르지 않습니다.")
+            continue
+
+        if os.path.getsize(file_path) > 245:
+            print("파일 크기가 245바이트를 초과합니다. RSA로 암호화할 수 없습니다.")
+            continue
+
+        public_key_path = input("공개 키 경로를 입력하세요: ")
+        if not os.path.isfile(public_key_path):
+            print("공개 키 경로가 올바르지 않습니다.")
+            continue
+
+        encrypt_file_rsa(file_path, public_key_path)
+
+    elif func == "RSA Dec":
+        enc_file_path = input("복호화할 파일 경로를 입력하세요: ")
+        if not os.path.isfile(enc_file_path):
+            print("파일 경로가 올바르지 않습니다.")
+            continue
+
+        private_key_path = input("비밀 키 경로를 입력하세요: ")
+        if not os.path.isfile(private_key_path):
+            print("비밀 키 경로가 올바르지 않습니다.")
+            continue
+
+        decrypt_file_rsa(enc_file_path, private_key_path)
+
     elif func == "?":
         print("""
                 [도움말]
-                '파일편집' 입력시 파일을 편집할 수 있습니다.
-                '즐겨찾기' 입력시 즐겨찾기 기능을 사용할 수 있습니다.
-                '파일관리' 입력시 파일을 관리할 수 있습니다.
-                '가독성'   입력시 파일의 단위를 읽기 좋게 볼 수 있습니다.
-                '중복관리' 입력시 중복 파일을 관리할 수 있습니다.
-                'Check'   입력시 해당 파일 확장자와 원래의 파일 확장자를 비교합니다.
-                '종료'     입력시 프로그램을 종료합니다.
+                '파일편집'    입력시 파일을 편집할 수 있습니다.
+                '즐겨찾기'    입력시 즐겨찾기 기능을 사용할 수 있습니다.
+                '파일관리'    입력시 파일을 관리할 수 있습니다.
+                '가독성'      입력시 파일의 단위를 읽기 좋게 볼 수 있습니다.
+                '중복관리'    입력시 중복 파일을 관리할 수 있습니다.
+                'Check'      입력시 해당 파일 확장자와 원래의 파일 확장자를 비교합니다.
+                'RSA Keygen' 입력시 공개키와 비밀키가 생성됩니다.
+                'RSA Enc'    입력시 RSA 알고리즘으로 파일을 암호화 합니다.
+                'RSA Dec'    입력시 RSA 알고리즘으로 암호화 된 파일을 복호화 합니다.
+                '종료'       입력시 프로그램을 종료합니다.
             """)
 
     elif func.lower() == "종료":
