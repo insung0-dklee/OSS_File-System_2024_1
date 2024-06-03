@@ -609,7 +609,32 @@ def create_file(filename):
     else:
         print("비밀번호가 틀렸습니다.")
 
-
+def create_empty_file(file_path):
+    """
+    주어진 경로에 빈 파일을 생성합니다.
+    :param file_path: 생성할 파일의 경로
+    """
+    try:
+        # 디렉토리 경로가 아닌지 확인
+        if os.path.isdir(file_path):
+            raise IsADirectoryError(f"지정한 경로가 디렉토리입니다: {file_path}")
+        
+        # 파일을 생성할 디렉토리에 쓰기 권한이 있는지 확인
+        dir_path = os.path.dirname(file_path)
+        if not os.access(dir_path, os.W_OK):
+            raise PermissionError(f"디렉토리에 쓰기 권한이 없습니다: {dir_path}")
+        
+        # 빈 파일 생성
+        with open(file_path, 'w') as file:
+            pass
+        print(f"빈 파일이 생성되었습니다: {file_path}")
+    except IsADirectoryError as e:
+        print(f"오류: {e}")
+    except PermissionError as e:
+        print(f"오류: {e}")
+    except Exception as e:
+        print(f"빈 파일 생성 중 오류가 발생했습니다: {e}")
+        
 b_is_exit = False
 version = "1.0.0"
 print(f"프로그램 버전: {version}")
@@ -641,6 +666,10 @@ while not b_is_exit:
         print("중복 관리 기능 실행")
         Duplicates.duplicates()
 
+    elif func == "빈파일추가":
+        file_path = input("생성할 빈 파일의 경로를 입력하세요: ")
+        create_empty_file(file_path)
+        
     elif func == "?":
         print("""
                 [도움말]
@@ -649,6 +678,7 @@ while not b_is_exit:
                 '파일관리' 입력시 파일을 관리할 수 있습니다.
                 '가독성'   입력시 파일의 단위를 읽기 좋게 볼 수 있습니다.
                 '중복관리' 입력시 중복 파일을 관리할 수 있습니다.
+                '빈파일추가' 입력시 빈 파일을 추가할 수 있습니다.
                 '종료'     입력시 프로그램을 종료합니다.
             """)
 
