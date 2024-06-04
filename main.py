@@ -12,27 +12,27 @@ addFavorite() : 원하는 파일을 즐겨찾기에 추가하는 함수
 showFavorites() : 즐겨찾기 안의 파일 목록을 순서대로 출력하는 함수
 """
 
-import os
-import shutil
-import time
-import function
-import zipfile
-import tarfile
-import getpass
-import hashlib
-from Control import Bookmark
-from Control import FileEdit
-from Control import FileControl
-from Control import Duplicates
-from Control import Readable
-from Control.FileControl import search_file
-import datetime
-from collections import defaultdict
-import platform
-from Control import AutoFileManage
-import subprocess
-import ctypes
-import stat
+import os  # 운영체제와 상호작용을 위한 모듈
+import shutil  # 파일 이동 및 복사 작업을 위한 모듈
+import time  # 시간 관련 작업을 위한 모듈
+import function  # 사용자 정의 함수 모듈 (정의되지 않음)
+import zipfile  # ZIP 파일 작업을 위한 모듈
+import tarfile  # TAR 파일 작업을 위한 모듈
+import getpass  # 비밀번호 입력을 위한 모듈
+import hashlib  # 해시 알고리즘을 위한 모듈
+from Control import Bookmark  # 즐겨찾기 기능을 위한 모듈
+from Control import FileEdit  # 파일 편집 기능을 위한 모듈
+from Control import FileControl  # 파일 제어 기능을 위한 모듈
+from Control import Duplicates  # 중복 파일 관리 기능을 위한 모듈
+from Control import Readable  # 가독성 기능을 위한 모듈
+from Control.FileControl import search_file  # 파일 검색 기능을 위한 모듈
+import datetime  # 날짜 및 시간 작업을 위한 모듈
+from collections import defaultdict  # 기본값이 있는 딕셔너리를 위한 모듈
+import platform  # 플랫폼 정보를 위한 모듈
+from Control import AutoFileManage  # 파일 자동 관리 기능을 위한 모듈 (정의되지 않음)
+import subprocess  # 하위 프로세스 관리 모듈
+import ctypes  # C 언어와의 상호작용을 위한 모듈
+import stat  # 파일 모드 상수를 위한 모듈
 
 
 def move_to_trash(file_path):
@@ -122,45 +122,52 @@ def compare_files(file1_path, file2_path):
         file1_path: 첫 번째 파일 경로
         file2_path: 두 번째 파일 경로
     """
-    supported_extensions = ['.txt', '.md', '.py', '.json']
+    supported_extensions = ['.txt', '.md', '.py', '.json'] # 지원하는 파일 확장자 목록
 
     def check_extension(file_path):
-        _, ext = os.path.splitext(file_path)
-        if ext not in supported_extensions:
-            raise ValueError(f"지원하지 않는 파일 형식입니다: {ext}")
+        """
+        파일의 확장자가 지원 목록에 있는지 확인합니다.
+        @param
+            file_path: 확인할 파일의 경로
+        """
+        _, ext = os.path.splitext(file_path)  # 파일 경로에서 확장자를 분리
+        if ext not in supported_extensions:  # 확장자가 지원 목록에 없는 경우
+            raise ValueError(f"지원하지 않는 파일 형식입니다: {ext}")  # 예외 발생
 
     try:
-        check_extension(file1_path)
-        check_extension(file2_path)
+        check_extension(file1_path)  # 첫 번째 파일의 확장자 확인
+        check_extension(file2_path)  # 두 번째 파일의 확장자 확인
 
+        # 두 파일을 읽기 모드로 열기
         with open(file1_path, 'r') as file1, open(file2_path, 'r') as file2:
-            file1_lines = file1.readlines()
-            file2_lines = file2.readlines()
+            file1_lines = file1.readlines()  # 첫 번째 파일의 모든 줄 읽기
+            file2_lines = file2.readlines()  # 두 번째 파일의 모든 줄 읽기
 
-        differences = []
-        max_lines = max(len(file1_lines), len(file2_lines))
+        differences = []  # 차이점을 저장할 리스트 초기화
+        max_lines = max(len(file1_lines), len(file2_lines))  # 두 파일 중 더 많은 줄 수 계산
 
-        for i in range(max_lines):
-            line1 = file1_lines[i] if i < len(file1_lines) else ""
-            line2 = file2_lines[i] if i < len(file2_lines) else ""
-            if line1 != line2:
-                differences.append((i + 1, line1, line2))
+        for i in range(max_lines):  # 두 파일의 각 줄을 비교
+            line1 = file1_lines[i] if i < len(file1_lines) else ""  # 첫 번째 파일의 i번째 줄
+            line2 = file2_lines[i] if i < len(file2_lines) else ""  # 두 번째 파일의 i번째 줄
+            if line1 != line2:  # 두 줄이 다르면
+                differences.append((i + 1, line1, line2))  # 차이점 목록에 추가
 
-        if differences:
+        if differences:  # 차이점이 있는 경우
             print("파일의 내용 차이점:")
-            for line_num, line1, line2 in differences:
-                print(f"Line {line_num}:")
-                print(f"  파일1: {line1.strip()}")
-                print(f"  파일2: {line2.strip()}")
+            for line_num, line1, line2 in differences:  # 각 차이점에 대해
+                print(f"Line {line_num}:")  # 줄 번호 출력
+                print(f"  파일1: {line1.strip()}")  # 첫 번째 파일의 해당 줄 출력
+                print(f"  파일2: {line2.strip()}")  # 두 번째 파일의 해당 줄 출력
         else:
-            print("두 파일의 내용은 동일합니다.")
+            print("두 파일의 내용은 동일합니다.")  # 차이점이 없는 경우 메시지 출력
 
-    except FileNotFoundError as e:
-        print(f"파일을 찾을 수 없습니다: {e}")
-    except ValueError as e:
-        print(e)
-    except Exception as e:
-        print(f"파일 비교 중 오류가 발생했습니다: {e}")
+    except FileNotFoundError as e:  # 파일이 없을 때의 예외 처리
+        print(f"파일을 찾을 수 없습니다: {e}")  # 오류 메시지 출력
+    except ValueError as e:  # 지원하지 않는 파일 형식 예외 처리
+        print(e)  # 오류 메시지 출력
+    except Exception as e:  # 그 외 모든 예외 처리
+        print(f"파일 비교 중 오류가 발생했습니다: {e}")  # 오류 메시지 출력
+
 
 def search_files_with_keyword(directory, keyword):
     """
@@ -187,7 +194,6 @@ keyword = input("검색할 키워드를 입력하세요: ")  # 사용자로부�
 matching_files = search_files_with_keyword(directory, keyword)  # 함수 호출하여 결과 저장
 print(f"키워드를 포함한 파일 목록: {matching_files}")  # 결과 출력
 
-
 def get_file_system_statistics(directory):
     """
     주어진 디렉토리의 파일 시스템 통계를 계산합니다.
@@ -198,28 +204,33 @@ def get_file_system_statistics(directory):
     @Returns
         파일 시스템 통계를 담은 딕셔너리
     """
+    # 통계 정보를 담을 딕셔너리 초기화
     statistics = {
-        'total_files': 0,
-        'total_directories': 0,
-        'total_size': 0,
-        'file_type_counts': defaultdict(int)
+        'total_files': 0,  # 총 파일 수
+        'total_directories': 0,  # 총 디렉토리 수
+        'total_size': 0,  # 총 파일 크기 (바이트 단위)
+        'file_type_counts': defaultdict(int)  # 파일 유형별 개수
     }
 
+    # 디렉토리 내 모든 파일과 하위 디렉토리를 순회
     for dirpath, dirnames, filenames in os.walk(directory):
-        # 디렉토리 수 증가
+        # 현재 디렉토리 내의 하위 디렉토리 수를 총 디렉토리 수에 추가
         statistics['total_directories'] += len(dirnames)
 
-        # 파일 수 및 파일 크기 증가
+        # 현재 디렉토리 내의 각 파일에 대해
         for filename in filenames:
+            # 파일 수 증가
             statistics['total_files'] += 1
+            # 파일의 전체 경로 생성
             file_path = os.path.join(dirpath, filename)
+            # 파일 크기를 총 파일 크기에 더함
             statistics['total_size'] += os.path.getsize(file_path)
 
-            # 파일 유형별 통계 증가
+            # 파일의 확장자를 이용해 파일 유형별 통계 증가
             _, file_extension = os.path.splitext(filename)
             statistics['file_type_counts'][file_extension] += 1
 
-    return statistics
+    return statistics  # 계산된 통계 정보를 반환
 
 def print_file_system_statistics(directory):
     """
@@ -369,19 +380,28 @@ def encrypt_file(file_path):
     except Exception as e: #외의 에러 제어
         return f"An error occurred: {e}"
 
-def calculate_directory_size(directory): # 폴더크기 측정 기능 함수
+def calculate_directory_size(directory):  # 폴더크기 측정 기능 함수
     """
     주어진 디렉토리의 총 크기를 계산합니다.
+    
+    @param
+        directory: 크기를 계산할 디렉토리 경로
+    @return
+        total_size: 디렉토리의 총 크기 (바이트 단위)
     """
-    total_size = 0
-    for dirpath, _, filenames in os.walk(directory):
-        for f in filenames:
-            fp = os.path.join(dirpath, f)
-            total_size += os.path.getsize(fp)
-    return total_size
+    total_size = 0  # 총 크기를 저장할 변수 초기화
+    for dirpath, _, filenames in os.walk(directory):  # 디렉토리 내 모든 파일과 디렉토리 순회
+        for f in filenames:  # 각 파일에 대해
+            fp = os.path.join(dirpath, f)  # 파일의 전체 경로 생성
+            total_size += os.path.getsize(fp)  # 파일 크기를 가져와 총 크기에 더함
+    return total_size  # 계산된 총 크기 반환
 
+# 사용자로부터 크기를 측정할 디렉토리 경로를 입력받음
 directory_path = input("크기를 측정할 디렉토리 경로를 입력하세요: ")
+
+# 입력받은 디렉토리 경로의 총 크기를 계산하여 출력
 print(f"디렉토리의 총 크기: {calculate_directory_size(directory_path)} bytes")
+
 
 
 # 파일 관리 시스템
@@ -392,84 +412,124 @@ print(f"디렉토리의 총 크기: {calculate_directory_size(directory_path)} b
 def manage_metadata(file_path):
     """
     주어진 파일의 메타데이터를 관리합니다.
+    
+    @param
+        file_path: 메타데이터를 관리할 파일의 경로
     """
     # 파일 생성 및 수정 시간 가져오기
-    created_time = os.path.getctime(file_path)
-    modified_time = os.path.getmtime(file_path)
+    created_time = os.path.getctime(file_path)  # 파일의 생성 시간 가져오기
+    modified_time = os.path.getmtime(file_path)  # 파일의 수정 시간 가져오기
 
     # 생성 및 수정 시간을 사람이 읽기 쉬운 형식으로 변환
-    created_time_readable = time.ctime(created_time)
-    modified_time_readable = time.ctime(modified_time)
+    created_time_readable = time.ctime(created_time)  # 생성 시간을 사람이 읽을 수 있는 형식으로 변환
+    modified_time_readable = time.ctime(modified_time)  # 수정 시간을 사람이 읽을 수 있는 형식으로 변환
 
     # 파일 크기 가져오기
-    file_size = os.path.getsize(file_path)
+    file_size = os.path.getsize(file_path)  # 파일의 크기 가져오기
 
     # 파일 메타데이터 출력
-    print(f"File: {file_path}")
-    print(f"Created Time: {created_time_readable}")
-    print(f"Modified Time: {modified_time_readable}")
-    print(f"Size: {file_size} bytes")
+    print(f"File: {file_path}")  # 파일 경로 출력
+    print(f"Created Time: {created_time_readable}")  # 생성 시간 출력
+    print(f"Modified Time: {modified_time_readable}")  # 수정 시간 출력
+    print(f"Size: {file_size} bytes")  # 파일 크기 출력
 
 def search_in_file(file_path, keyword):
-    with open(file_path, 'r') as file:
-        return [line for line in file if keyword in line]
+    """
+    파일 내에서 특정 키워드를 검색합니다.
     
+    @param
+        file_path: 검색할 파일의 경로
+        keyword: 검색할 키워드
+    @return
+        키워드를 포함하는 줄들의 리스트
+    """
+    # 파일을 읽기 모드로 열기
+    with open(file_path, 'r') as file:
+        # 파일의 각 줄을 순회하며 키워드를 포함하는 줄들을 반환
+        return [line for line in file if keyword in line]
+
 def get_directory_size(dir_path):
-    total_size = 0
-    for dirpath, dirnames, filenames in os.walk(dir_path):
-        for f in filenames:
-            fp = os.path.join(dirpath, f)
-            total_size += os.path.getsize(fp)
-    return total_size
+    """
+    주어진 디렉토리의 총 크기를 계산합니다.
+    
+    @param
+        dir_path: 디렉토리 경로
+    @return
+        총 크기 (바이트 단위)
+    """
+    total_size = 0  # 총 크기를 저장할 변수 초기화
+    for dirpath, dirnames, filenames in os.walk(dir_path):  # 디렉토리 내 모든 파일과 디렉토리 순회
+        for f in filenames:  # 각 파일에 대해
+            fp = os.path.join(dirpath, f)  # 파일의 전체 경로 생성
+            total_size += os.path.getsize(fp)  # 파일 크기를 가져와 총 크기에 더함
+    return total_size  # 계산된 총 크기 반환
 
 def get_file_size(file_path):
-    if os.path.exists(file_path):
-        return os.path.getsize(file_path)
-    return None
+    """
+    주어진 파일의 크기를 반환합니다.
+    
+    @param
+        file_path: 파일 경로
+    @return
+        파일 크기 (바이트 단위), 파일이 없으면 None 반환
+    """
+    if os.path.exists(file_path):  # 파일이 존재하는지 확인
+        return os.path.getsize(file_path)  # 파일 크기 반환
+    return None  # 파일이 없으면 None 반환
 
 def touch(file_path):
     """
-    사용자로부터 파일의 경로를 입력받아서 타임스탬프를 업데이트
-    파일이 존재하면 마지막 수정 시간을 갱신한다.
-    파일이 존재하지 않으면 에러 출력
-    매개변수 file_path: 사용자로부터 입력받은 타임스탬프를 업데이트할 파일의 경로
+    사용자로부터 파일의 경로를 입력받아서 타임스탬프를 업데이트합니다.
+    파일이 존재하면 마지막 수정 시간을 갱신하고,
+    파일이 존재하지 않으면 에러를 출력합니다.
+
+    @param
+        file_path: 타임스탬프를 업데이트할 파일의 경로
     """
     try:
-        if os.path.exists(file_path):
-            os.utime(file_path, None)
-            print(f"'{file_path}' 파일의 타임스탬프가 업데이트 되었습니다.")
+        if os.path.exists(file_path):  # 파일이 존재하는지 확인
+            os.utime(file_path, None)  # 파일의 타임스탬프를 현재 시간으로 업데이트
+            print(f"'{file_path}' 파일의 타임스탬프가 업데이트 되었습니다.")  # 성공 메시지 출력
         else:
-            raise FileNotFoundError(f"'{file_path}' 파일을 찾을 수 없습니다.")
-    except Exception as e:
-        print(f"파일 수정 중 오류가 발생했습니다: {e}")
+            raise FileNotFoundError(f"'{file_path}' 파일을 찾을 수 없습니다.")  # 파일이 없으면 예외 발생
+    except Exception as e:  # 예외가 발생한 경우
+        print(f"파일 수정 중 오류가 발생했습니다: {e}")  # 오류 메시지 출력
 
 def hideFile(path):
+    """
+    주어진 파일을 숨깁니다. (Windows 전용)
+
+    @param
+        path: 숨길 파일의 경로
+    """
     try:
-        subprocess.call(['attrib', '+H', path])
-        print(f"파일이 성공적으로 숨겨졌습니다: {path}")
-    except Exception as e:
-        print(f"파일 숨기기 중 오류가 발생했습니다: {e}")
+        subprocess.call(['attrib', '+H', path])  # Windows 명령어 'attrib'을 사용하여 파일을 숨김
+        print(f"파일이 성공적으로 숨겨졌습니다: {path}")  # 성공 메시지 출력
+    except Exception as e:  # 예외가 발생한 경우
+        print(f"파일 숨기기 중 오류가 발생했습니다: {e}")  # 오류 메시지 출력
 
 def backup_directory_files(file_path, backup_directory):
     """
     지정된 디렉토리의 파일들을 백업 디렉토리로 복사합니다.
-    :param file_path: 백업할 소스 디렉토리의 경로
-    :param backup_directory: 백업 파일을 저장할 디렉토리의 경로
+    
+    @param
+        file_path: 백업할 소스 디렉토리의 경로
+        backup_directory: 백업 파일을 저장할 디렉토리의 경로
     """
-
+    
     # 백업 디렉토리 생성
-    os.makedirs(backup_directory, exist_ok=True)
+    os.makedirs(backup_directory, exist_ok=True)  # backup_directory가 존재하지 않으면 생성
 
     # 디렉토리 내 파일들의 리스트 가져오기
-    file_list = os.listdir(file_path)
+    file_list = os.listdir(file_path)  # file_path 디렉토리 내의 모든 파일 및 디렉토리 이름 가져오기
 
     # 디렉토리 내 파일들을 백업 디렉토리로 복사
-    for file_name in file_list:
-        file_path = os.path.join(file_path, file_name)
-        backup_path = os.path.join(backup_directory, file_name)
-        shutil.copy2(file_path, backup_path)
+    for file_name in file_list:  # file_list의 각 파일에 대해 반복
+        file_path = os.path.join(file_path, file_name)  # 소스 파일의 전체 경로 생성
+        backup_path = os.path.join(backup_directory, file_name)  # 백업 파일의 전체 경로 생성
+        shutil.copy2(file_path, backup_path)  # 소스 파일을 백업 디렉토리로 복사
 
-    print("파일 백업 완료!")
+    print("파일 백업 완료!")  # 백업 완료 메시지 출력
 
 def list_zip_contents(zip_path):
     """
@@ -625,30 +685,37 @@ def print_file_mode(file_path):
 def decompressFile(zip_path, dest):
     """
     압축 파일을 해제합니다.
+    
+    @param
+        zip_path: 압축 파일의 경로
+        dest: 압축을 해제할 목적지 디렉토리
     """
     try:
+        # ZIP 파일을 읽기 모드로 열기
         with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-            zip_ref.extractall(dest)
-        print(f"압축 해제가 성공적으로 완료되었습니다: {dest}")
-    except Exception as e:
-        print(f"압축 해제 중 오류가 발생했습니다: {e}")
+            zip_ref.extractall(dest)  # ZIP 파일의 모든 내용을 목적지 디렉토리에 추출
+        print(f"압축 해제가 성공적으로 완료되었습니다: {dest}")  # 성공 메시지 출력
+    except Exception as e:  # 예외가 발생한 경우
+        print(f"압축 해제 중 오류가 발생했습니다: {e}")  # 오류 메시지 출력
 
 
 def list_file_creation_times(directory):
     """
     사용자가 입력한 디렉토리 내부의 모든 파일들의 생성 시간을 출력합니다.
     
-    매개변수 directory: 파일 생성 시간을 출력할 디렉토리의 경로
+    @param
+        directory: 파일 생성 시간을 출력할 디렉토리의 경로
     """
     try:
+        # 디렉토리 내 모든 파일 및 디렉토리 이름 가져오기
         for filename in os.listdir(directory):
-            file_path = os.path.join(directory, filename)
-            if os.path.isfile(file_path):
-                created_time = os.path.getctime(file_path)
-                created_time_readable = time.ctime(created_time)
-                print(f"{filename}: 생성 시간 - {created_time_readable}")
-    except Exception as e:
-        print(f"파일 생성 시간 출력 중 오류가 발생했습니다: {e}")
+            file_path = os.path.join(directory, filename)  # 파일 또는 디렉토리의 전체 경로 생성
+            if os.path.isfile(file_path):  # 경로가 파일인지 확인
+                created_time = os.path.getctime(file_path)  # 파일의 생성 시간 가져오기
+                created_time_readable = time.ctime(created_time)  # 생성 시간을 사람이 읽기 쉬운 형식으로 변환
+                print(f"{filename}: 생성 시간 - {created_time_readable}")  # 파일 이름과 생성 시간 출력
+    except Exception as e:  # 예외가 발생한 경우
+        print(f"파일 생성 시간 출력 중 오류가 발생했습니다: {e}")  # 오류 메시지 출력
 
 
 # 메모 파일 저장 경로
@@ -811,27 +878,41 @@ if __name__ == "__main__":
 def change_permissions(path, mode):
     """
     파일 또는 디렉토리의 권한을 변경합니다.
-    :param path: 파일 또는 디렉토리 경로
-    :param mode: 권한 모드 (8진수 형태로 입력, 예: 0o755)
+    
+    @param
+        path: 파일 또는 디렉토리 경로
+        mode: 권한 모드 (8진수 형태로 입력, 예: 0o755)
     """
     try:
-        os.chmod(path, mode)
-        print(f"{path}의 권한이 {oct(mode)}로 변경되었습니다.")
-    except Exception as e:
-        print(f"권한 변경 중 오류가 발생했습니다: {e}")
-
+        os.chmod(path, mode)  # 파일 또는 디렉토리의 권한을 변경
+        print(f"{path}의 권한이 {oct(mode)}로 변경되었습니다.")  # 성공 메시지 출력
+    except Exception as e:  # 예외가 발생한 경우
+        print(f"권한 변경 중 오류가 발생했습니다: {e}")  # 오류 메시지 출력
 
 def check_password(input_password):
-    correct_password = "1234"
-    return input_password == correct_password
+    """
+    입력한 비밀번호가 맞는지 확인합니다.
+    
+    @param
+        input_password: 사용자가 입력한 비밀번호
+    @return
+        비밀번호가 맞으면 True, 아니면 False
+    """
+    correct_password = "1234"  # 설정된 비밀번호
+    return input_password == correct_password  # 입력한 비밀번호가 맞는지 확인
 
 def create_file(filename):
-    password = getpass.getpass("비밀번호를 입력하세요: ")
-    if check_password(password):
-        print(f"'{filename}' 파일이 생성되었습니다.")
+    """
+    비밀번호를 입력받아 파일을 생성합니다.
+    
+    @param
+        filename: 생성할 파일의 이름
+    """
+    password = getpass.getpass("비밀번호를 입력하세요: ")  # 비밀번호 입력 받기
+    if check_password(password):  # 비밀번호가 맞는지 확인
+        print(f"'{filename}' 파일이 생성되었습니다.")  # 비밀번호가 맞으면 파일 생성 메시지 출력
     else:
-        print("비밀번호가 틀렸습니다.")
-
+        print("비밀번호가 틀렸습니다.")  # 비밀번호가 틀리면 오류 메시지 출력
 
 b_is_exit = False
 version = "1.0.0"
