@@ -144,7 +144,3 @@ def video_to_audio(video_path, audio_format='mp3'):
     audio_clip.close()
 
     print(f"동영상 '{video_path}'를 오디오 '{audio_file_path}'로 변환했습니다.")
-
-
-# 예제 사용법
-converted_audio_path = video_to_audio(input(), audio_format='aac')
