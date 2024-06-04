@@ -161,6 +161,33 @@ def compare_files(file1_path, file2_path):
     except Exception as e:
         print(f"파일 비교 중 오류가 발생했습니다: {e}")
 
+def backup_file(source_path, backup_directory):
+    """
+    파일을 백업합니다.
+    :param source_path: 백업할 파일의 경로
+    :param backup_directory: 백업 파일을 저장할 디렉토리 경로
+    """
+    try:
+        # 백업 디렉토리가 존재하지 않으면 생성
+        if not os.path.exists(backup_directory):
+            os.makedirs(backup_directory)
+        
+        # 백업 파일의 경로 생성
+        backup_path = os.path.join(backup_directory, os.path.basename(source_path))
+        # 파일을 백업 디렉토리로 복사
+        shutil.copy2(source_path, backup_path)
+        # 성공 메시지 출력
+        print(f"{source_path}가 {backup_path}로 백업되었습니다.")
+    except Exception as e:
+        # 오류 메시지 출력
+        print(f"파일 백업 중 오류가 발생했습니다: {e}")
+
+# 사용자 입력을 받아 백업 함수 호출
+source_path = input("백업할 파일의 경로를 입력하세요: ")  # 백업할 파일 경로 입력 받기
+backup_directory = input("백업 파일을 저장할 디렉토리 경로를 입력하세요: ")  # 백업 디렉토리 경로 입력 받기
+backup_file(source_path, backup_directory)  # 백업 함수 호출
+
+
 def get_file_system_statistics(directory):
     """
     주어진 디렉토리의 파일 시스템 통계를 계산합니다.
