@@ -22,7 +22,7 @@ def file_edit():
             print(" '종료'             입력시 프로그램을 종료할 수 있습니다.")
         elif select == "읽기":
             read_file()
-        elif select == "파일 생성 및 쓰기":
+        elif select == "파일생성":
             create_and_write_file()
         elif select == "찾아 바꾸기":
             modify_file()
@@ -42,10 +42,20 @@ def read_file():
     return content
 
 def create_and_write_file():
-    file_path = input("파일을 생성하고 싶은 디렉토리의 경로를 입력하세요. : ")
-    content = input("쓰고 싶은 문장을 입력하세요. : ")
-    with open(file_path, 'w') as file:
-        file.write(content)
+    while True:
+        try:
+            file_path = input("파일을 생성하고 싶은 디렉토리의 경로를 입력하세요. : ")
+            with open(file_path, 'w') as file:
+                content = input("쓰고 싶은 문장을 입력하세요. : ")
+                file.write(content)
+                break
+        except:
+            print("디렉토리 접근 권한이 없거나 존재하지 않는 디렉토리입니다.")
+            sel = input("종료를 원하시면 '종료', 다른 경로를 이용하시려면 아무 키나 눌러주세요. : ")
+            if sel == '종료':
+                break
+            else:
+                continue
 
 def modify_file():
     """
