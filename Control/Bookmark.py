@@ -26,7 +26,7 @@ def bookmark(bookmark : List):
             addFavorite(bookmark)
 
         elif select == "종료":
-            print("즐겨찾기를 종료합니다.")
+            print('메인 메뉴로 복귀합니다.')
             finish = True
         
         else:

@@ -28,8 +28,8 @@ def file_edit():
             modify_file()
         elif select == "복사 및 붙여넣기":
             copy_and_paste_text()
-        elif select == '종료':
-            print('파일 편집 기능을 종료합니다.')
+        elif select == "종료":
+            print('메인 메뉴로 복귀합니다.')
             finish = True
         else:
             print("잘못된 입력입니다. 다시 입력해주세요.")

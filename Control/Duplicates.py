@@ -23,7 +23,7 @@ def duplicates():
             remove_duplicates()
 
         elif select == "종료":
-            print("중복 관리를 종료합니다.")
+            print('메인 메뉴로 복귀합니다.')
             finish = True
 
         else:

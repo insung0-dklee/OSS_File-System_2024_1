@@ -26,8 +26,8 @@ def readable():
         elif select == '디렉토리 탐색':
             display_file_sizes()
 
-        elif select == "종료":
-            print("중복 관리를 종료합니다.")
+        elif select == '종료':
+            print('메인 메뉴로 복귀합니다.')
             finish = True
 
         else:
