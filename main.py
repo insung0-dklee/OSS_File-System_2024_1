@@ -65,6 +65,20 @@ def get_most_recently_created_files(directory, n=10):
     files_with_ctime.sort(key=lambda x: x[1], reverse=True)
     return files_with_ctime[:n]
 
+def get_file_type_statistics(directory):
+    """
+    주어진 디렉토리의 파일 유형별 통계를 반환합니다.
+    :param directory: 디렉토리 경로
+    :return: 파일 유형별 통계 딕셔너리
+    """
+    file_type_counts = defaultdict(int)
+    for dirpath, _, filenames in os.walk(directory):
+        for filename in filenames:
+            _, ext = os.path.splitext(filename)
+            file_type_counts[ext] += 1
+
+    return dict(file_type_counts)
+
 
 def move_to_trash(file_path):
     """
@@ -912,6 +926,13 @@ while not b_is_exit:
         for file_path, ctime in recent_files:
             print(f"{file_path}: 생성 시간 - {time.ctime(ctime)}")
 
+    elif func == "유형통계":
+        directory = input("디렉토리 경로를 입력하세요: ")
+        statistics = get_file_type_statistics(directory)
+        print("파일 유형별 통계:")
+        for file_type, count in statistics.items():
+            print(f"  {file_type if file_type else 'No Extension'}: {count} files")
+
     elif func == "?":
         print("""
                 [도움말]
@@ -922,6 +943,7 @@ while not b_is_exit:
                 '중복관리' 입력시 중복 파일을 관리할 수 있습니다.
                 '용량상위' 입력시 디렉토리에서 용량이 큰 파일 상위 n개를 출력합니다.
                 '최근생성' 입력시 디렉토리에서 최근 생성된 파일 상위 n개를 출력합니다.
+                '유형통계' 입력시 디렉토리의 파일 유형별 통계를 출력합니다.
                 '종료'     입력시 프로그램을 종료합니다.
             """)
 
