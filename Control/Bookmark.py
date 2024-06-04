@@ -15,15 +15,19 @@ def bookmark(bookmark : List):
         select = input("원하는 기능을 입력하세요. ('?' 입력시 도움말)")
         
         if select == '?':
-            print(" '목록' 입력시 현재 즐겨찾기 목록을 볼 수 있습니다.")
-            print(" '추가' 입력시 즐겨찾기를 목록에 추가할 수 있습니다.")
-            print(" '종료' 입력시 프로그램을 종료할 수 있습니다.")
+            print(" '목록'      입력시 현재 즐겨찾기 목록을 볼 수 있습니다.")
+            print(" '추가'      입력시 즐겨찾기를 목록에 추가할 수 있습니다.")
+            print(" '정렬 변경' 입력시 현재 즐겨찾기 목록을 거꾸로 정렬할 수 있습니다.")
+            print(" '종료'      입력시 프로그램을 종료할 수 있습니다.")
 
         elif select == '목록':
             showFavorites(bookmark)
 
         elif select == '추가':
             addFavorite(bookmark)
+
+        elif select == '정렬 변경':
+            reverseFavorites(bookmark)
 
         elif select == "종료":
             print("즐겨찾기를 종료합니다.")
@@ -64,3 +68,15 @@ def removeFavorite():
             print(f"{removed_favorite} 가 즐겨찾기에서 제거되었습니다.")
         else:
             print("해당 번호의 파일이 존재하지 않습니다. 제거할 파일의 번호를 다시 입력해주세요.")
+
+
+
+def reverseFavorites(bookmark: List):
+    """
+    사용자가 실행할 시, 현재 즐겨찾기 목록을 거꾸로 정렬한다
+    """
+    if not bookmark:
+        print("현재 즐겨찾기 목록이 비어있습니다.")
+    else:
+        bookmark.reverse()
+        print("즐겨찾기 목록이 거꾸로 정렬되었습니다.")
