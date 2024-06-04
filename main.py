@@ -181,12 +181,13 @@ def search_files_with_keyword(directory, keyword):
                 continue
     return result_files  # 키워드를 포함한 파일 경로 리스트 반환
 
+"""
 # 사용 예시
 directory = input("검색할 디렉토리 경로를 입력하세요: ")  # 사용자로부터 검색할 디렉토리 경로 입력 받기
 keyword = input("검색할 키워드를 입력하세요: ")  # 사용자로부터 검색할 키워드 입력 받기
 matching_files = search_files_with_keyword(directory, keyword)  # 함수 호출하여 결과 저장
 print(f"키워드를 포함한 파일 목록: {matching_files}")  # 결과 출력
-
+"""
 
 def get_file_system_statistics(directory):
     """
@@ -380,9 +381,10 @@ def calculate_directory_size(directory): # 폴더크기 측정 기능 함수
             total_size += os.path.getsize(fp)
     return total_size
 
+"""
 directory_path = input("크기를 측정할 디렉토리 경로를 입력하세요: ")
 print(f"디렉토리의 총 크기: {calculate_directory_size(directory_path)} bytes")
-
+"""
 
 # 파일 관리 시스템
 # - 중복 파일 탐지 및 삭제: 주어진 디렉토리에서 중복 파일을 찾아내고, 중복된 파일을 삭제합니다.
@@ -832,6 +834,24 @@ def create_file(filename):
     else:
         print("비밀번호가 틀렸습니다.")
 
+def list_zip_contents(zip_path):
+    """
+    사용자가 입력한 ZIP 파일의 내용을 나열한다.
+    매개변수 zip_path: ZIP 파일의 경로
+    """
+    try:
+        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+            file_list = zip_ref.namelist() 
+            print(f"{zip_path} 내용:")
+            for file in file_list:
+                print(f"  - {file}")  
+    except FileNotFoundError:
+        print("입력한 경로에 파일이 존재하지 않습니다. 올바른 경로를 입력해 주세요.")
+    except zipfile.BadZipFile:
+        print("입력한 파일이 유효한 ZIP 파일이 아닙니다. ZIP 파일을 확인해 주세요.")
+    except Exception as e:
+        print(f"ZIP 파일 내용을 나열하는 중 오류가 발생했습니다: {e}")
+
 
 b_is_exit = False
 version = "1.0.0"
@@ -863,6 +883,11 @@ while not b_is_exit:
     elif func == "중복관리":
         print("중복 관리 기능 실행")
         Duplicates.duplicates()
+
+    elif func =="zip내부":
+        print("zip파일 내용을 출력하는 기능 실행")
+        zip_file_path = input("zip파일 경로를 입력하세요: ")
+        list_zip_contents(zip_file_path)
 
     elif func == "?":
         print("""
