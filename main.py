@@ -161,6 +161,35 @@ def compare_files(file1_path, file2_path):
     except Exception as e:
         print(f"파일 비교 중 오류가 발생했습니다: {e}")
 
+def convert_file_encoding(file_path, original_encoding, target_encoding):
+    """
+    파일의 인코딩을 변환합니다.
+    :param file_path: 변환할 파일의 경로
+    :param original_encoding: 원본 파일의 인코딩
+    :param target_encoding: 변환할 인코딩
+    """
+    try:
+        # 원본 파일을 지정된 인코딩으로 읽기
+        with open(file_path, 'r', encoding=original_encoding) as file:
+            content = file.read()  # 파일 내용 읽기
+        
+        # 파일 내용을 지정된 인코딩으로 쓰기
+        with open(file_path, 'w', encoding=target_encoding) as file:
+            file.write(content)  # 파일 내용 쓰기
+        
+        # 성공 메시지 출력
+        print(f"{file_path}의 인코딩이 {original_encoding}에서 {target_encoding}으로 변환되었습니다.")
+    except Exception as e:
+        # 오류 메시지 출력
+        print(f"인코딩 변환 중 오류가 발생했습니다: {e}")
+
+# 사용자 입력을 받아 인코딩 변환 함수 호출
+file_path = input("인코딩을 변환할 파일 경로를 입력하세요: ")  # 변환할 파일 경로 입력 받기
+original_encoding = input("원본 파일의 인코딩을 입력하세요: ")  # 원본 파일의 인코딩 입력 받기
+target_encoding = input("변환할 인코딩을 입력하세요: ")  # 변환할 인코딩 입력 받기
+convert_file_encoding(file_path, original_encoding, target_encoding)  # 인코딩 변환 함수 호출
+
+
 def get_file_system_statistics(directory):
     """
     주어진 디렉토리의 파일 시스템 통계를 계산합니다.
