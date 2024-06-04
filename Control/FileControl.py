@@ -456,6 +456,8 @@ def resize_images(dir_path, size, output_dir=None):
         output_dir : 크기 조정된 이미지를 저장할 폴더의 경로 (기본값: None)
     @Return
         None
+    @Example
+        resize_image(dir_path, (400, 600), output_dir)
     """
     # 정상적인 경로가 아니면 오류
     if not(os.path.isdir(dir_path)):
@@ -528,10 +530,3 @@ def resize_images(dir_path, size, output_dir=None):
         print(f"이미지를 성공적으로 저장했습니다.")
     except Exception as e:
         print(f"'{file_path}'의 크기 조정 중 오류 발생: {e}")
-
-# 예제 사용법
-dir_path = r'C:\Users\SAMSUNG\Pictures\Screenshots'  # 이미지가 들어있는 폴더 경로
-size = (250, 250)  # 조정할 이미지 크기
-output_dir = r'C:\Users\SAMSUNG\image'  # 크기 조정된 이미지를 저장할 폴더 경로 (None으로 설정 가능)
-
-resize_images(dir_path, size, output_dir)
