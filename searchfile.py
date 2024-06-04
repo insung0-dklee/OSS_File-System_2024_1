@@ -6,7 +6,7 @@ def search_files(directory, name_pattern, use_regex=False):
     for root, dirs, files in os.walk(directory):
         for file in files:
             if use_regex:
-                if re.match(name_pattern, file):
+                if re.search(name_pattern, file):  # re.match -> re.search
                     found_files.append(os.path.join(root, file))
             else:
                 if file == name_pattern:
