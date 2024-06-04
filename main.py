@@ -720,6 +720,34 @@ def print_file_permissions_rwx(file_path):
     except Exception as e:
         print(f"권한 확인 중 오류가 발생했습니다: {e}")
 
+
+def check_extension_in_directory(directory, extension):
+    """
+    사용자가 입력한 디렉토리 내에 사용자가 입력한 확장자가 존재하는지 여부를 출력합니다.
+    :param directory: 검색할 디렉토리 경로
+    :param extension: 검색할 파일 확장자 (예: '.txt')
+    """
+    if not os.path.exists(directory):
+        print(f"경로가 존재하지 않습니다: {directory}")
+        return
+    
+    if not os.path.isdir(directory):
+        print(f"유효한 디렉토리가 아닙니다: {directory}")
+        return
+
+    try:
+        extension_found = False
+        for dirpath, _, filenames in os.walk(directory):
+            for filename in filenames:
+                if filename.endswith(extension):
+                    extension_found = True
+                    print(f"확장자가 {extension}인 파일 발견: {os.path.join(dirpath, filename)}")
+        
+        if not extension_found:
+            print(f"디렉토리 내에 확장자가 {extension}인 파일이 존재하지 않습니다.")
+    except Exception as e:
+        print(f"확장자 확인 중 오류가 발생했습니다: {e}")
+
 b_is_exit = False
 version = "1.0.0"
 print(f"프로그램 버전: {version}")
@@ -760,6 +788,12 @@ while not b_is_exit:
         print("파일 권한 rwx 형식 출력기능 실행")
         file_path = input("권한을 확인할 파일 경로를 입력하세요: ")
         print_file_permissions_rwx(file_path)
+
+    elif func == "확장자존재":
+        print("디렉토리 내에 입력한 확장자가 존재하는지 판단하는 기능 실행")
+        directory_path = input("디렉토리 경로를 입력하세요: ")
+        file_extension = input("확장자를 입력하세요 (예: .txt): ")
+        check_extension_in_directory(directory_path, file_extension)
 
     elif func == "?":
         print("""
