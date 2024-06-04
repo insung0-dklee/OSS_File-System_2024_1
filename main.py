@@ -161,6 +161,32 @@ def compare_files(file1_path, file2_path):
     except Exception as e:
         print(f"파일 비교 중 오류가 발생했습니다: {e}")
 
+def search_files_with_keyword(directory, keyword):
+    """
+    디렉토리 내에서 특정 키워드를 포함한 파일을 검색합니다.
+    :param directory: 검색할 디렉토리 경로
+    :param keyword: 검색할 키워드
+    """
+    result_files = []  # 키워드를 포함한 파일 경로를 저장할 리스트
+    for dirpath, _, filenames in os.walk(directory):  # 디렉토리 내 모든 파일을 순회
+        for filename in filenames:
+            file_path = os.path.join(dirpath, filename)  # 파일의 절대 경로 생성
+            try:
+                with open(file_path, 'r', encoding='utf-8') as file:  # 파일을 읽기 모드로 열기
+                    content = file.read()  # 파일 내용 읽기
+                    if keyword in content:  # 키워드가 파일 내용에 포함되어 있는지 확인
+                        result_files.append(file_path)  # 키워드를 포함한 파일 경로를 리스트에 추가
+            except (UnicodeDecodeError, IOError):  # 인코딩 오류 또는 입출력 오류 처리
+                continue
+    return result_files  # 키워드를 포함한 파일 경로 리스트 반환
+
+# 사용 예시
+directory = input("검색할 디렉토리 경로를 입력하세요: ")  # 사용자로부터 검색할 디렉토리 경로 입력 받기
+keyword = input("검색할 키워드를 입력하세요: ")  # 사용자로부터 검색할 키워드 입력 받기
+matching_files = search_files_with_keyword(directory, keyword)  # 함수 호출하여 결과 저장
+print(f"키워드를 포함한 파일 목록: {matching_files}")  # 결과 출력
+
+
 def get_file_system_statistics(directory):
     """
     주어진 디렉토리의 파일 시스템 통계를 계산합니다.
