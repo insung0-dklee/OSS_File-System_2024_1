@@ -353,9 +353,10 @@ def calculate_directory_size(directory): # 폴더크기 측정 기능 함수
             total_size += os.path.getsize(fp)
     return total_size
 
+"""
 directory_path = input("크기를 측정할 디렉토리 경로를 입력하세요: ")
 print(f"디렉토리의 총 크기: {calculate_directory_size(directory_path)} bytes")
-
+"""
 
 # 파일 관리 시스템
 # - 중복 파일 탐지 및 삭제: 주어진 디렉토리에서 중복 파일을 찾아내고, 중복된 파일을 삭제합니다.
@@ -681,6 +682,17 @@ def create_file(filename):
     else:
         print("비밀번호가 틀렸습니다.")
 
+def print_file_mode(file_path):
+    """
+    파일의 권한(모드)를 8진수 형식으로 출력합니다.
+    매개변수 file_path: 권한(모드)를 출력할 파일 경로
+    """
+    try:
+        mode = os.stat(file_path).st_mode
+        print(f"{file_path}의 모드: {oct(mode)}")
+    except Exception as e:
+        print(f"모드 확인 중 오류가 발생했습니다: {e}")
+
 
 b_is_exit = False
 version = "1.0.0"
@@ -712,6 +724,11 @@ while not b_is_exit:
     elif func == "중복관리":
         print("중복 관리 기능 실행")
         Duplicates.duplicates()
+
+    elif func == "권한출력":
+        print("파일 권한 출력기능 실행")
+        file_path = input("권한을 확인할 파일 경로를 입력하세요: ")
+        print_file_mode(file_path)
 
     elif func == "?":
         print("""
