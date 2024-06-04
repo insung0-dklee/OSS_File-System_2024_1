@@ -9,6 +9,7 @@ from typing import List
 import hashlib
 from functools import lru_cache
 from pathlib import Path
+from fpdf import FPDF
 
 def file_control():
     finish = False
@@ -28,6 +29,7 @@ def file_control():
             print(" '부모 디렉토리 확인' 입력시 선택한 디렉토리의 부모 디렉토리 출력")
             print(" '파일복사'           입력시 파일 복사 및 붙여넣기")
             print(" '잘라내기'           입력시 파일 잘라내기 및 붙여넣기")
+            print(" '파일변환'           입력시 txt파일을 pdf로 변환")
             print(" '종료'               입력시 프로그램을 종료할 수 있습니다.")
         elif select == '메타데이터 출력':
             manage_metadata()
@@ -55,6 +57,9 @@ def file_control():
 
         elif select == '잘라내기':
             cut_file()
+
+        elif select == '파일변환':
+            change_txt()
 
         elif select == "종료":
             print("중복 관리를 종료합니다.")
@@ -422,6 +427,29 @@ def check_integrity(hash_path, file_path):
         print(f"{file_path}의 무결성 : 정상")
     else:
         print(f"{file_path}의 무결성 : 손상\nCurrent Hash: {current_hash}\nOrigin Hash: {origin_hash}")
+
+def txt_to_pdf(txt_file_path, pdf_file_path):
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_auto_page_break(auto=True, margin=15)
+    pdf.set_font("Arial", size=12)
+
+    try:
+        with open(txt_file_path, 'r', encoding='utf-8') as file:
+            for line in file:
+                pdf.cell(200, 10, txt=line, ln=True)
+        
+        pdf.output(pdf_file_path)
+        print(f"파일이 성공적으로 변환되었습니다: {pdf_file_path}")
+    except FileNotFoundError:
+        print("지정된 파일이 존재하지 않습니다.")
+    except Exception as e:
+        print(f"예기치 못한 오류가 발생했습니다: {e}")
+
+def change_txt():
+    txt_file_path = input("txt 파일 경로와 이름을 입력하세요: ")
+    pdf_file_path = input("저장할 pdf 파일 경로와 이름을 입력하세요: ")
+    txt_to_pdf(txt_file_path, pdf_file_path)
 
 """
 Deletes a directory at the specified path.
