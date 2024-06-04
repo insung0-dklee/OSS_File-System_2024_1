@@ -677,6 +677,30 @@ def create_file(filename):
     else:
         print("비밀번호가 틀렸습니다.")
 
+def copy_directory(src_directory, dest_directory):
+    """
+    디렉토리를 복사합니다.
+    @param
+        src_directory: 복사할 디렉토리 경로
+        dest_directory: 복사한 디렉토리를 저장할 경로
+    """
+    try:
+        if not os.path.exists(src_directory):
+            print(f"{src_directory} 디렉토리가 존재하지 않습니다.")
+            return
+
+        if os.path.exists(dest_directory):
+            overwrite = input(f"{dest_directory}가 이미 존재합니다. 덮어쓰시겠습니까? (y/n): ")
+            if overwrite.lower() == 'y':
+                shutil.rmtree(dest_directory)
+            else:
+                print("복사 작업이 취소되었습니다.")
+                return
+
+        shutil.copytree(src_directory, dest_directory)
+        print(f"{src_directory}가 {dest_directory}로 복사되었습니다.")
+    except Exception as e:
+        print(f"디렉토리를 복사하는 중 오류가 발생했습니다: {e}")
 
 b_is_exit = False
 version = "1.0.0"
@@ -714,6 +738,13 @@ while not b_is_exit:
         size = calculate_directory_size(directory_path)
         print(f"디렉토리의 총 크기: {calculate_directory_size(directory_path)} bytes")
 
+    elif func == "Dir Copy":
+        print("디렉토리 복사 기능 실행")
+        src = input("복사할 디렉토리 경로를 입력하세요: ")
+        dest = input("복사한 디렉토리를 저장할 경로를 입력하세요: ")
+        copy_directory(src, dest)
+
+
     elif func == "?":
         print("""
                 [도움말]
@@ -722,6 +753,8 @@ while not b_is_exit:
                 '파일관리' 입력시 파일을 관리할 수 있습니다.
                 '가독성'   입력시 파일의 단위를 읽기 좋게 볼 수 있습니다.
                 '중복관리' 입력시 중복 파일을 관리할 수 있습니다.
+                '크기측정' 입력시 디렉토리의 크기를 측정한다.
+                'Dir Copy'입력시 디렉토리를 복사한다.
                 '종료'     입력시 프로그램을 종료합니다.
             """)
 
