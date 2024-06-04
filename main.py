@@ -35,6 +35,22 @@ import ctypes
 import stat
 
 
+def get_largest_files(directory, n=10):
+    """
+    주어진 디렉토리에서 용량이 큰 파일 상위 n개를 반환합니다.
+    :param directory: 디렉토리 경로
+    :param n: 반환할 파일 수 (기본값 10)
+    """
+    files_with_size = []
+    for dirpath, _, filenames in os.walk(directory):
+        for filename in filenames:
+            file_path = os.path.join(dirpath, filename)
+            files_with_size.append((file_path, os.path.getsize(file_path)))
+
+    files_with_size.sort(key=lambda x: x[1], reverse=True)
+    return files_with_size[:n]
+
+
 def move_to_trash(file_path):
     """
     파일을 휴지통으로 이동합니다.
@@ -864,6 +880,14 @@ while not b_is_exit:
         print("중복 관리 기능 실행")
         Duplicates.duplicates()
 
+    elif func == "용량상위":
+        directory = input("디렉토리 경로를 입력하세요: ")
+        n = int(input("출력할 파일 수를 입력하세요: "))
+        largest_files = get_largest_files(directory, n)
+        print(f"용량이 큰 파일 상위 {n}개:")
+        for file_path, size in largest_files:
+            print(f"{file_path}: {size} bytes")
+
     elif func == "?":
         print("""
                 [도움말]
@@ -872,6 +896,7 @@ while not b_is_exit:
                 '파일관리' 입력시 파일을 관리할 수 있습니다.
                 '가독성'   입력시 파일의 단위를 읽기 좋게 볼 수 있습니다.
                 '중복관리' 입력시 중복 파일을 관리할 수 있습니다.
+                '용량상위' 입력시 디렉토리에서 용량이 큰 파일 상위 n개를 출력합니다.
                 '종료'     입력시 프로그램을 종료합니다.
             """)
 
