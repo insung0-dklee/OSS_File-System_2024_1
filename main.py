@@ -747,6 +747,44 @@ def delete_unused_files_prompt():
             print("잘못 입력하였습니다. 숫자를 입력해주세요.")
             return  
 
+def search_by_regex(directory, pattern):
+    """
+    주어진 디렉토리 내에서 정규 표현식을 이용하여 파일 내용을 검색합니다.
+    
+    @param
+        directory: 검색할 디렉토리 경로
+        pattern: 정규 표현식 패턴
+    """
+    matches = {}
+    try:
+        regex = re.compile(pattern)
+    except re.error as e:
+        raise ValueError(f"올바르지 않은 정규 표현식입니다: {e}")
+    
+    for dirpath, _, filenames in os.walk(directory):
+        for filename in filenames:
+            file_path = os.path.join(dirpath, filename)
+            try:
+                with open(file_path, 'r', encoding='utf-8') as file:
+                    for line_num, line in enumerate(file, start=1):
+                        if regex.search(line):
+                            if file_path not in matches:
+                                matches[file_path] = []
+                            matches[file_path].append((line_num, line.strip()))
+            except (UnicodeDecodeError, FileNotFoundError, PermissionError):
+                continue  
+    
+    return matches
+
+def print_search_results(results):
+    """
+    검색된 정규 표현식의 결과를 출력합니다.
+    """
+    for file_path, lines in results.items():
+        print(f"\nFile: {file_path}")
+        for line_num, line in lines:
+            print(f"  Line {line_num}: {line}")
+
 b_is_exit = False
 version = "1.0.0"
 print(f"프로그램 버전: {version}")
@@ -792,6 +830,19 @@ while not b_is_exit:
     elif func == "Remove":
         delete_unused_files_prompt()
 
+    elif func == "Search":
+        directory_to_search = input("검색할 디렉토리 경로를 입력하세요: ")
+        if not os.path.exists(directory_to_search):
+            print("잘못된 경로입니다. 다시 입력해주세요.")
+            continue
+        regex_pattern = input("검색할 정규 표현식 패턴을 입력하세요: ")
+        try:
+            results = search_by_regex(directory_to_search, regex_pattern)
+            print_search_results(results)
+        except ValueError as e:
+            print(e)
+            continue
+
     elif func == "?":
         print("""
                 [도움말]
@@ -802,7 +853,8 @@ while not b_is_exit:
                 '중복관리' 입력시 중복 파일을 관리할 수 있습니다.
                 '크기측정' 입력시 디렉토리의 크기를 측정한다.
                 'Dir Copy'입력시 디렉토리를 복사한다.
-                'Remove'   입력시 지정된 일수 동안 사용되지 않은 파일들을 삭제한다.
+                'Remove'  입력시 지정된 일수 동안 사용되지 않은 파일들을 삭제한다.
+                'Search'  입력시 정규 표현식을 이용하여 파일 내용을 검색합니다.
                 '종료'     입력시 프로그램을 종료합니다.
             """)
 
