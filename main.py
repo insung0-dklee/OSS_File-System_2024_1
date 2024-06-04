@@ -33,7 +33,8 @@ from Control import AutoFileManage
 import subprocess
 import ctypes
 import stat
-
+from PIL import Image
+from fpdf import FPDF
 
 def move_to_trash(file_path):
     """
