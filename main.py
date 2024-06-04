@@ -33,6 +33,64 @@ from Control import AutoFileManage
 import subprocess
 import ctypes
 
+
+def move_to_trash(file_path):
+    """
+    파일을 휴지통으로 이동합니다.
+    :param file_path: 삭제할 파일의 경로
+    """
+    trash_dir = os.path.join(os.path.expanduser("~"), ".trash")
+    if not os.path.exists(trash_dir):
+        os.makedirs(trash_dir)
+
+    try:
+        shutil.move(file_path, trash_dir)
+        print(f"{file_path}가 휴지통으로 이동되었습니다.")
+    except Exception as e:
+        print(f"파일을 휴지통으로 이동하는 중 오류가 발생했습니다: {e}")
+
+### 휴지통에서 파일을 복구하는 함수
+def restore_from_trash(file_name):
+    """
+    휴지통에서 파일을 복구합니다.
+    :param file_name: 복구할 파일의 이름
+    """
+    trash_dir = os.path.join(os.path.expanduser("~"), ".trash")
+    if not os.path.exists(trash_dir):
+        print("휴지통이 비어 있습니다.")
+        return
+
+    file_path = os.path.join(trash_dir, file_name)
+    if not os.path.exists(file_path):
+        print(f"{file_name}이(가) 휴지통에 없습니다.")
+        return
+
+    try:
+        restored_path = os.path.join(os.path.expanduser("~"), "Desktop", file_name)  # 복구할 경로 지정
+        shutil.move(file_path, restored_path)
+        print(f"{file_name}이(가) {restored_path}로 복구되었습니다.")
+    except Exception as e:
+        print(f"파일을 복구하는 중 오류가 발생했습니다: {e}")
+
+### 휴지통 내 파일 목록을 출력하는 함수
+def list_trash():
+    """
+    휴지통 내의 파일 목록을 출력합니다.
+    """
+    trash_dir = os.path.join(os.path.expanduser("~"), ".trash")
+    if not os.path.exists(trash_dir):
+        print("휴지통이 비어 있습니다.")
+        return
+
+    files = os.listdir(trash_dir)
+    if not files:
+        print("휴지통이 비어 있습니다.")
+        return
+
+    print("휴지통 내 파일 목록:")
+    for file in files:
+        print(f"  - {file}")
+
 def defragment_file_system(path):
     """주어진 경로에 대해 파일 시스템 조각 모음을 수행합니다."""
     try:
@@ -295,7 +353,21 @@ def encrypt_file(file_path):
         return "File not found. Please check the file path." # 파일을 찾을 수 없을때 나타나는 error
     except Exception as e: #외의 에러 제어
         return f"An error occurred: {e}"
-    
+
+def calculate_directory_size(directory): # 폴더크기 측정 기능 함수
+    """
+    주어진 디렉토리의 총 크기를 계산합니다.
+    """
+    total_size = 0
+    for dirpath, _, filenames in os.walk(directory):
+        for f in filenames:
+            fp = os.path.join(dirpath, f)
+            total_size += os.path.getsize(fp)
+    return total_size
+
+directory_path = input("크기를 측정할 디렉토리 경로를 입력하세요: ")
+print(f"디렉토리의 총 크기: {calculate_directory_size(directory_path)} bytes")
+
 
 # 파일 관리 시스템
 # - 중복 파일 탐지 및 삭제: 주어진 디렉토리에서 중복 파일을 찾아내고, 중복된 파일을 삭제합니다.
