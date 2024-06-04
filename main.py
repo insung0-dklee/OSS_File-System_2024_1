@@ -853,6 +853,38 @@ def list_zip_contents(zip_path):
         print(f"ZIP 파일 내용을 나열하는 중 오류가 발생했습니다: {e}")
 
 
+
+def list_files_by_extension(directory):
+    """
+    사용자가 입력한 디렉토리 내의 파일들을 확장자별로 분류하여 출력합니다.
+    매개변수 directory: 파일들을 분류할 디렉토리의 경로
+    """
+    if not os.path.exists(directory):
+        print("입력하신 경로가 존재하지 않습니다.")
+        return
+    if not os.path.isdir(directory):
+        print("입력하신 경로는 유효한 디렉토리가 아닙니다.")
+        return
+
+    extensions_dict = defaultdict(list)
+
+    for root, dirs, files in os.walk(directory):
+        for file in files:
+            extension = os.path.splitext(file)[1].lower()
+            if extension: 
+                extensions_dict[extension].append(os.path.join(root, file))
+
+    if not extensions_dict:
+        print("해당 디렉토리에 파일이 존재하지 않습니다.")
+    else:
+        for ext, files in sorted(extensions_dict.items()):
+            print(f"확장자 '{ext}' 파일 목록:")
+            for file in files:
+                print(f"  - {file}")
+            print() 
+
+
+
 b_is_exit = False
 version = "1.0.0"
 print(f"프로그램 버전: {version}")
@@ -888,6 +920,11 @@ while not b_is_exit:
         print("zip파일 내용을 출력하는 기능 실행")
         zip_file_path = input("zip파일 경로를 입력하세요: ")
         list_zip_contents(zip_file_path)
+
+    elif func == "확장자분류":
+        print("디렉토리 내 확장자별로 파일을 출력하는 기능 실행")
+        directory_path = input("파일을 분류할 디렉토리 경로를 입력하세요: ")
+        list_files_by_extension(directory_path)
 
     elif func == "?":
         print("""
