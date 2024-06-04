@@ -41,9 +41,16 @@ def showFavorites(bookmark: List):
             print(f"{i}. {favorite}")
 
 def addFavorite(bookmark: List):
+    """
+    사용자에게 즐겨찾기 목록으로 추가할 파일의 경로를 받아 목록 안에 동일 파일 경로가 있는지를 확인한다
+    없다면 즐겨찾기 목록에 새 항목으로 추가한다
+    """
     path = input("즐겨찾기에 추가할 파일 경로를 입력하세요: ")
-    bookmark.append(path)
-    print("즐겨찾기에 추가되었습니다.")
+    if path in bookmark:
+        print("이미 즐겨찾기에 추가된 파일입니다.")
+    else:
+        bookmark.append(path)
+        print("즐겨찾기에 추가되었습니다.")
 
 def removeFavorite():
     """
