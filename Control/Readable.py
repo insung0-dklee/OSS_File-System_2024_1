@@ -27,7 +27,7 @@ def readable():
             display_file_sizes()
 
         elif select == "종료":
-            print("중복 관리를 종료합니다.")
+            print("메인 메뉴로 이동합니다.")
             finish = True
 
         else:

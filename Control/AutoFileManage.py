@@ -67,7 +67,7 @@ def AutoFileManager():
             managerExecute()
 
         elif select == "종료":
-            print("자동 파일 관리자를 종료합니다.")
+            print("메인 메뉴로 이동합니다.")
             end = True
 
         else:
