@@ -353,9 +353,10 @@ def calculate_directory_size(directory): # 폴더크기 측정 기능 함수
             total_size += os.path.getsize(fp)
     return total_size
 
+"""
 directory_path = input("크기를 측정할 디렉토리 경로를 입력하세요: ")
 print(f"디렉토리의 총 크기: {calculate_directory_size(directory_path)} bytes")
-
+"""
 
 # 파일 관리 시스템
 # - 중복 파일 탐지 및 삭제: 주어진 디렉토리에서 중복 파일을 찾아내고, 중복된 파일을 삭제합니다.

@@ -17,6 +17,7 @@ def file_edit():
         if select == '?':
             print(" '읽기'              입력시 해당 파일의 내용을 출력")
             print(" '파일생성'          입력시 파일을 생성하고 원하는 내용을 작성")
+            print(" '단어횟수 세기'  입력시 파일에서 원하는 단어의 등장 횟수를 셀 수 있습니다.")
             print(" '찾아 바꾸기'       입력시 파일을 불러오고 원하는 단어를 찾아 새 단어로 바꿀 수 있습니다")
             print(" '복사 및 붙여넣기'  입력시 파일을 불러오고 원하는 부분을 찾아 다른 파일에 붙여넣을 수 있습니다")
             print(" '종료'             입력시 프로그램을 종료할 수 있습니다.")
@@ -28,6 +29,10 @@ def file_edit():
             modify_file()
         elif select == "복사 및 붙여넣기":
             copy_and_paste_text()
+
+        elif select == "단어횟수 세기":
+            count_word()
+        
         elif select == '종료':
             print('파일 편집 기능을 종료합니다.')
             finish = True
@@ -80,11 +85,28 @@ def copy_and_paste_text():
 
 def count_word():
     """
-    이미 만들어진 파일 내에서 특정 단어가 몇 번 나오는지를 세주는 함수
+    이미 만들어진 파일 내에서 특정 단어가 몇 번 나오는지를 세주는 함수입니다.
+    @Param
+        없음: 사용자 입력을 통해 파일 경로와 검색할 단어를 받습니다.
+    @Return
+        없음: 결과는 콘솔에 직접 출력됩니다.
+    @Raises
+        FileNotFoundError: 입력한 파일 경로에 해당하는 파일이 없을 때 예외를 발생시킵니다.
+        Exception: 파일을 읽는 중에 발생하는 기타 예외를 처리합니다.
     """
     file_path = input("단어 수 세기 기능을 사용하고 싶은 파일의 경로를 입력하세요: ")
-    word = input("횟수를 셀 단어를 입력하세요: ")
-    with open(file_path, 'r') as file:
-        content = file.read()
-    word_count = content.count(word)
+    word = input("횟수를 셀 단어를 입력하세요: ").lower()  # 대소문자 구분 없이 처리
+    word_count = 0
+    
+    try:
+        with open(file_path, 'r') as file:
+            for line in file:  # 파일을 한 줄씩 읽기
+                word_count += line.lower().count(word)  # 대소문자 구분 없이 카운트
+    except FileNotFoundError:
+        print(f"파일을 찾을 수 없습니다: {file_path}")
+        return
+    except Exception as e:
+        print(f"파일을 읽는 중 오류가 발생했습니다: {e}")
+        return
+    
     print(f"{word}는 {word_count}번 나옵니다.")
