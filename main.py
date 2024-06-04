@@ -20,6 +20,7 @@ import zipfile
 import tarfile
 import getpass
 import hashlib
+import stat
 from Control import Bookmark
 from Control import FileEdit
 from Control import FileControl
@@ -693,6 +694,31 @@ def print_file_mode(file_path):
     except Exception as e:
         print(f"모드 확인 중 오류가 발생했습니다: {e}")
 
+def print_file_permissions_rwx(file_path):
+    """
+    사용자가 입력한 파일 경로의 권한을 rwx 형식으로 출력합니다.
+    매개변수 file_path: 권한을 출력할 파일 경로
+    """
+    def get_permission_string(mode):
+        """
+        파일 모드를 rwx 문자열로 변환합니다.
+        매개변수 mode: 파일 모드
+        """
+        is_dir = 'd' if stat.S_ISDIR(mode) else '-'
+        perms = [
+            (stat.S_IRUSR, 'r'), (stat.S_IWUSR, 'w'), (stat.S_IXUSR, 'x'),
+            (stat.S_IRGRP, 'r'), (stat.S_IWGRP, 'w'), (stat.S_IXGRP, 'x'),
+            (stat.S_IROTH, 'r'), (stat.S_IWOTH, 'w'), (stat.S_IXOTH, 'x')
+        ]
+        permission_string = is_dir + ''.join([perm if mode & mask else '-' for mask, perm in perms])
+        return permission_string
+
+    try:
+        mode = os.stat(file_path).st_mode
+        permission_string = get_permission_string(mode)
+        print(f"{file_path}의 권한: {permission_string}")
+    except Exception as e:
+        print(f"권한 확인 중 오류가 발생했습니다: {e}")
 
 b_is_exit = False
 version = "1.0.0"
@@ -729,6 +755,11 @@ while not b_is_exit:
         print("파일 권한 출력기능 실행")
         file_path = input("권한을 확인할 파일 경로를 입력하세요: ")
         print_file_mode(file_path)
+
+    elif func == "rwx출력":
+        print("파일 권한 rwx 형식 출력기능 실행")
+        file_path = input("권한을 확인할 파일 경로를 입력하세요: ")
+        print_file_permissions_rwx(file_path)
 
     elif func == "?":
         print("""
