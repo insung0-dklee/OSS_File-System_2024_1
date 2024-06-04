@@ -3,6 +3,7 @@
 '''
 
 from typing import List
+import os
 
 
 favorites = []
@@ -42,6 +43,20 @@ def showFavorites(bookmark: List):
 
 def addFavorite(bookmark: List):
     path = input("즐겨찾기에 추가할 파일 경로를 입력하세요: ")
+
+    path = os.path.abspath(path)
+
+    # 파일 경로가 유효한지 확인
+    if not os.path.exists(path):
+        print("오류: 유효하지 않은 파일 경로입니다.")
+        return
+
+    # 중복된 항목인지 확인
+    if path in bookmark:
+        print("오류: 이미 즐겨찾기에 추가된 경로입니다.")
+        return
+
+    # 경로를 즐겨찾기에 추가
     bookmark.append(path)
     print("즐겨찾기에 추가되었습니다.")
 
