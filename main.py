@@ -658,3 +658,19 @@ while not b_is_exit:
 
     else:
         print("잘못 입력하셨습니다. 다시 입력해주세요. : ")
+
+
+def count_file_bytes(file_path):
+    # 파일 경로를 받아 파일 크기를 바이트 단위로 반환하는 함수
+    try:
+        # os.path.getsize() 함수로 파일 크기를 바이트 단위로 가져옴
+        byte_count = os.path.getsize(file_path)
+        return byte_count
+    except FileNotFoundError:
+        # 파일이 존재하지 않을 경우 예외 처리
+        print(f"File not found: {file_path}")
+        return None
+    except OSError as e:
+        # 기타 OS 관련 오류 발생 시 예외 처리
+        print(f"Error occurred while accessing the file: {file_path}, Error: {e}")
+        return None
