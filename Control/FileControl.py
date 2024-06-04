@@ -2,6 +2,7 @@
 파일 자체를 컨트롤 하는 기능들의 패키지 입니다.
 '''
 
+import ctypes
 import os
 import shutil
 import time
@@ -9,6 +10,7 @@ from typing import List
 import hashlib
 from functools import lru_cache
 from pathlib import Path
+import winreg
 
 def file_control():
     finish = False
@@ -440,3 +442,68 @@ def delete_directory(directory_path):
         print(f"Directory not found: {directory_path}")
     except OSError as e:
         print(f"Error deleting directory: {e}")
+
+
+def toggle_hidden(file_path):
+    """
+    파일 경로를 입력받아 해당 파일을 숨김, 해제 상태로 토글하는 코드
+    @Param
+        file_path : 숨김 설정을 토글할 파일 경로
+    @Return
+        오류 발생 시 False, 외에는 None
+    @Example
+        toggle_hidden(file_path)
+    """
+    try:
+        # 파일 속성 가져오기
+        attrs = ctypes.windll.kernel32.GetFileAttributesW(file_path)
+        if attrs == -1:
+            print("파일 속성을 가져오는 도중 오류가 발생했습니다.")
+            return False
+
+        # 숨김 속성 토글
+        if attrs & 2:
+            new_attrs = attrs & ~2  # 속성에서 숨김 속성 제거
+        else:
+            new_attrs = attrs | 2  # 속성에 숨김 속성 추가
+
+        # 새로운 파일 속성 설정
+        if not ctypes.windll.kernel32.SetFileAttributesW(file_path, new_attrs):
+            raise ctypes.WinError()
+
+        print(f"'{file_path}'의 숨김 상태가 토글되었습니다.")
+    except Exception as e:
+        print(f"'{file_path}'의 숨김 상태 토글 중 오류 발생: {e}")
+
+
+
+def toggle_show_hidden_files():
+    """
+    파일 탐색기의 숨김 폴더 또는 드라이브 표시 기능을 토글하는 함수
+    @Param
+        None
+    @Return
+        None
+    @Example
+        toggle_show_hidden_files()
+    """
+
+
+    try:
+        # 파일 탐색기 설정을 위한 레지스트리 키 열기
+        key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced", 0, winreg.KEY_ALL_ACCESS)
+        
+        # 'Hidden' 키의 현재 값 가져오기
+        current_value, _ = winreg.QueryValueEx(key, "Hidden")
+        
+        # 값 토글 (0에서 1로 또는 1에서 0으로)
+        new_value = int(not current_value)
+        
+        # 'Hidden' 키에 새로운 값 설정
+        winreg.SetValueEx(key, "Hidden", 0, winreg.REG_DWORD, new_value)
+        
+        # 레지스트리 키 닫기
+        winreg.CloseKey(key)
+        print("숨김 파일 표시 설정이 토글되었습니다.")
+    except Exception as e:
+        print(f"숨김 파일 표시 설정 토글 중 오류 발생: {e}")
