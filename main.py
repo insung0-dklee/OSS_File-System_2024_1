@@ -50,6 +50,21 @@ def get_largest_files(directory, n=10):
     files_with_size.sort(key=lambda x: x[1], reverse=True)
     return files_with_size[:n]
 
+def get_most_recently_created_files(directory, n=10):
+    """
+    주어진 디렉토리에서 최근 생성된 파일 상위 n개를 반환합니다.
+    :param directory: 디렉토리 경로
+    :param n: 반환할 파일 수 (기본값 10)
+    """
+    files_with_ctime = []
+    for dirpath, _, filenames in os.walk(directory):
+        for filename in filenames:
+            file_path = os.path.join(dirpath, filename)
+            files_with_ctime.append((file_path, os.path.getctime(file_path)))
+
+    files_with_ctime.sort(key=lambda x: x[1], reverse=True)
+    return files_with_ctime[:n]
+
 
 def move_to_trash(file_path):
     """
@@ -888,6 +903,15 @@ while not b_is_exit:
         for file_path, size in largest_files:
             print(f"{file_path}: {size} bytes")
 
+
+    elif func == "최근생성":
+        directory = input("디렉토리 경로를 입력하세요: ")
+        n = int(input("출력할 파일 수를 입력하세요: "))
+        recent_files = get_most_recently_created_files(directory, n)
+        print(f"최근 생성된 파일 상위 {n}개:")
+        for file_path, ctime in recent_files:
+            print(f"{file_path}: 생성 시간 - {time.ctime(ctime)}")
+
     elif func == "?":
         print("""
                 [도움말]
@@ -897,6 +921,7 @@ while not b_is_exit:
                 '가독성'   입력시 파일의 단위를 읽기 좋게 볼 수 있습니다.
                 '중복관리' 입력시 중복 파일을 관리할 수 있습니다.
                 '용량상위' 입력시 디렉토리에서 용량이 큰 파일 상위 n개를 출력합니다.
+                '최근생성' 입력시 디렉토리에서 최근 생성된 파일 상위 n개를 출력합니다.
                 '종료'     입력시 프로그램을 종료합니다.
             """)
 
