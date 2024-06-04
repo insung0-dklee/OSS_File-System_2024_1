@@ -466,6 +466,18 @@ def compress_file(file_path, method='zip'):
                 tarf.add(file_path, arcname=file_name)
             print(f"파일이 성공적으로 압축되었습니다: {output_tar}")
 
+        elif method == 'tar.gz':
+            output_tar_gz = os.path.join(file_dir, f"{file_name}.tar.gz")
+            with tarfile.open(output_tar_gz, 'w:gz') as tarf:
+                tarf.add(file_path, arcname=file_name)
+            print(f"파일이 성공적으로 압축되었습니다: {output_tar_gz}")
+        
+        elif method == 'tar.bz2':
+            output_tar_bz2 = os.path.join(file_dir, f"{file_name}.tar.bz2")
+            with tarfile.open(output_tar_bz2, 'w:bz2') as tarf:
+                tarf.add(file_path, arcname=file_name)
+            print(f"파일이 성공적으로 압축되었습니다: {output_tar_bz2}")
+
         else:
             print(f"지원하지 않는 압축 방식입니다: {method}")
     except Exception as e:
