@@ -423,20 +423,38 @@ def check_integrity(hash_path, file_path):
     else:
         print(f"{file_path}의 무결성 : 손상\nCurrent Hash: {current_hash}\nOrigin Hash: {origin_hash}")
 
-"""
-Deletes a directory at the specified path.
-@Param
-    directory_path : The path where the directory should be deleted.
-@Return
-    None
-@Raises
-    Prints an error message if the operation fails.
-"""
+
 def delete_directory(directory_path):
-    try:
+    """
+    디렉토리를 삭제하는 함수입니다. 디렉토리가 존재하는지 확인하고, 비어 있으면 삭제합니다. 비어 있지 않으면 사용자에게 확인을 요청한 후 삭제합니다.
+
+    @Param
+        directory_path: str - 삭제할 디렉토리의 경로입니다.
+    @Return
+        None
+    @Raises
+        FileNotFoundError: 디렉토리가 존재하지 않을 때 발생합니다.
+        OSError: 디렉토리 삭제 시 오류가 발생했을 때 발생합니다. 비어 있지 않은 디렉토리를 `os.rmdir`로 삭제하려 할 때 발생할 수 있습니다.
+        Exception: `shutil.rmtree` 함수 사용 시 예상치 못한 오류가 발생할 때 발생합니다.
+    """
+    # 디렉토리 존재 여부 확인
+    if not os.path.exists(directory_path):
+        print(f"Directory not found: {directory_path}")
+        return
+    
+    # 디렉토리가 비어 있는지 확인
+    if not os.listdir(directory_path):  # 비어 있다면
         os.rmdir(directory_path)
         print(f"Directory {directory_path} deleted successfully")
-    except FileNotFoundError:
-        print(f"Directory not found: {directory_path}")
-    except OSError as e:
-        print(f"Error deleting directory: {e}")
+    else:  # 비어 있지 않다면
+        confirmation = input("비어있지 않습니다. 정말 삭제하겠습니까?(Y/N) ")
+        if confirmation.lower() == 'y':
+            try:
+                # shutil 모듈을 사용하여 비어있지 않은 디렉토리 삭제
+                import shutil
+                shutil.rmtree(directory_path)
+                print(f"Directory {directory_path} deleted successfully")
+            except Exception as e:
+                print(f"Error deleting directory: {e}")
+        else:
+            print("삭제가 취소되었습니다.")
