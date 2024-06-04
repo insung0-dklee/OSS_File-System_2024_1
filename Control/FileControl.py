@@ -1,7 +1,7 @@
 '''
 파일 자체를 컨트롤 하는 기능들의 패키지 입니다.
 '''
-
+from PIL import Image
 import os
 import shutil
 import time
@@ -440,3 +440,98 @@ def delete_directory(directory_path):
         print(f"Directory not found: {directory_path}")
     except OSError as e:
         print(f"Error deleting directory: {e}")
+
+
+import os
+from PIL import Image
+import re
+
+def resize_images(dir_path, size, output_dir=None):
+    """
+    이미지 파일을 받아와 이미지의 크기를 일괄적으로 변경합니다.
+
+    @Param
+        dir_path : 파일들을 선택할 폴더의 경로
+        size : 이미지 파일의 재조정할 크기. 예 : (250, 250)
+        output_dir : 크기 조정된 이미지를 저장할 폴더의 경로 (기본값: None)
+    @Return
+        None
+    """
+    # 정상적인 경로가 아니면 오류
+    if not(os.path.isdir(dir_path)):
+        print("정상적인 경로가 아닙니다.")
+        return False
+
+    # 정상적인 크기가 아니면 오류
+    if len(size) != 2 or not isinstance(size[0], int) or not isinstance(size[1], int):
+        print("정상적인 크기가 아닙니다.")
+        return False
+    
+    # 이미지 파일 목록을 key=경로, value=이름으로 image 딕셔너리에 저장
+    images = {}
+    for file_name in os.listdir(dir_path):
+        if file_name.lower().endswith(('png', 'jpg', 'jpeg', 'bmp', 'gif')):
+            file_path = os.path.join(dir_path, file_name)
+            images[file_path] = file_name
+    
+    # 파일 목록이 없으면 파일이 없다고 하고 종료
+    if len(images) == 0:
+        print("해당 디렉터리에 이미지 파일이 존재하지 않습니다.")
+        return False
+
+    # 사용자에게 폴더의 이미지 목록을 출력
+    print("이미지 목록:")
+    for i, (file_path, file_name) in enumerate(images.items()):
+        print(f"{i}: {file_name}")
+
+    # 사용자로부터 변경할 파일의 인덱스를 입력받음
+    index_list = []
+    for x in input("변경할 파일들의 번호를 공백 문자 혹은 -로 구분해 입력 (예: 1 3-20 21 22): ").split():
+        if re.match(r'^\d+$|^\d+-\d+$', x):  # 숫자 또는 숫자-숫자 형식의 입력 검증
+            if '-' in x:
+                start, end = x.split('-')
+                index_list.extend(range(int(start), int(end) + 1))
+            else:
+                index_list.append(int(x))
+        else:
+            print("입력된 파일 번호가 문자이거나 정상적이지 않습니다.")
+            return False
+
+    # 출력 디렉터리가 지정되었고, 존재하지 않으면 생성
+    try:
+        if output_dir and not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+    except:
+        print(f"권한이 없거나 예상치 못한 오류가 발생했습니다.")
+        return False
+
+    # 선택된 파일의 크기를 조정
+    try:
+        for index in index_list:
+            file_path = list(images.keys())[index]
+            img = Image.open(file_path)
+            # 이미지 크기 조정
+            img_resized = img.resize(size)
+            
+            # 파일 이름과 확장자 분리
+            file_name, file_extension = os.path.splitext(images[file_path])
+            
+            # 출력 파일 경로 정의
+            if output_dir:
+                output_file_path = os.path.join(output_dir, f"{file_name}_resized{file_extension}")
+            else:
+                output_file_path = os.path.join(os.path.dirname(file_path), f"{file_name}_resized{file_extension}")
+            
+            # 크기 조정된 이미지 저장
+            img_resized.save(output_file_path)
+            
+        print(f"이미지를 성공적으로 저장했습니다.")
+    except Exception as e:
+        print(f"'{file_path}'의 크기 조정 중 오류 발생: {e}")
+
+# 예제 사용법
+dir_path = r'C:\Users\SAMSUNG\Pictures\Screenshots'  # 이미지가 들어있는 폴더 경로
+size = (250, 250)  # 조정할 이미지 크기
+output_dir = r'C:\Users\SAMSUNG\image'  # 크기 조정된 이미지를 저장할 폴더 경로 (None으로 설정 가능)
+
+resize_images(dir_path, size, output_dir)
