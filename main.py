@@ -33,6 +33,7 @@ from Control import AutoFileManage
 import subprocess
 import ctypes
 
+import re
 
 def move_to_trash(file_path):
     """
