@@ -883,6 +883,29 @@ def list_files_by_extension(directory):
                 print(f"  - {file}")
             print() 
 
+def read_first_10_lines(file_path):
+    """
+    지정된 텍스트 파일에서 첫 10줄을 읽고 출력합니다.
+    매개변수 file_path: 읽을 파일의 경로
+    """
+    try:
+        if not os.path.exists(file_path):
+            print("파일이 존재하지 않습니다.")
+            return
+        
+        if not file_path.endswith('.txt'):
+            print("입력된 파일이 텍스트 파일(.txt)이 아닙니다.")
+            return
+
+        with open(file_path, 'r', encoding='utf-8') as file:
+            for i in range(10):
+                line = file.readline()
+                if not line:  
+                    break
+                print(line.strip())  
+    except Exception as e:
+        print(f"파일을 읽는 중 오류가 발생했습니다: {e}")
+
 
 
 b_is_exit = False
@@ -925,6 +948,12 @@ while not b_is_exit:
         print("디렉토리 내 확장자별로 파일을 출력하는 기능 실행")
         directory_path = input("파일을 분류할 디렉토리 경로를 입력하세요: ")
         list_files_by_extension(directory_path)
+
+    elif func == "txt미리보기":
+        print("txt파일 10줄 미리보기 기능 실행")
+        file_path = input("읽을 텍스트 파일의 경로를 입력하세요: ")
+        read_first_10_lines(file_path)
+        
 
     elif func == "?":
         print("""
