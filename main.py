@@ -682,6 +682,57 @@ def create_file(filename):
         print("비밀번호가 틀렸습니다.")
 
 
+def find_unused_files(directory, days_unused):
+    """
+    주어진 기간 동안 사용되지 않은 파일을 찾습니다.
+    :param directory: 검색할 디렉토리
+    :param days_unused: 사용되지 않은 일 수
+    :return: 사용되지 않은 파일 목록
+    """
+    unused_files = []
+    current_time = time.time()
+    cutoff_time = current_time - (days_unused * 86400)  # 86400초 = 1일
+
+    for root, dirs, files in os.walk(directory):
+        for file in files:
+            file_path = os.path.join(root, file)
+            last_access_time = os.path.getatime(file_path)
+            if last_access_time < cutoff_time:
+                unused_files.append(file_path)
+
+    return unused_files
+
+def cleanup_unused_files():
+    """
+    사용되지 않은 파일을 찾아 정리합니다.
+    """
+    directory = input("정리할 디렉토리 경로를 입력하세요: ")
+    days_unused = int(input("몇 일 동안 사용되지 않은 파일을 찾으시겠습니까? "))
+
+    unused_files = find_unused_files(directory, days_unused)
+
+    if not unused_files:
+        print("사용되지 않은 파일이 없습니다.")
+        return
+
+    print("사용되지 않은 파일 목록:")
+    for idx, file in enumerate(unused_files, start=1):
+        print(f"{idx}. {file}")
+
+    delete_choice = input("위 파일들을 삭제하시겠습니까? (y/n): ").lower()
+
+    if delete_choice == 'y':
+        for file in unused_files:
+            try:
+                os.remove(file)
+                print(f"삭제됨: {file}")
+            except Exception as e:
+                print(f"파일 삭제 중 오류 발생: {file} - {e}")
+    else:
+        print("파일 삭제가 취소되었습니다.")
+
+
+
 b_is_exit = False
 version = "1.0.0"
 print(f"프로그램 버전: {version}")
@@ -713,6 +764,10 @@ while not b_is_exit:
         print("중복 관리 기능 실행")
         Duplicates.duplicates()
 
+     elif func == "파일정리":
+        print("중복 관리 기능 실행")
+        cleanup_unused_files()
+
     elif func == "?":
         print("""
                 [도움말]
@@ -721,6 +776,7 @@ while not b_is_exit:
                 '파일관리' 입력시 파일을 관리할 수 있습니다.
                 '가독성'   입력시 파일의 단위를 읽기 좋게 볼 수 있습니다.
                 '중복관리' 입력시 중복 파일을 관리할 수 있습니다.
+                '파일정리' 입력시 특정 기간 동안 사용하지 않은 파일을 정리할 수 있습니다.
                 '종료'     입력시 프로그램을 종료합니다.
             """)
 
