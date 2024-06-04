@@ -1,3 +1,5 @@
+from moviepy.editor import *
+
 '''
 파일 편집 패키지 (vim 생각하면 편합니다.)
 
@@ -88,3 +90,61 @@ def count_word():
         content = file.read()
     word_count = content.count(word)
     print(f"{word}는 {word_count}번 나옵니다.")
+
+def video_to_audio(video_path, audio_format='mp3'):
+    """
+    동영상 형식의 파일을 입력받고, 음악 혹은 소리를 추출해 저장하는 함수
+    @Param
+        video_path : 동영상 파일의 경로입니다.
+                     ['mp4', 'avi', 'mov', 'mkv', 'wmv'] 중 하나 사용
+        audio_format : 저장할 파일의 확장자입니다. 기본 mp3
+                       ['mp3', 'aac', 'm4a', 'wav', 'ogg'] 중 하나 사용
+    @Return
+        오류 발생 시 False, 아니면 None
+    @Examples
+        video_to_audio(file_path, ogg)
+    """
+    # 지원되는 오디오 형식 확인
+    supported_audio_formats = ['mp3', 'aac', 'm4a', 'wav', 'ogg']
+    
+    if audio_format not in supported_audio_formats:
+        print(f"Error: '{audio_format}'은(는) 지원되지 않는 오디오 형식입니다. {supported_audio_formats} 중 하나를 입력하세요.")
+        return False
+    
+    # 동영상 파일 확장자 추출
+    video_extension = video_path.split('.')[-1].lower()
+    
+    # 지원되는 동영상 형식인지 확인
+    if video_extension not in ['mp4', 'avi', 'mov', 'mkv', 'wmv']:
+        print("Error: 지원되지 않는 동영상 형식입니다. MP4, AVI, MOV, MKV, WMV 형식 중 하나를 입력하세요.")
+        return False
+    
+    # 동영상 파일 로드
+    try:
+        video_clip = VideoFileClip(video_path)
+    except Exception as e:
+        print(f"Error: 동영상 파일 로드 중 오류 발생: {e}")
+        return False
+    
+    # 동영상에서 오디오 추출
+    audio_clip = video_clip.audio
+    
+    # 출력 오디오 파일 경로 정의
+    audio_file_path = video_path.rsplit('.', 1)[0] + f'.{audio_format}'
+    
+    # 오디오를 파일로 저장
+    try:
+        audio_clip.write_audiofile(audio_file_path, codec=audio_format)
+    except Exception as e:
+        print(f"Error: 오디오 파일 저장 중 오류 발생: {e}")
+        return False
+    
+    # 클립 닫기
+    video_clip.close()
+    audio_clip.close()
+
+    print(f"동영상 '{video_path}'를 오디오 '{audio_file_path}'로 변환했습니다.")
+
+
+# 예제 사용법
+converted_audio_path = video_to_audio(input(), audio_format='aac')
