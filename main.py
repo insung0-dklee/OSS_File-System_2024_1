@@ -1,5 +1,74 @@
-
 """
+import os
+
+def search_files(directory, name=None, ext=None, min_size=None, max_size=None): -> 파일의 이름과 타입, 최소크기 최대크기에 맞는 파일을 찾는 코드입니다.
+    results = []    -> results라는 리스트를 만들어 이 함수에 적합한 값을 넣습니다.
+    for root, _, files in os.walk(directory):   -> root는 현재 아래 조건문을 돌아야할 파일의 경로를 나타냅니다. 즉 디렉토리 내에있는 파일들의 경로를 하나씩 보는 코드입니다.
+        for file in files:  -> 파일들에 있는 모든 파일을 다 검색합니다.
+            file_path = os.path.join(root, file)    -> 파일의 경로를 만듭니다.
+
+            if name and name.lower() not in file.lower(): -> 사용자가 대소문자의 입력을 잘못했을 때를 대비하여 name의 소문자를 나타내는 name.lower()까지 확인하여 만약 file
+            에 해당하는 이름이 없다면
+                continue 건너뜁니다.
+
+            if ext and not file.lower().endswith(f".{ext.lower()}"):    -> 만약 해당하는 확장자 파일이 없다면 즉 txt를 입력했을 때 txt로 끝나는 파일명이 없다면
+                continue 건너뜁니다.
+
+            file_size = os.path.getsize(file_path) ->file_size는 현재 탐색중인 파일의 크기를 나타냅니다.
+            if (min_size and file_size < min_size) or (max_size and file_size > max_size):  -> 만약 파일의 크기가 최소크기보다 작거나 최대크기보다 크다면
+                continue 건너뜁니다.
+
+            results.append(file_path)   위의 조건문에서 continue되지 않은 파일들을 results 리스트에 넣습니다.
+
+    return results
+
+# 사용 예시
+if __name__ == "__main__":
+    directory = "/path/to/your/directory"  -> 사용자가 검색할 디렉토리 경로입니다.
+    name = "example"   -> 사용자가 입력할 파일 이름
+    ext = "txt"  -> 사용자가 입력할 확장자 파일의 종류입니다.
+    min_size = 1024     -> 작성자가 임의로 정한 최소 크기(1KB)입니다.
+    max_size = 1024 * 1024  -> 작성자가 임의로 정한 최대 크기(1MB)입니다.
+
+    matched_files = search_files(directory, name, ext, min_size, max_size)  -> search_files 함수의 리턴값을 matched_files에 넣습니다.
+    for file in matched_files:  -> matched_files안에 있는 file들을 다 출력해주는 코드입니다.
+        print(file)
+"""
+
+import os
+
+def search_files(directory, name=None, ext=None, min_size=None, max_size=None):
+    results = []
+    for root, _, files in os.walk(directory):
+        for file in files:
+            file_path = os.path.join(root, file)
+
+            if name and name.lower() not in file.lower():
+                continue
+
+            if ext and not file.lower().endswith(f".{ext.lower()}"):
+                continue
+
+            file_size = os.path.getsize(file_path)
+            if (min_size and file_size < min_size) or (max_size and file_size > max_size):
+                continue
+
+            results.append(file_path)
+
+    return results
+
+if __name__ == "__main__":
+    directory = "/path/to/your/directory"  # 검색할 디렉토리 경로
+    name = "example"  # 파일 이름
+    ext = "txt"  # 확장자
+    min_size = 1024  # 최소 크기 (1KB)
+    max_size = 1024 * 1024  # 최대 크기 (1MB)
+
+    matched_files = search_files(directory, name, ext, min_size, max_size)
+    for file in matched_files:
+        print(file)
+"""
+
 현재 경로에 특정 파일이나 디렉토리가 존재하는지를 확인하기 위해 import os를 사용
 파일을 이동이나 복사하기 위해 shutil 모듈을 사용하였음
 파일 탐색기에서의 잘라내기 기능을 구현함
