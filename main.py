@@ -91,6 +91,39 @@ def list_trash():
     for file in files:
         print(f"  - {file}")
 
+def getParentDir(path):
+    return os.path.dirname(path)
+
+def get_versioned_filename(filename, version):
+    base, ext = os.path.splitext(filename)
+    return f"{base}_v{version}{ext}"
+
+def get_latest_version(dest_dir, filename):
+    base, ext = os.path.splitext(filename)
+    version = 0
+    for file in os.listdir(dest_dir):
+        if file.startswith(base) and file.endswith(ext):
+            parts = file[len(base):-len(ext)].split('_v')
+            if len(parts) == 2 and parts[1].isdigit():
+                version = max(version, int(parts[1]))
+    return version
+
+def copyFileWithVersion(src, dest_dir):
+    try:
+        filename = os.path.basename(src)
+        latest_version = get_latest_version(dest_dir, filename)
+        new_version = latest_version + 1
+        dest = os.path.join(dest_dir, get_versioned_filename(filename, new_version))
+        shutil.copy(src, dest)
+        print(f"파일이 성공적으로 복사되었습니다: {dest}")
+    except Exception as e:
+        print(f"파일 복사 중 오류가 발생했습니다: {e}")
+
+def CopyFile():
+    src = input("복사할 파일의 경로를 입력하세요: ")
+    dest_dir = input("복사할 위치를 입력하세요 (디렉토리 경로): ")
+    copyFileWithVersion(src, dest_dir)
+
 def defragment_file_system(path):
     """주어진 경로에 대해 파일 시스템 조각 모음을 수행합니다."""
     try:
@@ -713,6 +746,10 @@ while not b_is_exit:
         print("중복 관리 기능 실행")
         Duplicates.duplicates()
 
+    elif func == "파일복사":
+        print("파일 복사 기능 실행")
+        CopyFile()
+
     elif func == "?":
         print("""
                 [도움말]
@@ -721,6 +758,7 @@ while not b_is_exit:
                 '파일관리' 입력시 파일을 관리할 수 있습니다.
                 '가독성'   입력시 파일의 단위를 읽기 좋게 볼 수 있습니다.
                 '중복관리' 입력시 중복 파일을 관리할 수 있습니다.
+                '파일복사' 입력시 파일을 복사하여 새로운 버전을 남깁니다.
                 '종료'     입력시 프로그램을 종료합니다.
             """)
 
