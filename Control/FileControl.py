@@ -5,6 +5,7 @@
 import os
 import shutil
 import time
+import stat
 from typing import List
 import hashlib
 from functools import lru_cache
@@ -28,6 +29,7 @@ def file_control():
             print(" '부모 디렉토리 확인' 입력시 선택한 디렉토리의 부모 디렉토리 출력")
             print(" '파일복사'           입력시 파일 복사 및 붙여넣기")
             print(" '잘라내기'           입력시 파일 잘라내기 및 붙여넣기")
+            print(" '읽기전용'           입력시 파일을 읽기전용으로 만듦")
             print(" '종료'               입력시 프로그램을 종료할 수 있습니다.")
         elif select == '메타데이터 출력':
             manage_metadata()
@@ -55,6 +57,9 @@ def file_control():
 
         elif select == '잘라내기':
             cut_file()
+
+        elif select == '읽기전용':
+       	    read_only()
 
         elif select == "종료":
             print("중복 관리를 종료합니다.")
@@ -422,6 +427,39 @@ def check_integrity(hash_path, file_path):
         print(f"{file_path}의 무결성 : 정상")
     else:
         print(f"{file_path}의 무결성 : 손상\nCurrent Hash: {current_hash}\nOrigin Hash: {origin_hash}")
+
+def make_read_only(file_path):
+    # 파일 존재 여부 확인
+    if not os.path.exists(file_path):
+        print(f"오류: {file_path} 파일이 존재하지 않습니다.")
+        return
+    
+    # 운영체제에 따라 파일 권한 설정
+    if os.name == 'posix':
+        # Unix 기반 시스템
+        os.chmod(file_path, 0o444)
+    elif os.name == 'nt':
+        # Windows 시스템
+        os.chmod(file_path, stat.S_IREAD)
+    else:
+        print(f"지원되지 않는 운영 체제: {os.name}")
+        return
+    
+    print(f"{file_path}가 읽기 전용으로 설정되었습니다.")
+
+def read_only():
+    # 사용자로부터 경로와 파일 이름 입력받기
+    path = input("파일의 경로를 입력하세요: ")
+    filename = input("파일 이름을 입력하세요: ")
+    
+    # 전체 파일 경로 생성
+    full_path = os.path.join(path, filename)
+    
+    # 파일 읽기 전용으로 만들기
+    make_read_only(full_path)
+
+if __name__ == "__read_only__":
+    read_only()
 
 """
 Deletes a directory at the specified path.
