@@ -1,3 +1,78 @@
+"""
+watchdog 라이브러리를 다운받아야 실행할 수 있습니다.
+import time
+from watchdog.observers import Observer         -> watchdong 라이브러리를 통해 디렉토리의 현황을 실시간으로 파악할 수 있습니다. observer라는 것을 통해
+                                                    파일 내의 디렉토리의 변경사항을 관찰합니다.
+from watchdog.events import FileSystemEventHandler  -> 디렉토리 내에서 일어난 이벤트를 관리하는 것입니다.
+
+class FileChangeHandler(FileSystemEventHandler):    -> FileSysTemEventHandler라는 클래스를 상속받아 파일 변화를 감지하는
+                                                        새로운 클래스를 만듭니다.
+    def on_created(self, event):                    -> 만약 파일이 생성되는 이벤트가 일어났다면
+        print(f"파일 생성: {event.src_path}")         -> 파일이 생성되었음을 알리고 생성된 주소를 나타냅니다.
+
+    def on_modified(self, event):                   -> 만약 파일이 수정됐다면
+        print(f"파일 수정: {event.src_path}")         -> 파일이 수정됨을 알리고 수정된 주소를 나타냅니다.
+
+    def on_deleted(self, event):                    -> 만약 파일이 삭제됐다면
+        print(f"파일 삭제: {event.src_path}")         -> 파일이 삭제됨을 알리고 삭제된 주소를 나타냅니다.
+
+    def on_moved(self, event):                      -> 만약 파일이 이동했다면
+        print(f"파일 이동: {event.src_path} -> {event.dest_path}")  -> 파일이 이동됐음을 알리고 이동된 주소를 나타냅니다.
+
+def monitor_directory(path):                       -> 현재 디렉토리를 감시하는 함수입니다.
+    event_handler = FileChangeHandler()            -> 디렉토리 내에 이벤트가 발생하면 어떤동작을 할지를 나타내는 변수입니다.
+    observer = Observer()                           -> 디렉토리 내에 파일이 어떻게 변했는지 감시하는 변수입니다.
+    observer.schedule(event_handler, path, recursive=True)  -> 감시하는 옵저버에 event_handler를 등록하고 감시할 디렉토리 경로를 path로 설정,
+                                                            -> 그 path의 하위목록 까지 검사하는 recursive+=True를 사용하였습니다.
+    observer.start()                                        -> 관찰하기를 시작한다는 것을 뜻합니다.
+
+    try:            -> 예외를 설정하기 위하여 try를 사용하였습니다.
+        while True:
+            time.sleep(1)   -> 반복문이 실행되는 주기를 1초로 합니다.
+    except KeyboardInterrupt:   -> 만약 사용자가 Ctrl+c 를 누른다면 예외가 발생하여
+        observer.stop()         -> 프로그램을 강제종료합니다.
+    observer.join()             -> observer.stop()이 완전이 실행될 때까지 기다립니다.
+
+if __name__ == "__main__":
+    print("모니터링할 디렉토리 경로:  ")
+    path = os.getcwd()
+    monitor_directory(path)
+"""
+
+import time
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
+
+class FileChangeHandler(FileSystemEventHandler):
+    def on_created(self, event):
+        print(f"파일 생성: {event.src_path}")
+
+    def on_modified(self, event):
+        print(f"파일 수정: {event.src_path}")
+
+    def on_deleted(self, event):
+        print(f"파일 삭제: {event.src_path}")
+
+    def on_moved(self, event):
+        print(f"파일 이동: {event.src_path} -> {event.dest_path}")
+
+def monitor_directory(path):
+    event_handler = FileChangeHandler()
+    observer = Observer()
+    observer.schedule(event_handler, path, recursive=True)
+    observer.start()
+
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        observer.stop()
+    observer.join()
+
+if __name__ == "__main__":
+    print("모니터링할 디렉토리 경로:  ")
+    path = os.getcwd()
+    monitor_directory(path)
 
 """
 현재 경로에 특정 파일이나 디렉토리가 존재하는지를 확인하기 위해 import os를 사용
