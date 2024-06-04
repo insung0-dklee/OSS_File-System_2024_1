@@ -63,9 +63,15 @@ def removeFavorite(bookmark: List):
         for i, favorite in enumerate(favorites, 1):
             print(f"{i}. {favorite}")
 
-        index = int(input("제거할 파일의 번호를 입력하세요: "))
-        if 1 <= index <= len(favorites):
-            removed_favorite = bookmark.pop(index - 1)
-            print(f"{removed_favorite} 가 즐겨찾기에서 제거되었습니다.")
-        else:
-            print("해당 번호의 파일이 존재하지 않습니다. 제거할 파일의 번호를 다시 입력해주세요.")
+        while True:
+            try:
+                index = int(input("제거할 파일의 번호를 입력하세요: "))
+                if 1 <= index <= len(bookmark):
+                    removed_favorite = bookmark.pop(index - 1)
+                    removed_favorite = favorites.pop(index - 1)
+                    print(f"{removed_favorite} 가 즐겨찾기에서 제거되었습니다.")
+                    break
+                else:
+                    print("해당 번호의 파일이 존재하지 않습니다. 제거할 파일의 번호를 다시 입력해주세요.")
+            except ValueError:
+                print("잘못된 입력입니다. 숫자를 입력해주세요.")
