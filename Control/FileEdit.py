@@ -77,3 +77,14 @@ def copy_and_paste_text():
     with open(target_file_path, 'a') as file:
         file.write(text_to_copy)
     print("복사 및 붙여넣기가 완료되었습니다.")
+
+def count_word():
+    """
+    이미 만들어진 파일 내에서 특정 단어가 몇 번 나오는지를 세주는 함수
+    """
+    file_path = input("단어 수 세기 기능을 사용하고 싶은 파일의 경로를 입력하세요: ")
+    word = input("횟수를 셀 단어를 입력하세요: ")
+    with open(file_path, 'r') as file:
+        content = file.read()
+    word_count = content.count(word)
+    print(f"{word}는 {word_count}번 나옵니다.")
