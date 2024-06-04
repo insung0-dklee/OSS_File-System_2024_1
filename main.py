@@ -681,6 +681,36 @@ def create_file(filename):
     else:
         print("비밀번호가 틀렸습니다.")
 
+def list_zip_contents(zip_path):
+    """
+    ZIP 파일의 내용을 나열합니다.
+    :param zip_path: ZIP 파일의 경로
+    """
+    try:
+        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+            file_list = zip_ref.namelist()
+            print(f"{zip_path} 내용:")
+            for file in file_list:
+                print(f"  - {file}")
+    except Exception as e:
+        print(f"ZIP 파일 내용을 나열하는 중 오류가 발생했습니다: {e}")
+
+def extract_file_from_zip(zip_path, file_name, dest_dir):
+    """
+    ZIP 파일에서 특정 파일을 추출합니다.
+    :param zip_path: ZIP 파일의 경로
+    :param file_name: 추출할 파일의 이름
+    :param dest_dir: 추출할 목적지 디렉토리
+    """
+    try:
+        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+            if file_name in zip_ref.namelist():
+                zip_ref.extract(file_name, dest_dir)
+                print(f"{file_name}이(가) {dest_dir}로 추출되었습니다.")
+            else:
+                print(f"{file_name}이(가) ZIP 파일에 존재하지 않습니다.")
+    except Exception as e:
+        print(f"ZIP 파일에서 파일을 추출하는 중 오류가 발생했습니다: {e}")
 
 b_is_exit = False
 version = "1.0.0"
@@ -713,6 +743,16 @@ while not b_is_exit:
         print("중복 관리 기능 실행")
         Duplicates.duplicates()
 
+    elif func == "압축파일탐색":
+        zip_path = input("ZIP 파일 경로를 입력하세요: ")
+        list_zip_contents(zip_path)
+
+    elif func == "압축파일추출":
+        zip_path = input("ZIP 파일 경로를 입력하세요: ")
+        file_name = input("추출할 파일 이름을 입력하세요: ")
+        dest_dir = input("파일을 추출할 목적지 디렉토리를 입력하세요: ")
+        extract_file_from_zip(zip_path, file_name, dest_dir)
+        
     elif func == "?":
         print("""
                 [도움말]
@@ -721,6 +761,8 @@ while not b_is_exit:
                 '파일관리' 입력시 파일을 관리할 수 있습니다.
                 '가독성'   입력시 파일의 단위를 읽기 좋게 볼 수 있습니다.
                 '중복관리' 입력시 중복 파일을 관리할 수 있습니다.
+                '압축파일탐색' 입력시 ZIP 파일의 내용을 나열합니다.
+                '압축파일추출' 입력시 ZIP 파일에서 특정 파일을 추출합니다.
                 '종료'     입력시 프로그램을 종료합니다.
             """)
 
