@@ -20,6 +20,7 @@ import zipfile
 import tarfile
 import getpass
 import hashlib
+import logging
 from Control import Bookmark
 from Control import FileEdit
 from Control import FileControl
@@ -681,6 +682,29 @@ def create_file(filename):
     else:
         print("비밀번호가 틀렸습니다.")
 
+def setup_logging():
+    logging.basicConfig(filename='access_log.txt', level=logging.INFO,
+                        format='%(asctime)s:%(levelname)s:%(message)s')
+
+setup_logging()
+
+def log_file_read(file_path):
+    # 파일 읽기 시뮬레이션
+    logging.info(f'File read: {file_path}')
+
+def log_file_write(file_path):
+    # 파일 쓰기 시뮬레이션
+    logging.info(f'File written: {file_path}')
+
+def log_file_delete(file_path):
+    # 파일 삭제 시뮬레이션
+    logging.info(f'File deleted: {file_path}')
+
+def checking_log():
+    log_file_read('/path/to/read_file.txt')
+    log_file_write('/path/to/write_file.txt')
+    log_file_delete('/path/to/delete_file.txt')
+
 
 b_is_exit = False
 version = "1.0.0"
@@ -713,6 +737,10 @@ while not b_is_exit:
         print("중복 관리 기능 실행")
         Duplicates.duplicates()
 
+    elif func == "로그확인":
+        print("액세스 로그 기록 확인")
+        checking_log()
+
     elif func == "?":
         print("""
                 [도움말]
@@ -721,6 +749,7 @@ while not b_is_exit:
                 '파일관리' 입력시 파일을 관리할 수 있습니다.
                 '가독성'   입력시 파일의 단위를 읽기 좋게 볼 수 있습니다.
                 '중복관리' 입력시 중복 파일을 관리할 수 있습니다.
+                '로그확인' 입력시 액세스 로그 기록을 확인 할 수 있습니다.
                 '종료'     입력시 프로그램을 종료합니다.
             """)
 
