@@ -682,6 +682,75 @@ def create_file(filename):
         print("비밀번호가 틀렸습니다.")
 
 
+def search_files_by_name(directory, search_name):
+    """
+    주어진 이름을 포함하는 파일을 검색합니다.
+    """
+    result = []
+    for root, dirs, files in os.walk(directory):
+        for file in files:
+            if search_name in file:
+                result.append(os.path.join(root, file))
+    if result:
+        print("검색 결과:")
+        for file in result:
+            print(f"  - {file}")
+    else:
+        print("조건에 맞는 파일을 찾을 수 없습니다.")
+
+def search_files_by_extension(directory, extension):
+    """
+    주어진 확장자를 가진 파일을 검색합니다.
+    """
+    result = []
+    for root, dirs, files in os.walk(directory):
+        for file in files:
+            if file.endswith(extension):
+                result.append(os.path.join(root, file))
+    if result:
+        print("검색 결과:")
+        for file in result:
+            print(f"  - {file}")
+    else:
+        print("조건에 맞는 파일을 찾을 수 없습니다.")
+
+def search_files_by_size(directory, min_size, max_size):
+    """
+    주어진 크기 범위에 속하는 파일을 검색합니다.
+    """
+    result = []
+    for root, dirs, files in os.walk(directory):
+        for file in files:
+            file_path = os.path.join(root, file)
+            file_size = os.path.getsize(file_path)
+            if min_size <= file_size <= max_size:
+                result.append(file_path)
+    if result:
+        print("검색 결과:")
+        for file in result:
+            print(f"  - {file}")
+    else:
+        print("조건에 맞는 파일을 찾을 수 없습니다.")
+
+def search_files_by_date(directory, start_date, end_date):
+    """
+    주어진 날짜 범위 내에 수정된 파일을 검색합니다.
+    """
+    result = []
+    for root, dirs, files in os.walk(directory):
+        for file in files:
+            file_path = os.path.join(root, file)
+            file_mtime = datetime.datetime.fromtimestamp(os.path.getmtime(file_path))
+            if start_date <= file_mtime <= end_date:
+                result.append(file_path)
+    if result:
+        print("검색 결과:")
+        for file in result:
+            print(f"  - {file}")
+    else:
+        print("조건에 맞는 파일을 찾을 수 없습니다.")
+        
+
 b_is_exit = False
 version = "1.0.0"
 print(f"프로그램 버전: {version}")
@@ -713,6 +782,29 @@ while not b_is_exit:
         print("중복 관리 기능 실행")
         Duplicates.duplicates()
 
+    elif func == "파일검색":
+            search_func = input("검색 기능을 선택하세요. (이름검색, 확장자검색, 크기검색, 날짜검색, ?): ")
+            if search_func == "이름검색":
+                directory = input("검색할 디렉토리 경로를 입력하세요: ")
+                search_name = input("검색할 파일 이름을 입력하세요: ")
+                search_files_by_name(directory, search_name)
+            elif search_func == "확장자검색":
+                directory = input("검색할 디렉토리 경로를 입력하세요: ")
+                extension = input("검색할 파일 확장자를 입력하세요 (예: .txt): ")
+                search_files_by_extension(directory, extension)
+            elif search_func == "크기검색":
+                directory = input("검색할 디렉토리 경로를 입력하세요: ")
+                min_size = int(input("최소 파일 크기 (바이트)를 입력하세요: "))
+                max_size = int(input("최대 파일 크기 (바이트)를 입력하세요: "))
+                search_files_by_size(directory, min_size, max_size)
+            elif search_func == "날짜검색":
+                directory = input("검색할 디렉토리 경로를 입력하세요: ")
+                start_date_str = input("검색할 시작 날짜를 입력하세요 (예: 2024-01-01): ")
+                end_date_str = input("검색할 끝 날짜를 입력하세요 (예: 2024-12-31): ")
+                start_date = datetime.datetime.strptime(start_date_str, "%Y-%m-%d")
+                end_date = datetime.datetime.strptime(end_date_str, "%Y-%m-%d")
+                search_files_by_date(directory, start_date, end_date)
+
     elif func == "?":
         print("""
                 [도움말]
@@ -721,6 +813,7 @@ while not b_is_exit:
                 '파일관리' 입력시 파일을 관리할 수 있습니다.
                 '가독성'   입력시 파일의 단위를 읽기 좋게 볼 수 있습니다.
                 '중복관리' 입력시 중복 파일을 관리할 수 있습니다.
+                '파일검색' 입력시 파일을 검색할 수 있습니다.
                 '종료'     입력시 프로그램을 종료합니다.
             """)
 
