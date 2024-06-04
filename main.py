@@ -702,6 +702,51 @@ def copy_directory(src_directory, dest_directory):
     except Exception as e:
         print(f"디렉토리를 복사하는 중 오류가 발생했습니다: {e}")
 
+def delete_unused_files(directory, days):
+    """
+    지정된 일수 동안 사용되지 않은 파일들을 삭제합니다.
+    
+    @param
+        directory: 검색을 시작할 루트 디렉토리
+        days: 파일이 사용되지 않은 일수
+    """
+    current_time = time.time()
+    cutoff_time = current_time - (days * 86400)  # 86400초 = 1일
+    files_deleted = False
+
+    for dirpath, dirnames, filenames in os.walk(directory):
+        for filename in filenames:
+            file_path = os.path.join(dirpath, filename)
+            file_mtime = os.path.getmtime(file_path)
+            if file_mtime < cutoff_time:
+                try:
+                    os.remove(file_path)
+                    print(f"삭제됨: {file_path}")
+                    files_deleted = True
+                except Exception as e:
+                    print(f"파일 삭제 중 오류 발생: {e}")
+
+    if not files_deleted:
+        print("삭제할 파일이 없습니다.")
+
+def delete_unused_files_prompt():
+    """
+    사용자로부터 디렉토리와 일수를 입력받아 사용되지 않은 파일들을 삭제하는 함수
+    """
+    directory = input("파일을 검색할 디렉토리 경로를 입력하세요: ")
+    if not os.path.isdir(directory):
+        print("파일 경로가 올바르지 않습니다.")
+        return  
+    while True:
+        days_input = input("몇 일 동안 사용되지 않은 파일을 삭제하시겠습니까?: ")
+        try:
+            days = int(days_input)
+            delete_unused_files(directory, days)
+            break
+        except ValueError:
+            print("잘못 입력하였습니다. 숫자를 입력해주세요.")
+            return  
+
 b_is_exit = False
 version = "1.0.0"
 print(f"프로그램 버전: {version}")
@@ -744,6 +789,8 @@ while not b_is_exit:
         dest = input("복사한 디렉토리를 저장할 경로를 입력하세요: ")
         copy_directory(src, dest)
 
+    elif func == "Remove":
+        delete_unused_files_prompt()
 
     elif func == "?":
         print("""
@@ -755,6 +802,7 @@ while not b_is_exit:
                 '중복관리' 입력시 중복 파일을 관리할 수 있습니다.
                 '크기측정' 입력시 디렉토리의 크기를 측정한다.
                 'Dir Copy'입력시 디렉토리를 복사한다.
+                'Remove'   입력시 지정된 일수 동안 사용되지 않은 파일들을 삭제한다.
                 '종료'     입력시 프로그램을 종료합니다.
             """)
 
@@ -763,4 +811,4 @@ while not b_is_exit:
         print("프로그램을 종료합니다.")
 
     else:
-        print("잘못 입력하셨습니다. 다시 입력해주세요. : ")
+        print("잘못 입력하셨습니다. 다시 입력해주세요.")
