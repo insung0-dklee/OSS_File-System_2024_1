@@ -832,6 +832,71 @@ def create_file(filename):
     else:
         print("비밀번호가 틀렸습니다.")
 
+def convert_image_format(input_path, output_path):
+    """
+    이미지 파일의 형식을 변환하는 함수.
+    :param input_path: 입력 이미지 파일 경로
+    :param output_path: 출력 이미지 파일 경로 (확장자에 따라 형식이 결정됨)
+    """
+    try:
+        valid_input_formats = {'JPEG', 'PNG', 'GIF', 'BMP', 'TIFF'}
+        valid_output_formats = {'JPEG', 'PNG', 'GIF', 'BMP', 'TIFF'}
+
+        input_format = os.path.splitext(input_path)[1][1:].upper()
+        output_format = os.path.splitext(output_path)[1][1:].upper()
+
+        if input_format not in valid_input_formats:
+            raise ValueError(f"입력 파일 형식이 잘못되었습니다. 지원되는 형식: {', '.join(valid_input_formats)}")
+
+        if output_format not in valid_output_formats:
+            raise ValueError(f"출력 파일 형식이 잘못되었습니다. 지원되는 형식: {', '.join(valid_output_formats)}")
+
+        if not os.path.exists(input_path):
+            raise FileNotFoundError(f"입력 이미지 파일을 찾을 수 없습니다: {input_path}")
+
+        with Image.open(input_path) as img:
+            if output_format == 'JPEG' and img.mode in ('RGBA', 'LA'):
+                img = img.convert('RGB')
+            img.save(output_path, format=output_format)
+        print(f"이미지 파일이 성공적으로 변환되었습니다: {output_path}")
+    except FileNotFoundError as e:
+        print(f"파일을 찾을 수 없습니다: {e}")
+    except ValueError as e:
+        print(e)
+    except IOError as e:
+        print(f"이미지 파일을 열 수 없습니다: {e}")
+    except Exception as e:
+        print(f"이미지 파일 변환 중 오류가 발생했습니다: {e}")
+
+def text_to_pdf(input_text_path, output_pdf_path):
+    """
+    텍스트 파일을 PDF로 변환하는 함수.
+    :param input_text_path: 입력 텍스트 파일 경로
+    :param output_pdf_path: 출력 PDF 파일 경로
+    """
+    try:
+        if not input_text_path.lower().endswith('.txt'):
+            raise ValueError("입력 파일은 .txt 형식이어야 합니다.")
+        if not output_pdf_path.lower().endswith('.pdf'):
+            raise ValueError("출력 파일 확장자는 .pdf여야 합니다.")
+
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_auto_page_break(auto=True, margin=15)
+        pdf.set_font("Arial", size=12)
+
+        with open(input_text_path, 'r', encoding='utf-8') as file:
+            for line in file:
+                pdf.cell(200, 10, txt=line, ln=True)
+
+        pdf.output(output_pdf_path)
+        print(f"텍스트 파일이 성공적으로 PDF로 변환되었습니다: {output_pdf_path}")
+    except FileNotFoundError as e:
+        print(f"파일을 찾을 수 없습니다: {e}")
+    except ValueError as e:
+        print(e)
+    except Exception as e:
+        print(f"텍스트 파일을 PDF로 변환 중 오류가 발생했습니다: {e}")
 
 b_is_exit = False
 version = "1.0.0"
@@ -864,6 +929,16 @@ while not b_is_exit:
         print("중복 관리 기능 실행")
         Duplicates.duplicates()
 
+    elif func == "이미지변환":
+        input_image_path = input("입력 이미지 파일 경로를 입력하세요: ")
+        output_image_path = input("출력 이미지 파일 경로를 입력하세요: ")
+        convert_image_format(input_image_path, output_image_path)
+
+    elif func == "텍스트변환":
+        input_text_path = input("입력 텍스트 파일 경로를 입력하세요: ")
+        output_pdf_path = input("출력 PDF 파일 경로를 입력하세요: ")
+        text_to_pdf(input_text_path, output_pdf_path)
+
     elif func == "?":
         print("""
                 [도움말]
@@ -872,6 +947,8 @@ while not b_is_exit:
                 '파일관리' 입력시 파일을 관리할 수 있습니다.
                 '가독성'   입력시 파일의 단위를 읽기 좋게 볼 수 있습니다.
                 '중복관리' 입력시 중복 파일을 관리할 수 있습니다.
+                '이미지변환' 입력시 이미지 파일 형식을 변환할 수 있습니다.
+                '텍스트변환' 입력시 텍스트 파일을 PDF로 변환할 수 있습니다.
                 '종료'     입력시 프로그램을 종료합니다.
             """)
 
