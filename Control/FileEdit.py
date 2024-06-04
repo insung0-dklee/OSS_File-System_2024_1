@@ -7,11 +7,13 @@
 3. 파일 단어 찾아 바꾸기
 4. 파일 내용 복사 및 붙여넣기
 '''
+import os
+
 
 def file_edit():
     finish = False
     while not finish:
-        
+
         select = input("원하는 기능을 입력하세요. ('?' 입력시 도움말)")
 
         if select == '?':
@@ -21,7 +23,8 @@ def file_edit():
             print(" '복사 및 붙여넣기'  입력시 파일을 불러오고 원하는 부분을 찾아 다른 파일에 붙여넣을 수 있습니다")
             print(" '종료'             입력시 프로그램을 종료할 수 있습니다.")
         elif select == "읽기":
-            read_file()
+            content = read_file()
+            print(content)
         elif select == "파일 생성 및 쓰기":
             create_and_write_file()
         elif select == "찾아 바꾸기":
@@ -35,17 +38,31 @@ def file_edit():
             print("잘못된 입력입니다. 다시 입력해주세요.")
 
 
+# 유효한 파일 경로를 입력 받는 함수
+def gat_valid_file_path(prompt):
+    while True:
+        path = input(prompt)
+
+        path = os.path.abspath(path)
+        if os.path.exists(path):
+            return path
+        else:
+            print("오류: 유효하지 않은 파일 경로입니다. 다시 입력하세요")
+
+
 def read_file():
-    file_path = input("읽고 싶은 파일의 경로를 입력하세요. : ")
+    file_path = gat_valid_file_path("읽고 싶은 파일의 경로를 입력하세요. : ")
     with open(file_path, 'r') as file:
         content = file.read()
     return content
+
 
 def create_and_write_file():
     file_path = input("파일을 생성하고 싶은 디렉토리의 경로를 입력하세요. : ")
     content = input("쓰고 싶은 문장을 입력하세요. : ")
     with open(file_path, 'w') as file:
         file.write(content)
+
 
 def modify_file():
     """
@@ -62,6 +79,7 @@ def modify_file():
         file.write(modified_content)
     print("찾아 바꾸기가 완료되었습니다.")
 
+
 def copy_and_paste_text():
     """
     이미 만들어진 파일의 내용 중 일부를 복사하여 다른 파일에 붙여넣는 함수
@@ -72,11 +90,12 @@ def copy_and_paste_text():
     print(f"원본 파일 내용:\n{content}")
     start_index = int(input("복사할 부분의 시작 인덱스를 입력하세요(인덱스 0부터 시작) : "))
     end_index = int(input("복사할 부분의 끝 인덱스를 입력하세요 : "))
-    text_to_copy = content[start_index:end_index+1]
+    text_to_copy = content[start_index:end_index + 1]
     target_file_path = input("붙여넣을 파일의 경로를 입력하세요: ")
     with open(target_file_path, 'a') as file:
         file.write(text_to_copy)
     print("복사 및 붙여넣기가 완료되었습니다.")
+
 
 def count_word():
     """
