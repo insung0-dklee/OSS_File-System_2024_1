@@ -25,6 +25,7 @@ from Control import FileEdit
 from Control import FileControl
 from Control import Duplicates
 from Control import Readable
+from Control import FileShare
 from Control.FileControl import search_file
 import datetime
 from collections import defaultdict
@@ -32,6 +33,7 @@ import platform
 from Control import AutoFileManage
 import subprocess
 import ctypes
+
 
 
 def move_to_trash(file_path):
@@ -713,6 +715,10 @@ while not b_is_exit:
         print("중복 관리 기능 실행")
         Duplicates.duplicates()
 
+    elif func == "파일공유":
+        print("파일 공유 기능 실행.")
+        FileShare.file_share()
+
     elif func == "?":
         print("""
                 [도움말]
@@ -721,6 +727,7 @@ while not b_is_exit:
                 '파일관리' 입력시 파일을 관리할 수 있습니다.
                 '가독성'   입력시 파일의 단위를 읽기 좋게 볼 수 있습니다.
                 '중복관리' 입력시 중복 파일을 관리할 수 있습니다.
+                '파일공유' 입력시 파일을 다른 사용자와 공유할 수 있습니다..
                 '종료'     입력시 프로그램을 종료합니다.
             """)
 
