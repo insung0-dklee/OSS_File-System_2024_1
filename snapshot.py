@@ -26,3 +26,10 @@ def restore_snapshot(snapshot_path, restore_dir):
     #예외처리
     except Exception as e:
         print(f"Error restoring snapshot: {e}")
+
+        """
+        create_snapshot : 현재 상태 저장 가능(타임스탬프로 시간도 볼 수 있음),
+        restore_snapshot : 디렉토리를  복원 대상 디렉토리로 복사하여 스냅샷 복원 
+        이 두함수를 통해 특정 디렉토리의 상태를 저장하고, 필요할때  해당상태로  복원할 수 있어서,
+        실수를 해도 다시 돌아갈 수 있으며, 원하는 상태를 저장할 수 있습니다.
+        """
