@@ -9,9 +9,13 @@ from typing import List
 import hashlib
 from functools import lru_cache
 from pathlib import Path
-import winreg
-import ctypes
 
+# 운영 체제에 따른 분기 처리
+# 'winreg' 모듈은 Windows에서만 임포트되고, 다른 운영체제에서는 해당 모듈을 사용하지 않음
+import platform
+if platform.system() == 'Windows':
+    import winreg
+    import ctypes
 
 
 def file_control():
