@@ -20,6 +20,7 @@ import zipfile
 import tarfile
 import getpass
 import hashlib
+from datetime import datetime
 from Control import Bookmark
 from Control import FileEdit
 from Control import FileControl
@@ -717,6 +718,41 @@ def manage_memo_for_files(root_directory, target_filename):
     else:
         print('파일을 찾을 수 없습니다.')
 
+def search_by_attributes():
+    directory = input("검색할 디렉토리를 입력하세요: ")
+    attribute = input("검색할 속성을 입력하세요 (크기/생성날짜/수정날짜): ").strip()
+    value = input("검색 기준 값을 입력하세요: ").strip()
+
+    try:
+        if attribute == "크기":
+            value = int(value)
+            for root, dirs, files in os.walk(directory):
+                for file in files:
+                    file_path = os.path.join(root, file)
+                    if os.path.getsize(file_path) >= value:
+                        print(file_path, os.path.getsize(file_path))
+        elif attribute == "생성날짜":
+            value_date = datetime.strptime(value, "%Y-%m-%d")
+            for root, dirs, files in os.walk(directory):
+                for file in files:
+                    file_path = os.path.join(root, file)
+                    create_time = datetime.fromtimestamp(os.path.getctime(file_path))
+                    if create_time >= value_date:
+                        print(file_path, create_time)
+        elif attribute == "수정날짜":
+            value_date = datetime.strptime(value, "%Y-%m-%d")
+            for root, dirs, files in os.walk(directory):
+                for file in files:
+                    file_path = os.path.join(root, file)
+                    modify_time = datetime.fromtimestamp(os.path.getmtime(file_path))
+                    if modify_time >= value_date:
+                        print(file_path, modify_time)
+        else:
+            print("잘못된 속성입니다. '크기', '생성날짜', '수정날짜' 중 하나를 입력하세요.")
+
+    except Exception as e:
+        print(f"오류가 발생했습니다: {e}")
+
 # 디렉토리 모니터링 기능 추가
 def get_files_snapshot(directory):
     """
@@ -864,6 +900,10 @@ while not b_is_exit:
         print("중복 관리 기능 실행")
         Duplicates.duplicates()
 
+    elif func == "파일속성검색":
+        print("파일 속성 검색 기능 실행")
+        search_by_attributes()
+
     elif func == "?":
         print("""
                 [도움말]
@@ -872,6 +912,7 @@ while not b_is_exit:
                 '파일관리' 입력시 파일을 관리할 수 있습니다.
                 '가독성'   입력시 파일의 단위를 읽기 좋게 볼 수 있습니다.
                 '중복관리' 입력시 중복 파일을 관리할 수 있습니다.
+                '파일속성검색' 입력시 파일 속성으로 파일을 검색할 수 있습니다.
                 '종료'     입력시 프로그램을 종료합니다.
             """)
 
