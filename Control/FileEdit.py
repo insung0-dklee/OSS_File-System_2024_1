@@ -1,3 +1,7 @@
+from moviepy.video.io.VideoFileClip import VideoFileClip
+from pydub import AudioSegment
+import re, os
+
 '''
 파일 편집 패키지 (vim 생각하면 편합니다.)
 
@@ -88,3 +92,89 @@ def count_word():
         content = file.read()
     word_count = content.count(word)
     print(f"{word}는 {word_count}번 나옵니다.")
+
+def convert_to_seconds(time_str):
+    """
+    시간 문자열을 초 단위로 변환합니다. 포맷: 시간:분:초
+    @Param
+        time_str : 포맷 시간
+    """
+    # 정규표현식으로 포맷 검사
+    if not re.match(r'^\d{2}:\d{2}:\d{2}$', time_str):
+        print("시간 형식이 잘못되었습니다. 올바른 형식: 시간:분:초 (예: 00:10:00)")
+        return None
+    
+    parts = list(map(int, time_str.split(':')))
+    return parts[0] * 3600 + parts[1] * 60 + parts[2]
+
+def process_video(file_path, start_time, end_time, output_dir=None):
+    """
+    동영상 파일의 길이를 출력하고, 입력받은 시간 범위만큼 동영상을 잘라 저장합니다.
+    시간은 각각 (시간:분:초) 단위로 입력합니다.
+    저장할 폴더가 지정되지 않으면 기존 파일의 위치에 생성합니다.
+    @Param
+        file_path : 동영상 파일의 경로
+        start_time : 시작 시간 (포맷: 시간:분:초)
+        end_time : 종료 시간 (포맷: 시간:분:초)
+        output_dir : 출력 동영상 파일을 저장할 폴더 경로 (기본값: None)
+    @Return
+        성공 시 True, 아니면 False
+    @Example
+        process_video(file_path, start_time, end_time, output_dir)
+        process_video(file_path, start_time, end_time)
+    """
+    if not os.path.isfile(file_path):
+        print("파일이 존재하지 않습니다.")
+        return False
+    
+    try:
+        # 동영상 불러오기
+        video = VideoFileClip(file_path)
+        video_duration = video.duration
+        print(f"동영상 길이: {video_duration}초")
+        
+        # 시작 시간과 종료 시간을 초 단위로 변환
+        start_seconds = convert_to_seconds(start_time)
+        end_seconds = convert_to_seconds(end_time)
+
+        if start_seconds is None or end_seconds is None:
+            return False
+        
+        if start_seconds >= video_duration:
+            print("시작 시간이 동영상 길이를 초과합니다.")
+            return False
+        
+        if end_seconds > video_duration:
+            print("종료 시간이 동영상 길이를 초과합니다.")
+            return False
+
+        if start_seconds >= end_seconds:
+            print("시작 시간이 종료 시간보다 크거나 같습니다.")
+            return False
+        
+        print("동영상 처리를 시작합니다.")
+        # 동영상 자르기
+        new_video = video.subclip(start_seconds, end_seconds)
+        
+        # 저장할 파일 경로 결정
+        file_name, _ = os.path.splitext(os.path.basename(file_path))
+        if output_dir:
+            if not os.path.exists(output_dir):
+                os.makedirs(output_dir)
+            output_file_path = os.path.join(output_dir, f"{file_name}_clip.mp4")
+        else:
+            output_file_path = os.path.join(os.path.dirname(file_path), f"{file_name}_clip.mp4")
+        
+        # 동영상 저장
+        new_video.write_videofile(output_file_path, codec="libx264", audio_codec="aac")
+        print(f"잘라낸 동영상을 '{output_file_path}'로 저장했습니다.")
+        return True
+
+    except Exception as e:
+        print(f"동영상 처리 중 오류 발생: {e}")
+        return False
+
+    finally:
+        if 'video' in locals():
+            video.reader.close()
+            video.audio.reader.close_proc()
