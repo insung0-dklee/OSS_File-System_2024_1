@@ -36,6 +36,7 @@ import stat
 
 import paramiko
 import socket
+import re
 
 def move_to_trash(file_path):
     """
@@ -1077,6 +1078,38 @@ def remote_file_management():
 
     close_ssh_connection(client)
 
+def analyze_word_frequency(file_path):
+    """
+    주어진 텍스트 파일 내 단어의 빈도수를 분석하여 출력합니다.
+    
+    @param
+        file_path: 분석할 텍스트 파일의 경로
+    """
+    supported_extensions = ['.txt', '.md', '.json']
+    file_extension = os.path.splitext(file_path)[1].lower()
+
+    if file_extension not in supported_extensions:
+        print("지원하지 않는 파일 형식입니다. txt, md, json 파일만 가능합니다.")
+        return
+
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            text = file.read()
+            words = re.findall(r'\b[가-힣a-zA-Z]+\b', text)
+            word_frequency = defaultdict(int)
+            
+            for word in words:
+                word_frequency[word.lower()] += 1
+            
+        print(f"단어 빈도수 분석 ({file_path}):")
+        for word, freq in sorted(word_frequency.items(), key=lambda item: item[1], reverse=True):
+            print(f"{freq}: {word}")
+    
+    except FileNotFoundError:
+        print(f"파일을 찾을 수 없습니다: {file_path}")
+    except Exception as e:
+        print(f"단어 빈도수 분석 중 오류가 발생했습니다: {e}")
+
 b_is_exit = False
 version = "1.0.0"
 print(f"프로그램 버전: {version}")
@@ -1128,6 +1161,10 @@ while not b_is_exit:
         print("원격 파일 관리 기능 실행")
         remote_file_management()
 
+    elif func == "Word":
+        file_path = input("분석할 파일의 경로를 입력하세요: ")
+        analyze_word_frequency(file_path)
+
     elif func == "?":
         print("""
                 [도움말]
@@ -1138,6 +1175,7 @@ while not b_is_exit:
                 '중복관리' 입력시 중복 파일을 관리할 수 있습니다.
                 'Check'   입력시 파일의 무결성을 검사할 수 있습니다.
                 'Remote'  입력시 원격 서버의 파일을 관리할 수 있습니다.
+                'Word'    입력시 파일 내 단어 빈도수를 분석할 수 있습니다.
                 '종료'     입력시 프로그램을 종료합니다.
             """)
 
