@@ -33,6 +33,7 @@ def file_control():
             print(" '파일복사'           입력시 파일 복사 및 붙여넣기")
             print(" '잘라내기'           입력시 파일 잘라내기 및 붙여넣기")
             print(" '종료'               입력시 프로그램을 종료할 수 있습니다.")
+            print(" '파일개수'           입력시 .txt파일의 개수를 셉니다.")
         elif select == '메타데이터 출력':
             manage_metadata()
         
@@ -63,6 +64,9 @@ def file_control():
         elif select == "종료":
             print("중복 관리를 종료합니다.")
             finish = True
+
+        elif select == "파일개수":
+            count_txt_files_in_folder()
 
         else:
             print("잘못 입력하셨습니다. 다시 입력해주세요. : ")
@@ -509,3 +513,17 @@ def delete_directory(directory_path):
     except OSError as e:
         print(f"Error deleting directory: {e}")
 
+def count_txt_files_in_folder():
+    folder_path = input("폴더의 경로를 입력하세요: ")
+
+    # 입력된 경로가 폴더인지 확인
+    if not os.path.isdir(folder_path):
+        print("입력된 경로는 폴더가 아닙니다.")
+        return
+
+    txt_count = 0
+    for file_name in os.listdir(folder_path):
+        if file_name.endswith('.txt'):
+            txt_count += 1
+
+    print(f"폴더 '{folder_path}' 내에는 총 {txt_count}개의 .txt 파일이 있습니다.")
