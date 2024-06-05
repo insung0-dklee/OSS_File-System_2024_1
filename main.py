@@ -807,6 +807,51 @@ if __name__ == "__main__":
     file_path = os.path.join(os.getcwd(), filename)      -> 파일명을 현재 작업하고 있는 파일의 경로와 합쳐 파일 경로 형식으로 만듭니다.
     create_file(file_path)                               -> create_file함수를 통과하면서 코드가 마무리됩니다.
 """
+def get_file_attributes(file_path):
+    """
+    파일의 속성을 출력합니다.
+    :param file_path: 속성을 볼 파일의 경로
+    """
+    try:
+        if not os.path.exists(file_path):
+            print(f"파일을 찾을 수 없습니다: {file_path}")
+            return
+        
+        # 파일 경로와 이름
+        file_name = os.path.basename(file_path)
+        file_directory = os.path.dirname(file_path)
+        
+        # 파일 크기
+        file_size = os.path.getsize(file_path)
+        
+        # 파일 생성 시간
+        created_time = os.path.getctime(file_path)
+        created_time_readable = time.ctime(created_time)
+        
+        # 파일 수정 시간
+        modified_time = os.path.getmtime(file_path)
+        modified_time_readable = time.ctime(modified_time)
+        
+        # 파일 접근 시간
+        accessed_time = os.path.getatime(file_path)
+        accessed_time_readable = time.ctime(accessed_time)
+        
+        # 파일 권한
+        mode = os.stat(file_path).st_mode
+        permissions = stat.filemode(mode)
+        
+        print(f"파일 이름: {file_name}")
+        print(f"파일 경로: {file_directory}")
+        print(f"파일 크기: {file_size} bytes")
+        print(f"생성 시간: {created_time_readable}")
+        print(f"수정 시간: {modified_time_readable}")
+        print(f"접근 시간: {accessed_time_readable}")
+        print(f"파일 권한: {permissions}")
+        
+    except Exception as e:
+        print(f"파일 속성 조회 중 오류가 발생했습니다: {e}")
+
+
 
 def change_permissions(path, mode):
     """
@@ -863,6 +908,10 @@ while not b_is_exit:
     elif func == "중복관리":
         print("중복 관리 기능 실행")
         Duplicates.duplicates()
+        
+    elif func =="파일 속성":
+        filepath = input("경로 입력 : ")
+        get_file_attributes(filepath)
 
     elif func == "?":
         print("""
