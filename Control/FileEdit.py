@@ -39,12 +39,23 @@ def file_edit():
 
 
 def read_file():
-    file_path = input("읽고 싶은 파일의 디렉토리 경로를 입력하세요. : ")
-    os.chdir(file_path)
-    lists = os.listdir()
-    print("현재 디렉토리의 파일\n")
-    for list in lists:
-        print(list)
+    while True:
+        try:
+            file_path = input("읽고 싶은 파일의 디렉토리 경로를 입력하세요. : ")
+            os.chdir(file_path)
+            lists = os.listdir()
+            print("현재 디렉토리의 파일\n")
+            for list in lists:
+                print(list)
+            break
+        except:
+            print("잘못된 디렉토리 형식입니다.")
+            sel = input("종료를 원하시면 '종료', 다시 입력하시려면 아무 키나 눌러주세요. : ")
+            if sel == '종료':
+                return
+            else:
+                continue
+
     while True:
         file_name = input("읽고 싶은 파일의 이름을 입력하세요. : ")
         try:
