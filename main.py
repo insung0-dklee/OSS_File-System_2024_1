@@ -832,6 +832,64 @@ def create_file(filename):
     else:
         print("비밀번호가 틀렸습니다.")
 
+def calculate_hash(file_path):
+    """
+    파일의 SHA-256 해시 값을 계산하여 반환합니다.
+    @param
+        file_path: 해시 값을 계산할 파일의 경로
+    """
+    hasher = hashlib.sha256()
+    try:
+        with open(file_path, 'rb') as file:
+            buffer = file.read(65536)  # 64KB씩 읽기
+            while buffer:
+                hasher.update(buffer)
+                buffer = file.read(65536)
+        return hasher.hexdigest()
+    except FileNotFoundError:
+        print(f"파일을 찾을 수 없습니다: {file_path}")
+        return None
+    except Exception as e:
+        print(f"해시 계산 중 오류가 발생했습니다: {e}")
+        return None
+
+def save_hash(file_path, hash_file_path):
+    """
+    파일의 해시 값을 계산하여 지정된 경로에 저장합니다.
+    @param
+        file_path: 해시 값을 계산할 파일의 경로
+        hash_file_path: 해시 값을 저장할 파일의 경로
+    """
+    hash_value = calculate_hash(file_path)
+    if hash_value:
+        try:
+            with open(hash_file_path, 'w') as hash_file:
+                hash_file.write(hash_value)
+            print(f"해시 값이 {hash_file_path}에 저장되었습니다.")
+        except Exception as e:
+            print(f"해시 값을 저장하는 중 오류가 발생했습니다: {e}")
+
+def verify_file_integrity(file_path, hash_file_path):
+    """
+    파일의 무결성을 검증합니다.
+    @param
+        file_path: 무결성을 검증할 파일의 경로
+        hash_file_path: 저장된 해시 값이 있는 파일의 경로
+    """
+    try:
+        with open(hash_file_path, 'r') as hash_file:
+            stored_hash = hash_file.read().strip()
+        current_hash = calculate_hash(file_path)
+        if current_hash == stored_hash:
+            print(f"{file_path}의 무결성이 확인되었습니다.")
+        else:
+            print(f"{file_path}의 무결성이 손상되었습니다.")
+            print(f"현재 해시 값: {current_hash}")
+            print(f"저장된 해시 값: {stored_hash}")
+    except FileNotFoundError:
+        print(f"해시 파일을 찾을 수 없습니다: {hash_file_path}")
+    except Exception as e:
+        print(f"무결성 검증 중 오류가 발생했습니다: {e}")
 
 b_is_exit = False
 version = "1.0.0"
@@ -864,6 +922,22 @@ while not b_is_exit:
         print("중복 관리 기능 실행")
         Duplicates.duplicates()
 
+    elif func == "Check":
+        print("파일 무결성 검사 기능 실행")
+        sub_func = input("원하는 무결성 검사 기능을 입력하세요 ('저장', '검증'): ")
+
+        if sub_func == "저장":
+            file_path = input("해시 값을 저장할 파일의 경로를 입력하세요: ")
+            hash_file_path = file_path + '.hash'
+            save_hash(file_path, hash_file_path)
+
+        elif sub_func == "검증":
+            verify_file_path = input("무결성을 검증할 파일의 경로를 입력하세요: ")
+            verify_hash_file_path = verify_file_path + '.hash'
+            verify_file_integrity(verify_file_path, verify_hash_file_path)
+        else:
+            print("잘못된 입력입니다. 다시 입력해주세요.")
+
     elif func == "?":
         print("""
                 [도움말]
@@ -872,6 +946,7 @@ while not b_is_exit:
                 '파일관리' 입력시 파일을 관리할 수 있습니다.
                 '가독성'   입력시 파일의 단위를 읽기 좋게 볼 수 있습니다.
                 '중복관리' 입력시 중복 파일을 관리할 수 있습니다.
+                'Check'   입력시 파일의 무결성을 검사할 수 있습니다.
                 '종료'     입력시 프로그램을 종료합니다.
             """)
 
