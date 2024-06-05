@@ -34,6 +34,8 @@ import subprocess
 import ctypes
 import stat
 
+import paramiko
+import socket
 
 def move_to_trash(file_path):
     """
@@ -891,6 +893,190 @@ def verify_file_integrity(file_path, hash_file_path):
     except Exception as e:
         print(f"무결성 검증 중 오류가 발생했습니다: {e}")
 
+# SSH를 통해 원격 서버의 파일을 관리하는 함수들
+def ssh_connect(hostname, port, username, password):
+    """
+    SSH 연결을 설정하고 반환합니다.
+    @param
+        hostname: 원격 서버의 호스트명 또는 IP 주소
+        port: 원격 서버의 포트 번호
+        username: SSH 사용자명
+        password: SSH 비밀번호
+    """
+    try:
+        client = paramiko.SSHClient()
+        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        client.connect(hostname, port, username, password, timeout=30)  # 30초 타임아웃 설정
+        return client
+    except (paramiko.ssh_exception.NoValidConnectionsError, socket.timeout):
+        print("SSH 연결이 30초 내에 완료되지 않았습니다. 다시 시도하세요.")
+    except paramiko.ssh_exception.AuthenticationException:
+        print("SSH 인증 실패. 사용자명 또는 비밀번호를 확인하세요.")
+    except Exception as e:
+        print(f"SSH 연결 중 오류가 발생했습니다: {e}")
+    return None
+
+def list_remote_files(client, remote_path):
+    """
+    원격 서버의 파일 목록을 나열합니다.
+    @param
+        client: paramiko SSHClient 객체
+        remote_path: 파일 목록을 나열할 원격 경로
+    """
+    try:
+        sftp = client.open_sftp()
+        files = sftp.listdir(remote_path)
+        sftp.close()
+        return files, None
+    except FileNotFoundError:
+        return None, f"원격 경로가 올바르지 않습니다: {remote_path}"
+    except Exception as e:
+        return None, f"원격 파일 목록을 나열하는 중 오류가 발생했습니다: {e}"
+
+def upload_file_to_remote(client, local_path, remote_path, is_windows):
+    """
+    로컬 파일을 원격 서버에 업로드합니다.
+    @param
+        client: paramiko SSHClient 객체
+        local_path: 업로드할 로컬 파일 경로
+        remote_path: 업로드할 원격 파일 경로
+        is_windows: 원격 서버가 윈도우 운영체제인지 여부
+    """
+    if not os.path.exists(local_path):
+        print(f"잘못된 로컬 파일 경로: {local_path}")
+        return
+
+    try:
+        sftp = client.open_sftp()
+        # 원격 경로가 절대 경로가 아니면 홈 디렉토리로 설정
+        if not (remote_path.startswith('/') or (is_windows and remote_path[1:3] == ':\\')):
+            home_dir = sftp.normalize(".")
+            remote_path = os.path.join(home_dir, remote_path).replace('\\', '/')
+        
+        # 원격 경로에 동일한 파일명이 존재하는지 확인
+        try:
+            sftp.stat(remote_path)
+            overwrite = input(f"{remote_path}에 동일한 이름의 파일이 있습니다. 덮어쓰시겠습니까? (y/n): ").strip().lower()
+            if overwrite != 'y':
+                print("업로드가 중단되었습니다.")
+                return
+        except FileNotFoundError:
+            pass  # 파일이 존재하지 않으면 계속 진행
+
+        sftp.put(local_path, remote_path)
+        sftp.close()
+        print(f"{local_path}가 {remote_path}로 업로드되었습니다.")
+    except Exception as e:
+        print(f"파일을 업로드하는 중 오류가 발생했습니다: {e}")
+
+def download_file_from_remote(client, remote_path, local_path):
+    """
+    원격 서버에서 로컬로 파일을 다운로드합니다.
+    @param
+        client: paramiko SSHClient 객체
+        remote_path: 다운로드할 원격 파일 경로
+        local_path: 다운로드할 로컬 파일 경로
+    """
+    try:
+        sftp = client.open_sftp()
+        sftp.stat(remote_path)  # 원격 파일 존재 여부 확인
+
+        # 로컬 경로가 절대 경로가 아니면 현재 작업 디렉토리로 설정
+        if not os.path.isabs(local_path):
+            local_path = os.path.join(os.getcwd(), local_path)
+
+        if os.path.exists(local_path):
+            overwrite = input(f"{local_path}에 동일한 이름의 파일이 있습니다. 덮어쓰시겠습니까? (y/n): ").strip().lower()
+            if overwrite != 'y':
+                print("다운로드가 중단되었습니다.")
+                return
+
+        sftp.get(remote_path, local_path)
+        sftp.close()
+        print(f"{remote_path}가 {local_path}로 다운로드되었습니다.")
+    except FileNotFoundError:
+        print(f"잘못된 원격 파일 경로: {remote_path}")
+    except Exception as e:
+        print(f"파일을 다운로드하는 중 오류가 발생했습니다: {e}")
+
+def close_ssh_connection(client):
+    """
+    SSH 연결을 종료합니다.
+    @param
+        client: paramiko SSHClient 객체
+    """
+    client.close()
+    print("SSH 연결이 종료되었습니다.")
+
+def detect_remote_os(client):
+    """
+    원격 서버의 운영체제를 감지합니다.
+    @param
+        client: paramiko SSHClient 객체
+    """
+    try:
+        stdin, stdout, stderr = client.exec_command('uname')
+        if stdout.read().strip():
+            return "unix"
+        return "windows"
+    except Exception as e:
+        print(f"원격 OS 감지 중 오류가 발생했습니다: {e}")
+        return None
+
+# 원격 파일 관리를 위한 인터페이스 추가
+def remote_file_management():
+    """
+    원격 파일 관리 인터페이스를 제공하는 함수입니다.
+    """
+    hostname = input("원격 서버 호스트명(IP)을 입력하세요: ")
+    
+    while True:
+        port_input = input("원격 서버 포트를 입력하세요 (기본값: 22): ").strip()
+        if not port_input:
+            port = 22
+            break
+        elif port_input.isdigit():
+            port = int(port_input)
+            break
+        else:
+            print("잘못된 포트 번호입니다. 숫자로 입력하세요.")
+            continue 
+    
+    username = input("사용자명을 입력하세요: ")
+    password = getpass.getpass("비밀번호를 입력하세요: ")
+
+    client = ssh_connect(hostname, port, username, password)
+    if not client:
+        return
+
+    os_type = detect_remote_os(client)
+    is_windows = os_type == "windows"
+
+    while True:
+        command = input("원격 파일 관리 작업을 선택하세요 (목록, 업로드, 다운로드, 종료): ").strip().lower()
+        if command == "목록":
+            remote_path = input("목록을 볼 원격 경로를 입력하세요: ")
+            files, error = list_remote_files(client, remote_path)
+            if error:
+                print(error)
+            else:
+                print(f"{remote_path}의 파일 목록")
+                print(f"{files}")
+        elif command == "업로드":
+            local_path = input("업로드할 로컬 파일 경로를 입력하세요: ")
+            remote_path = input("업로드할 원격 파일 경로를 입력하세요: ")
+            upload_file_to_remote(client, local_path, remote_path, is_windows)
+        elif command == "다운로드":
+            remote_path = input("다운로드할 원격 파일 경로를 입력하세요: ")
+            local_path = input("다운로드할 로컬 파일 경로를 입력하세요: ")
+            download_file_from_remote(client, remote_path, local_path)
+        elif command == "종료":
+            break
+        else:
+            print("잘못된 명령어입니다. 다시 시도하세요.")
+
+    close_ssh_connection(client)
+
 b_is_exit = False
 version = "1.0.0"
 print(f"프로그램 버전: {version}")
@@ -938,6 +1124,10 @@ while not b_is_exit:
         else:
             print("잘못된 입력입니다. 다시 입력해주세요.")
 
+    elif func == "Remote":
+        print("원격 파일 관리 기능 실행")
+        remote_file_management()
+
     elif func == "?":
         print("""
                 [도움말]
@@ -947,6 +1137,7 @@ while not b_is_exit:
                 '가독성'   입력시 파일의 단위를 읽기 좋게 볼 수 있습니다.
                 '중복관리' 입력시 중복 파일을 관리할 수 있습니다.
                 'Check'   입력시 파일의 무결성을 검사할 수 있습니다.
+                'Remote'  입력시 원격 서버의 파일을 관리할 수 있습니다.
                 '종료'     입력시 프로그램을 종료합니다.
             """)
 
