@@ -33,6 +33,7 @@ from Control import AutoFileManage
 import subprocess
 import ctypes
 import stat
+import rarfile
 
 
 def move_to_trash(file_path):
@@ -553,6 +554,12 @@ def compress_file(file_path, method='zip'):
                 tarf.add(file_path, arcname=file_name)
             print(f"파일이 성공적으로 압축되었습니다: {output_tar_bz2}")
 
+        elif method == 'rar':
+            output_rar = os.path.join(file_dir, f"{file_name}.rar")
+            with rarfile.RarFile(output_rar, 'w') as rarf:
+                rarf.add(file_path, arcname=file_name)
+            print(f"파일이 성공적으로 압축되었습니다: {output_rar}")
+            
         else:
             print(f"지원하지 않는 압축 방식입니다: {method}")
     except Exception as e:
