@@ -119,6 +119,21 @@ def endecrypt():
         else:
             print("잘못된 입력입니다. 다시 입력해주세요.")
 
+
+"""
+@functions:
+    endycrypt: function that encrypts or decrypts a file with personal password.
+
+@params
+    (string) content: data in the file
+    (string) password: user input
+    (string) basekey: string used to make plates for crytogram
+
+@explain
+    Encrypt the content using the en_password from the user, hiding the password in the returned file.
+    Decrypt the cryptogram using the de_password from the user.
+    After the decryption, comparing the en_password and de_password. If they are same, return the original file.
+"""
 def encrypt(content, password):
 
     basekey = string.printable
