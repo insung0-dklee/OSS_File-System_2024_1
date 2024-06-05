@@ -20,6 +20,9 @@ import zipfile
 import tarfile
 import getpass
 import hashlib
+import pdfkit
+from PIL import Image
+from docx import Document
 from Control import Bookmark
 from Control import FileEdit
 from Control import FileControl

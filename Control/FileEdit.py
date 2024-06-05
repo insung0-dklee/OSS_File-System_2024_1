@@ -6,6 +6,8 @@
 2. 파일 쓰기
 3. 파일 단어 찾아 바꾸기
 4. 파일 내용 복사 및 붙여넣기
+5. 이미지 파일 변환 (PNG, JPG)
+6. 문서 파일 변환(DOCX → PDF)
 '''
 
 def file_edit():
@@ -19,6 +21,8 @@ def file_edit():
             print(" '파일생성'          입력시 파일을 생성하고 원하는 내용을 작성")
             print(" '찾아 바꾸기'       입력시 파일을 불러오고 원하는 단어를 찾아 새 단어로 바꿀 수 있습니다")
             print(" '복사 및 붙여넣기'  입력시 파일을 불러오고 원하는 부분을 찾아 다른 파일에 붙여넣을 수 있습니다")
+            print("'이미지변환'        입력시 이미지 파일 형식을 변환할 수 있습니다.")
+            print("'문서변환'          입력시 문서 파일 형식을 변환할 수 있습니다.")
             print(" '종료'             입력시 프로그램을 종료할 수 있습니다.")
         elif select == "읽기":
             read_file()
@@ -28,6 +32,12 @@ def file_edit():
             modify_file()
         elif select == "복사 및 붙여넣기":
             copy_and_paste_text()
+        elif select == "이미지변환":
+            print("이미지 파일 형식 변환 기능 실행")
+            convert_image_format()
+        elif select == "문서변환":
+            print("문서 파일 형식 변환 기능 실행")
+            convert_document_format()
         elif select == '종료':
             print('파일 편집 기능을 종료합니다.')
             finish = True
@@ -88,3 +98,31 @@ def count_word():
         content = file.read()
     word_count = content.count(word)
     print(f"{word}는 {word_count}번 나옵니다.")
+
+def convert_image_format():
+    input_path = input("변환할 이미지 파일의 경로를 입력하세요: ")
+    output_format = input("변환할 형식을 입력하세요 (예: PNG, JPG): ").upper()
+    try:
+        img = Image.open(input_path)
+        output_path = os.path.splitext(input_path)[0] + f".{output_format.lower()}"
+        img.save(output_path)
+        print(f"이미지가 {output_format} 형식으로 변환되었습니다: {output_path}")
+    except Exception as e:
+        print(f"이미지 변환 중 오류 발생: {e}")
+
+def convert_document_format():
+    input_path = input("변환할 문서 파일의 경로를 입력하세요: ")
+    output_format = input("변환할 형식을 입력하세요 (예: PDF): ").upper()
+    try:
+        if output_format == "PDF":
+            if input_path.endswith(".docx"):
+                doc = Document(input_path)
+                output_path = os.path.splitext(input_path)[0] + ".pdf"
+                pdfkit.from_string(doc.text, output_path)
+                print(f"문서가 PDF 형식으로 변환되었습니다: {output_path}")
+            else:
+                print("현재 .docx 파일만 PDF로 변환할 수 있습니다.")
+        else:
+            print("지원하지 않는 문서 형식입니다.")
+    except Exception as e:
+        print(f"문서 변환 중 오류 발생: {e}")
