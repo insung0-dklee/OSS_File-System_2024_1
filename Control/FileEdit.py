@@ -8,6 +8,9 @@
 4. 파일 내용 복사 및 붙여넣기
 '''
 
+# 원활한 파일 읽기를 위한 os 모듈
+import os
+
 def file_edit():
     finish = False
     while not finish:
@@ -36,10 +39,26 @@ def file_edit():
 
 
 def read_file():
-    file_path = input("읽고 싶은 파일의 경로를 입력하세요. : ")
-    with open(file_path, 'r') as file:
-        content = file.read()
-    return content
+    file_path = input("읽고 싶은 파일의 디렉토리 경로를 입력하세요. : ")
+    os.chdir(file_path)
+    lists = os.listdir()
+    print("현재 디렉토리의 파일\n")
+    for list in lists:
+        print(list)
+    while True:
+        file_name = input("읽고 싶은 파일의 이름을 입력하세요. : ")
+        try:
+            with open(file_name, 'r') as file:
+                content = file.read()
+                print(content)
+                break
+        except:
+            print("읽을 수 없는 파일 형식입니다.")
+            sel = input("종료를 원하시면 '종료', 다른 파일을 읽으시려면 아무 키나 눌러주세요. : ")
+            if sel == '종료':
+                break
+            else:
+                continue
 
 def create_and_write_file():
     file_path = input("파일을 생성하고 싶은 디렉토리의 경로를 입력하세요. : ")
