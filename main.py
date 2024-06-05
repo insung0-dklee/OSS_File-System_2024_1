@@ -47,6 +47,8 @@ def move_to_trash(file_path):
     try:
         shutil.move(file_path, trash_dir)
         print(f"{file_path}가 휴지통으로 이동되었습니다.")
+    except FileNotFoundError:
+        print(f"파일을 찾을 수 없습니다: {file_path}")
     except Exception as e:
         print(f"파일을 휴지통으로 이동하는 중 오류가 발생했습니다: {e}")
 
@@ -67,7 +69,17 @@ def restore_from_trash(file_name):
         return
 
     try:
-        restored_path = os.path.join(os.path.expanduser("~"), "Desktop", file_name)  # 복구할 경로 지정
+        desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
+        restored_path = os.path.join(desktop_path, file_name)
+        
+        # 경로 충돌 방지
+        if os.path.exists(restored_path):
+            base, extension = os.path.splitext(file_name)
+            counter = 1
+            while os.path.exists(restored_path):
+                restored_path = os.path.join(desktop_path, f"{base}_{counter}{extension}")
+                counter += 1
+        
         shutil.move(file_path, restored_path)
         print(f"{file_name}이(가) {restored_path}로 복구되었습니다.")
     except Exception as e:
