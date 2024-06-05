@@ -112,6 +112,7 @@ def process_video(file_path, start_time, end_time, output_dir=None):
     동영상 파일의 길이를 출력하고, 입력받은 시간 범위만큼 동영상을 잘라 저장합니다.
     시간은 각각 (시간:분:초) 단위로 입력합니다.
     저장할 폴더가 지정되지 않으면 기존 파일의 위치에 생성합니다.
+    ['.mp4', '.avi', '.mov', '.wmv', '.mkv']를 지원합니다.
     @Param
         file_path : 동영상 파일의 경로
         start_time : 시작 시간 (포맷: 시간:분:초)
@@ -128,6 +129,13 @@ def process_video(file_path, start_time, end_time, output_dir=None):
         return False
     
     try:
+        # 동영상 파일인지 확인
+        video_extensions = ['.mp4', '.avi', '.mov', '.wmv', '.mkv']  # 지원하는 동영상 확장자 목록
+        file_extension = os.path.splitext(file_path)[-1].lower()
+        if file_extension not in video_extensions:
+            print("지원되지 않는 동영상 파일 형식입니다.")
+            return False
+        
         # 동영상 불러오기
         video = VideoFileClip(file_path)
         video_duration = video.duration
@@ -161,9 +169,9 @@ def process_video(file_path, start_time, end_time, output_dir=None):
         if output_dir:
             if not os.path.exists(output_dir):
                 os.makedirs(output_dir)
-            output_file_path = os.path.join(output_dir, f"{file_name}_clip.mp4")
+            output_file_path = os.path.join(output_dir, f"{file_name}_clip{file_extension}")
         else:
-            output_file_path = os.path.join(os.path.dirname(file_path), f"{file_name}_clip.mp4")
+            output_file_path = os.path.join(os.path.dirname(file_path), f"{file_name}_clip{file_extension}")
         
         # 동영상 저장
         new_video.write_videofile(output_file_path, codec="libx264", audio_codec="aac")
@@ -182,7 +190,9 @@ def process_video(file_path, start_time, end_time, output_dir=None):
 def process_audio(file_path, start_time, end_time, output_dir=None):
     """
     소리 파일의 길이를 출력하고, 입력받은 시간 범위만큼 소리를 잘라 저장합니다.
-
+    시간은 각각 (시간:분:초) 단위로 입력합니다.
+    저장할 폴더가 지정되지 않으면 기존 파일의 위치에 생성합니다.
+    ['.mp3', '.aac', '.m4a', '.wav', '.ogg']를 지원합니다.
     @Param
         file_path : 소리 파일의 경로
         start_time : 시작 시간 (포맷: 시간:분:초)
@@ -199,6 +209,13 @@ def process_audio(file_path, start_time, end_time, output_dir=None):
         return False
     
     try:
+        # 소리 파일인지 확인
+        audio_extensions = ['.mp3', '.aac', '.m4a', '.wav', '.ogg']  # 지원하는 소리 확장자 목록
+        file_extension = os.path.splitext(file_path)[-1].lower()
+        if file_extension not in audio_extensions:
+            print("지원되지 않는 소리 파일 형식입니다.")
+            return False
+        
         # 소리 파일 불러오기
         audio = AudioSegment.from_file(file_path)
         audio_duration = len(audio) / 1000.0  # 밀리초를 초로 변환
@@ -233,12 +250,12 @@ def process_audio(file_path, start_time, end_time, output_dir=None):
         if output_dir:
             if not os.path.exists(output_dir):
                 os.makedirs(output_dir)
-            output_file_path = os.path.join(output_dir, f"{file_name}_clip.mp3")
+            output_file_path = os.path.join(output_dir, f"{file_name}_clip{file_extension}")
         else:
-            output_file_path = os.path.join(os.path.dirname(file_path), f"{file_name}_clip.mp3")
+            output_file_path = os.path.join(os.path.dirname(file_path), f"{file_name}_clip{file_extension}")
         
         # 소리 파일 저장
-        new_audio.export(output_file_path, format=file_extension[1:])  # 확장자에서 점(.) 제거
+        new_audio.export(output_file_path, format="mp4", codec="aac")
         print(f"잘라낸 소리 파일을 '{output_file_path}'로 저장했습니다.")
         return True
 
