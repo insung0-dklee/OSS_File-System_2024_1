@@ -178,3 +178,70 @@ def process_video(file_path, start_time, end_time, output_dir=None):
         if 'video' in locals():
             video.reader.close()
             video.audio.reader.close_proc()
+
+def process_audio(file_path, start_time, end_time, output_dir=None):
+    """
+    소리 파일의 길이를 출력하고, 입력받은 시간 범위만큼 소리를 잘라 저장합니다.
+
+    @Param
+        file_path : 소리 파일의 경로
+        start_time : 시작 시간 (포맷: 시간:분:초)
+        end_time : 종료 시간 (포맷: 시간:분:초)
+        output_dir : 출력 소리 파일을 저장할 폴더 경로 (기본값: None)
+    @Return
+        성공 시 True, 아니면 False
+    @Example
+        process_audio(file_path, start_time, end_time, output_dir)
+        process_audio(file_path, start_time, end_time)
+    """
+    if not os.path.isfile(file_path):
+        print("파일이 존재하지 않습니다.")
+        return False
+    
+    try:
+        # 소리 파일 불러오기
+        audio = AudioSegment.from_file(file_path)
+        audio_duration = len(audio) / 1000.0  # 밀리초를 초로 변환
+        print(f"소리 파일 길이: {audio_duration}초")
+        
+        # 시작 시간과 종료 시간을 초 단위로 변환
+        start_seconds = convert_to_seconds(start_time)
+        end_seconds = convert_to_seconds(end_time)
+        
+        # 시간 변환이 실패한 경우
+        if start_seconds is None or end_seconds is None:
+            return False
+
+        if start_seconds >= audio_duration:
+            print("시작 시간이 소리 파일 길이를 초과합니다.")
+            return False
+        
+        if end_seconds > audio_duration:
+            print("종료 시간이 소리 파일 길이를 초과합니다.")
+            return False
+
+        if start_seconds >= end_seconds:
+            print("시작 시간이 종료 시간보다 크거나 같습니다.")
+            return False
+        
+        print("파일 처리를 시작합니다.")
+        # 소리 파일 자르기
+        new_audio = audio[start_seconds * 1000:end_seconds * 1000]  # 초를 밀리초로 변환
+        
+        # 저장할 파일 경로 결정
+        file_name, file_extension = os.path.splitext(os.path.basename(file_path))
+        if output_dir:
+            if not os.path.exists(output_dir):
+                os.makedirs(output_dir)
+            output_file_path = os.path.join(output_dir, f"{file_name}_clip.mp3")
+        else:
+            output_file_path = os.path.join(os.path.dirname(file_path), f"{file_name}_clip.mp3")
+        
+        # 소리 파일 저장
+        new_audio.export(output_file_path, format=file_extension[1:])  # 확장자에서 점(.) 제거
+        print(f"잘라낸 소리 파일을 '{output_file_path}'로 저장했습니다.")
+        return True
+
+    except Exception as e:
+        print(f"소리 파일 처리 중 오류 발생: {e}")
+        return False
