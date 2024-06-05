@@ -181,12 +181,13 @@ def search_files_with_keyword(directory, keyword):
                 continue
     return result_files  # 키워드를 포함한 파일 경로 리스트 반환
 
+"""
 # 사용 예시
 directory = input("검색할 디렉토리 경로를 입력하세요: ")  # 사용자로부터 검색할 디렉토리 경로 입력 받기
 keyword = input("검색할 키워드를 입력하세요: ")  # 사용자로부터 검색할 키워드 입력 받기
 matching_files = search_files_with_keyword(directory, keyword)  # 함수 호출하여 결과 저장
 print(f"키워드를 포함한 파일 목록: {matching_files}")  # 결과 출력
-
+"""
 
 def get_file_system_statistics(directory):
     """
@@ -379,10 +380,10 @@ def calculate_directory_size(directory): # 폴더크기 측정 기능 함수
             fp = os.path.join(dirpath, f)
             total_size += os.path.getsize(fp)
     return total_size
-
+"""
 directory_path = input("크기를 측정할 디렉토리 경로를 입력하세요: ")
 print(f"디렉토리의 총 크기: {calculate_directory_size(directory_path)} bytes")
-
+"""
 
 # 파일 관리 시스템
 # - 중복 파일 탐지 및 삭제: 주어진 디렉토리에서 중복 파일을 찾아내고, 중복된 파일을 삭제합니다.
@@ -502,6 +503,8 @@ def extract_file_from_zip(zip_path, file_name, dest_dir):
     except Exception as e:
         print(f"ZIP 파일에서 파일을 추출하는 중 오류가 발생했습니다: {e}")
 
+
+
 def set_desktop_background(image_path):
     """
     바탕화면 배경을 지정된 이미지 파일로 설정합니다.
@@ -509,12 +512,28 @@ def set_desktop_background(image_path):
     @param
         image_path: 바탕화면 배경으로 설정할 이미지 파일의 경로
     """
+    # 상수 정의
+    SPI_SETDESKWALLPAPER = 20
+    SPIF_UPDATEINIFILE = 0x01
+    SPIF_SENDCHANGE = 0x02
+    
+    if platform.system() != 'Windows':
+        print("이 스크립트는 Windows에서만 실행됩니다.")
+        return
+    
     try:
-        # SPI_SETDESKWALLPAPER 상수를 사용하여 바탕화면 배경 이미지 설정
-        ctypes.windll.user32.SystemParametersInfoW(20, 0, image_path, 0)
-        print("바탕화면 배경이 설정되었습니다.")
+        # 바탕화면 배경 이미지 설정
+        result = ctypes.windll.user32.SystemParametersInfoW(SPI_SETDESKWALLPAPER, 0, image_path, SPIF_UPDATEINIFILE | SPIF_SENDCHANGE)
+        
+        if result:
+            print("바탕화면 배경이 설정되었습니다.")
+        else:
+            print("Error to run SystemParametersinfo()")
     except Exception as e:
         print(f"바탕화면 배경 설정 중 오류가 발생했습니다: {e}")
+
+
+
 
 def get_desktop_files():
     """
