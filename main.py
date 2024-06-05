@@ -181,12 +181,13 @@ def search_files_with_keyword(directory, keyword):
                 continue
     return result_files  # 키워드를 포함한 파일 경로 리스트 반환
 
+"""
 # 사용 예시
 directory = input("검색할 디렉토리 경로를 입력하세요: ")  # 사용자로부터 검색할 디렉토리 경로 입력 받기
 keyword = input("검색할 키워드를 입력하세요: ")  # 사용자로부터 검색할 키워드 입력 받기
 matching_files = search_files_with_keyword(directory, keyword)  # 함수 호출하여 결과 저장
 print(f"키워드를 포함한 파일 목록: {matching_files}")  # 결과 출력
-
+"""
 
 def get_file_system_statistics(directory):
     """
@@ -369,19 +370,31 @@ def encrypt_file(file_path):
     except Exception as e: #외의 에러 제어
         return f"An error occurred: {e}"
 
-def calculate_directory_size(directory): # 폴더크기 측정 기능 함수
+
+def calculate_directory_size(directory: str) -> int:
     """
     주어진 디렉토리의 총 크기를 계산합니다.
+
+    @param
+        directory: 크기를 계산할 디렉토리의 경로
+    @return
+        int: 디렉토리의 총 크기 (바이트 단위)
     """
     total_size = 0
+    
     for dirpath, _, filenames in os.walk(directory):
-        for f in filenames:
-            fp = os.path.join(dirpath, f)
-            total_size += os.path.getsize(fp)
+        for filename in filenames:
+            try:
+                filepath = os.path.join(dirpath, filename)
+                total_size += os.stat(filepath).st_size
+            except FileNotFoundError:
+                print(f"파일을 찾을 수 없습니다: {filepath}")
+            except PermissionError:
+                print(f"파일에 접근할 수 없습니다: {filepath}")
+            except OSError as e:
+                print(f"파일 접근 중 오류 발생 ({filepath}): {e}")
     return total_size
 
-directory_path = input("크기를 측정할 디렉토리 경로를 입력하세요: ")
-print(f"디렉토리의 총 크기: {calculate_directory_size(directory_path)} bytes")
 
 
 # 파일 관리 시스템
@@ -812,11 +825,26 @@ def change_permissions(path, mode):
     """
     파일 또는 디렉토리의 권한을 변경합니다.
     :param path: 파일 또는 디렉토리 경로
-    :param mode: 권한 모드 (8진수 형태로 입력, 예: 0o755)
+    :param mode: 권한 모드 (8진수 형태 또는 정수 형태로 입력, 예: 0o755 또는 493)
     """
+    # 입력된 mode가 정수 형태인지 확인하고, 필요하다면 변환합니다.
+    if isinstance(mode, int):
+        formatted_mode = mode
+    else:
+        try:
+            formatted_mode = int(mode, 8)
+        except ValueError:
+            print(f"잘못된 권한 모드 형식입니다: {mode}")
+            return
+    
+    # 파일 또는 디렉토리의 존재 여부를 확인합니다.
+    if not os.path.exists(path):
+        print(f"지정된 경로가 존재하지 않습니다: {path}")
+        return
+    
     try:
-        os.chmod(path, mode)
-        print(f"{path}의 권한이 {oct(mode)}로 변경되었습니다.")
+        os.chmod(path, formatted_mode)
+        print(f"{path}의 권한이 {oct(formatted_mode)}로 변경되었습니다.")
     except Exception as e:
         print(f"권한 변경 중 오류가 발생했습니다: {e}")
 
