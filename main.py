@@ -493,7 +493,7 @@ def extract_file_from_zip(zip_path, file_name, dest_dir):
     :param dest_dir: 추출할 목적지 디렉토리
     """
     try:
-        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+        .ZipFile(zip_path, 'r') as zip_ref:
             if file_name in zip_ref.namelist():
                 zip_ref.extract(file_name, dest_dir)
                 print(f"{file_name}이(가) {dest_dir}로 추출되었습니다.")
@@ -641,11 +641,11 @@ def list_file_creation_times(directory):
     매개변수 directory: 파일 생성 시간을 출력할 디렉토리의 경로
     """
     try:
-        for filename in os.listdir(directory):
-            file_path = os.path.join(directory, filename)
-            if os.path.isfile(file_path):
-                created_time = os.path.getctime(file_path)
-                created_time_readable = time.ctime(created_time)
+        for filename in os.listdir(directory):  # 디렉토리 내 파일 목록 순회
+            file_path = os.path.join(directory, filename)  # 각 파일의 전체 경로 생성
+            if os.path.isfile(file_path):  # 파일인지 확인
+                created_time = os.path.getctime(file_path)  # 파일 생성 시간 가져오기
+                created_time_readable = time.ctime(created_time)  # 읽기 쉬운 형식으로 변환
                 print(f"{filename}: 생성 시간 - {created_time_readable}")
     except Exception as e:
         print(f"파일 생성 시간 출력 중 오류가 발생했습니다: {e}")
@@ -833,36 +833,35 @@ def create_file(filename):
         print("비밀번호가 틀렸습니다.")
 
 
-b_is_exit = False
+b_is_exit = False  # 프로그램 종료 여부를 결정하는 플래그
 version = "1.0.0"
 print(f"프로그램 버전: {version}")
 
-bookmark_list = []
+bookmark_list = []  # 즐겨찾기 목록을 저장하는 리스트
 
 while not b_is_exit:
 
     func = input("원하는 기능을 입력하세요. ('?' 입력시 도움말)")
     
-
     if func == "파일편집":
         print("파일 편집 기능 실행")
-        FileEdit.file_edit()
+        FileEdit.file_edit()  # 파일 편집 기능 실행
 
     elif func == "즐겨찾기":
         print("즐겨찾기 기능 실행.")
-        Bookmark.bookmark(bookmark_list)
+        Bookmark.bookmark(bookmark_list)  # 즐겨찾기 기능 실행
 
     elif func == "파일관리":
         print("파일 관리 기능 실행")
-        FileControl.file_control()
+        FileControl.file_control()  # 파일 관리 기능 실행
 
     elif func == "가독성":
         print("가독성 기능 실행")
-        Readable.readable()
+        Readable.readable()  # 가독성 기능 실행
 
     elif func == "중복관리":
         print("중복 관리 기능 실행")
-        Duplicates.duplicates()
+        Duplicates.duplicates()  # 중복 파일 관리 기능 실행
 
     elif func == "?":
         print("""
@@ -876,8 +875,8 @@ while not b_is_exit:
             """)
 
     elif func.lower() == "종료":
-        b_is_exit = True
+        b_is_exit = True  # 프로그램 종료 플래그 설정
         print("프로그램을 종료합니다.")
 
     else:
-        print("잘못 입력하셨습니다. 다시 입력해주세요. : ")
+        print("잘못 입력하셨습니다. 다시 입력해주세요. : ")  # 잘못된 입력 처리
