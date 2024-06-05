@@ -34,6 +34,52 @@ import subprocess
 import ctypes
 import stat
 
+def get_file_system_statistics(directory):
+    """
+    주어진 디렉토리의 파일 시스템 통계를 계산합니다.
+
+    @param directory: 통계를 계산할 디렉토리 경로
+
+    @Returns: 파일 시스템 통계를 담은 딕셔너리
+    """
+    statistics = {
+        'total_files': 0,
+        'total_directories': 0,
+        'total_size': 0,
+        'file_type_counts': defaultdict(int)
+    }
+
+    for dirpath, dirnames, filenames in os.walk(directory):
+        # 디렉토리 수 증가
+        statistics['total_directories'] += len(dirnames)
+
+        # 파일 수 및 파일 크기 증가
+        for filename in filenames:
+            statistics['total_files'] += 1
+            file_path = os.path.join(dirpath, filename)
+            statistics['total_size'] += os.path.getsize(file_path)
+
+            # 파일 유형별 통계 증가
+            _, file_extension = os.path.splitext(filename)
+            statistics['file_type_counts'][file_extension] += 1
+
+    return statistics
+
+def print_file_system_statistics(directory):
+    """
+    주어진 디렉토리의 파일 시스템 통계를 출력합니다.
+
+    @param directory: 통계를 출력할 디렉토리 경로
+    """
+    stats = get_file_system_statistics(directory)
+
+    print(f"디렉토리: {directory}")
+    print(f"총 파일 수: {stats['total_files']}")
+    print(f"총 디렉토리 수: {stats['total_directories']}")
+    print(f"총 용량: {stats['total_size']} bytes")
+    print("파일 유형별 통계:")
+    for file_type, count in stats['file_type_counts'].items():
+        print(f"  {file_type if file_type else 'No Extension'}: {count} files")
 
 def move_to_trash(file_path):
     """
@@ -863,7 +909,11 @@ while not b_is_exit:
     elif func == "중복관리":
         print("중복 관리 기능 실행")
         Duplicates.duplicates()
-
+        
+    elif func == "파일시스템상태":
+        directory = input("파일 시스템 상태를 확인할 디렉토리 경로를 입력하세요: ")
+        print_file_system_statistics(directory)
+    
     elif func == "?":
         print("""
                 [도움말]
@@ -872,6 +922,7 @@ while not b_is_exit:
                 '파일관리' 입력시 파일을 관리할 수 있습니다.
                 '가독성'   입력시 파일의 단위를 읽기 좋게 볼 수 있습니다.
                 '중복관리' 입력시 중복 파일을 관리할 수 있습니다.
+                '파일시스템상태' 입력시 파일 시스템 상태를 확인할 수 있습니다.
                 '종료'     입력시 프로그램을 종료합니다.
             """)
 
