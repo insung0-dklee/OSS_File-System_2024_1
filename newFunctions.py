@@ -65,3 +65,14 @@ def preview_text(file_path, num_lines=5):
             print(line, end='')
     except Exception as e:
         print(f"텍스트 미리보기 중 오류가 발생했습니다: {e}")
+
+def create_empty_folder(directory):
+    try:
+        # 지정된 경로에 폴더가 없는 경우에만 폴더를 생성합니다.
+        if not os.path.exists(directory):
+            os.makedirs(directory)  # 지정된 경로에 폴더를 생성합니다.
+            print("폴더 '{}' 가 생성되었습니다.".format(directory))  
+        else:
+            print("폴더 '{}' 가 이미 존재합니다.".format(directory))  
+    except OSError as e:
+        print("폴더 생성 에러: ", e) 
