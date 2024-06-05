@@ -32,6 +32,65 @@ import platform
 from Control import AutoFileManage
 import subprocess
 import ctypes
+import stat
+
+
+def move_to_trash(file_path):
+    """
+    파일을 휴지통으로 이동합니다.
+    :param file_path: 삭제할 파일의 경로
+    """
+    trash_dir = os.path.join(os.path.expanduser("~"), ".trash")
+    if not os.path.exists(trash_dir):
+        os.makedirs(trash_dir)
+
+    try:
+        shutil.move(file_path, trash_dir)
+        print(f"{file_path}가 휴지통으로 이동되었습니다.")
+    except Exception as e:
+        print(f"파일을 휴지통으로 이동하는 중 오류가 발생했습니다: {e}")
+
+### 휴지통에서 파일을 복구하는 함수
+def restore_from_trash(file_name):
+    """
+    휴지통에서 파일을 복구합니다.
+    :param file_name: 복구할 파일의 이름
+    """
+    trash_dir = os.path.join(os.path.expanduser("~"), ".trash")
+    if not os.path.exists(trash_dir):
+        print("휴지통이 비어 있습니다.")
+        return
+
+    file_path = os.path.join(trash_dir, file_name)
+    if not os.path.exists(file_path):
+        print(f"{file_name}이(가) 휴지통에 없습니다.")
+        return
+
+    try:
+        restored_path = os.path.join(os.path.expanduser("~"), "Desktop", file_name)  # 복구할 경로 지정
+        shutil.move(file_path, restored_path)
+        print(f"{file_name}이(가) {restored_path}로 복구되었습니다.")
+    except Exception as e:
+        print(f"파일을 복구하는 중 오류가 발생했습니다: {e}")
+
+### 휴지통 내 파일 목록을 출력하는 함수
+def list_trash():
+    """
+    휴지통 내의 파일 목록을 출력합니다.
+    """
+    trash_dir = os.path.join(os.path.expanduser("~"), ".trash")
+    if not os.path.exists(trash_dir):
+        print("휴지통이 비어 있습니다.")
+        return
+
+    files = os.listdir(trash_dir)
+    if not files:
+        print("휴지통이 비어 있습니다.")
+        return
+
+    print("휴지통 내 파일 목록:")
+    for file in files:
+        print(f"  - {file}")
 
 def defragment_file_system(path):
     """주어진 경로에 대해 파일 시스템 조각 모음을 수행합니다."""
@@ -102,6 +161,32 @@ def compare_files(file1_path, file2_path):
         print(e)
     except Exception as e:
         print(f"파일 비교 중 오류가 발생했습니다: {e}")
+
+def search_files_with_keyword(directory, keyword):
+    """
+    디렉토리 내에서 특정 키워드를 포함한 파일을 검색합니다.
+    :param directory: 검색할 디렉토리 경로
+    :param keyword: 검색할 키워드
+    """
+    result_files = []  # 키워드를 포함한 파일 경로를 저장할 리스트
+    for dirpath, _, filenames in os.walk(directory):  # 디렉토리 내 모든 파일을 순회
+        for filename in filenames:
+            file_path = os.path.join(dirpath, filename)  # 파일의 절대 경로 생성
+            try:
+                with open(file_path, 'r', encoding='utf-8') as file:  # 파일을 읽기 모드로 열기
+                    content = file.read()  # 파일 내용 읽기
+                    if keyword in content:  # 키워드가 파일 내용에 포함되어 있는지 확인
+                        result_files.append(file_path)  # 키워드를 포함한 파일 경로를 리스트에 추가
+            except (UnicodeDecodeError, IOError):  # 인코딩 오류 또는 입출력 오류 처리
+                continue
+    return result_files  # 키워드를 포함한 파일 경로 리스트 반환
+
+# 사용 예시
+directory = input("검색할 디렉토리 경로를 입력하세요: ")  # 사용자로부터 검색할 디렉토리 경로 입력 받기
+keyword = input("검색할 키워드를 입력하세요: ")  # 사용자로부터 검색할 키워드 입력 받기
+matching_files = search_files_with_keyword(directory, keyword)  # 함수 호출하여 결과 저장
+print(f"키워드를 포함한 파일 목록: {matching_files}")  # 결과 출력
+
 
 def get_file_system_statistics(directory):
     """
@@ -283,7 +368,21 @@ def encrypt_file(file_path):
         return "File not found. Please check the file path." # 파일을 찾을 수 없을때 나타나는 error
     except Exception as e: #외의 에러 제어
         return f"An error occurred: {e}"
-    
+
+def calculate_directory_size(directory): # 폴더크기 측정 기능 함수
+    """
+    주어진 디렉토리의 총 크기를 계산합니다.
+    """
+    total_size = 0
+    for dirpath, _, filenames in os.walk(directory):
+        for f in filenames:
+            fp = os.path.join(dirpath, f)
+            total_size += os.path.getsize(fp)
+    return total_size
+
+directory_path = input("크기를 측정할 디렉토리 경로를 입력하세요: ")
+print(f"디렉토리의 총 크기: {calculate_directory_size(directory_path)} bytes")
+
 
 # 파일 관리 시스템
 # - 중복 파일 탐지 및 삭제: 주어진 디렉토리에서 중복 파일을 찾아내고, 중복된 파일을 삭제합니다.
@@ -351,6 +450,58 @@ def hideFile(path):
     except Exception as e:
         print(f"파일 숨기기 중 오류가 발생했습니다: {e}")
 
+def backup_directory_files(file_path, backup_directory):
+    """
+    지정된 디렉토리의 파일들을 백업 디렉토리로 복사합니다.
+    :param file_path: 백업할 소스 디렉토리의 경로
+    :param backup_directory: 백업 파일을 저장할 디렉토리의 경로
+    """
+
+    # 백업 디렉토리 생성
+    os.makedirs(backup_directory, exist_ok=True)
+
+    # 디렉토리 내 파일들의 리스트 가져오기
+    file_list = os.listdir(file_path)
+
+    # 디렉토리 내 파일들을 백업 디렉토리로 복사
+    for file_name in file_list:
+        file_path = os.path.join(file_path, file_name)
+        backup_path = os.path.join(backup_directory, file_name)
+        shutil.copy2(file_path, backup_path)
+
+    print("파일 백업 완료!")
+
+def list_zip_contents(zip_path):
+    """
+    ZIP 파일의 내용을 나열합니다.
+    :param zip_path: ZIP 파일의 경로
+    """
+    try:
+        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+            file_list = zip_ref.namelist()
+            print(f"{zip_path} 내용:")
+            for file in file_list:
+                print(f"  - {file}")
+    except Exception as e:
+        print(f"ZIP 파일 내용을 나열하는 중 오류가 발생했습니다: {e}")
+
+def extract_file_from_zip(zip_path, file_name, dest_dir):
+    """
+    ZIP 파일에서 특정 파일을 추출합니다.
+    :param zip_path: ZIP 파일의 경로
+    :param file_name: 추출할 파일의 이름
+    :param dest_dir: 추출할 목적지 디렉토리
+    """
+    try:
+        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+            if file_name in zip_ref.namelist():
+                zip_ref.extract(file_name, dest_dir)
+                print(f"{file_name}이(가) {dest_dir}로 추출되었습니다.")
+            else:
+                print(f"{file_name}이(가) ZIP 파일에 존재하지 않습니다.")
+    except Exception as e:
+        print(f"ZIP 파일에서 파일을 추출하는 중 오류가 발생했습니다: {e}")
+
 def set_desktop_background(image_path):
     """
     바탕화면 배경을 지정된 이미지 파일로 설정합니다.
@@ -372,6 +523,8 @@ def get_desktop_files():
     desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
     return os.listdir(desktop_path)
 
+
+
 def compress_file(file_path, method='zip'):
     """
     사용자가 파일경로를 입력하면 해당파일을 zip으로 압축합니다.
@@ -388,16 +541,86 @@ def compress_file(file_path, method='zip'):
                 zipf.write(file_path, file_name)
             print(f"파일이 성공적으로 압축되었습니다: {output_zip}")
 
-        elif method == 'tar':
-            output_tar = os.path.join(file_dir, f"{file_name}.tar.gz")
-            with tarfile.open(output_tar, 'w:gz') as tarf:
+        elif method == 'tar.gz':
+            output_tar_gz = os.path.join(file_dir, f"{file_name}.tar.gz")
+            with tarfile.open(output_tar_gz, 'w:gz') as tarf:
                 tarf.add(file_path, arcname=file_name)
-            print(f"파일이 성공적으로 압축되었습니다: {output_tar}")
+            print(f"파일이 성공적으로 압축되었습니다: {output_tar_gz}")
+
+        elif method == 'tar.bz2':
+            output_tar_bz2 = os.path.join(file_dir, f"{file_name}.tar.bz2")
+            with tarfile.open(output_tar_bz2, 'w:bz2') as tarf:
+                tarf.add(file_path, arcname=file_name)
+            print(f"파일이 성공적으로 압축되었습니다: {output_tar_bz2}")
 
         else:
             print(f"지원하지 않는 압축 방식입니다: {method}")
     except Exception as e:
         print(f"파일 압축 중 오류가 발생했습니다: {e}")
+
+def print_file_permissions_rwx(file_path):
+    """
+    사용자가 입력한 파일 경로의 권한을 rwx 형식으로 출력합니다.
+    매개변수 file_path: 권한을 출력할 파일 경로
+    """
+    def get_permission_string(mode):
+        """
+        파일 모드를 rwx 문자열로 변환합니다.
+        매개변수 mode: 파일 모드
+        """
+        is_dir = 'd' if stat.S_ISDIR(mode) else '-'
+        perms = [
+            (stat.S_IRUSR, 'r'), (stat.S_IWUSR, 'w'), (stat.S_IXUSR, 'x'),
+            (stat.S_IRGRP, 'r'), (stat.S_IWGRP, 'w'), (stat.S_IXGRP, 'x'),
+            (stat.S_IROTH, 'r'), (stat.S_IWOTH, 'w'), (stat.S_IXOTH, 'x')
+        ]
+        permission_string = is_dir + ''.join([perm if mode & mask else '-' for mask, perm in perms])
+        return permission_string
+
+    try:
+        mode = os.stat(file_path).st_mode
+        permission_string = get_permission_string(mode)
+        print(f"{file_path}의 권한: {permission_string}")
+    except Exception as e:
+        print(f"권한 확인 중 오류가 발생했습니다: {e}")
+
+def check_extension_in_directory(directory, extension):
+    """
+    사용자가 입력한 디렉토리 내에 사용자가 입력한 확장자가 존재하는지 여부를 출력합니다.
+    :param directory: 검색할 디렉토리 경로
+    :param extension: 검색할 파일 확장자 (예: '.txt')
+    """
+    if not os.path.exists(directory):
+        print(f"경로가 존재하지 않습니다: {directory}")
+        return
+
+    if not os.path.isdir(directory):
+        print(f"유효한 디렉토리가 아닙니다: {directory}")
+        return
+
+    try:
+        extension_found = False
+        for dirpath, _, filenames in os.walk(directory):
+            for filename in filenames:
+                if filename.endswith(extension):
+                    extension_found = True
+                    print(f"확장자가 {extension}인 파일 발견: {os.path.join(dirpath, filename)}")
+
+        if not extension_found:
+            print(f"디렉토리 내에 확장자가 {extension}인 파일이 존재하지 않습니다.")
+    except Exception as e:
+        print(f"확장자 확인 중 오류가 발생했습니다: {e}")
+
+def print_file_mode(file_path):
+    """
+    파일의 권한(모드)를 8진수 형식으로 출력합니다.
+    매개변수 file_path: 권한(모드)를 출력할 파일 경로
+    """
+    try:
+        mode = os.stat(file_path).st_mode
+        print(f"{file_path}의 모드: {oct(mode)}")
+    except Exception as e:
+        print(f"모드 확인 중 오류가 발생했습니다: {e}")
 
 def decompressFile(zip_path, dest):
     """
