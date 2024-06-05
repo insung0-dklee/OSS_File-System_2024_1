@@ -658,3 +658,28 @@ while not b_is_exit:
 
     else:
         print("잘못 입력하셨습니다. 다시 입력해주세요. : ")
+
+
+from PIL import Image
+
+def invert_image(image_path, save_path):
+    """
+    이미지 파일의 색상을 반전시켜 새로운 이미지를 저장합니다.
+    
+    Args:
+        image_path (str): 원본 이미지 파일의 경로
+        save_path (str): 반전된 이미지를 저장할 경로
+    """
+    # 이미지 열기
+    image = Image.open(image_path)
+    
+    # 이미지 색상 반전
+    inverted_image = Image.eval(image, lambda x: 255 - x)
+    
+    # 디렉토리 생성
+    os.makedirs(os.path.dirname(save_path), exist_ok=True)
+    
+    # 이미지 저장
+    inverted_image.save(save_path)
+    
+    print("이미지가 성공적으로 저장되었습니다.")
