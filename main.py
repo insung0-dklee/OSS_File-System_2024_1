@@ -33,8 +33,90 @@ from Control import AutoFileManage
 import subprocess
 import ctypes
 import stat
+import json
 
+TAGS_FILE = 'tags.json'
 
+def load_tags():
+    if not os.path.exists(TAGS_FILE):
+        return {}
+    with open(TAGS_FILE, 'r', encoding='utf-8') as file:
+        return json.load(file)
+
+def save_tags(tags):
+    with open(TAGS_FILE, 'w', encoding='utf-8') as file:
+        json.dump(tags, file, ensure_ascii=False, indent=4)
+
+def add_tag(file_path, tag):
+    tags = load_tags()
+    if file_path not in tags:
+        tags[file_path] = []
+    if tag not in tags[file_path]:
+        tags[file_path].append(tag)
+        save_tags(tags)
+        print(f"태그 '{tag}'가 '{file_path}'에 추가되었습니다.")
+    else:
+        print(f"'{file_path}'에 이미 태그 '{tag}'가 존재합니다.")
+
+def remove_tag(file_path, tag):
+    tags = load_tags()
+    if file_path in tags and tag in tags[file_path]:
+        tags[file_path].remove(tag)
+        if not tags[file_path]:
+            del tags[file_path]
+        save_tags(tags)
+        print(f"태그 '{tag}'가 '{file_path}'에서 삭제되었습니다.")
+    else:
+        print(f"'{file_path}'에 태그 '{tag}'가 존재하지 않습니다.")
+
+def search_by_tag(tag):
+    tags = load_tags()
+    result = [file for file, tag_list in tags.items() if tag in tag_list]
+    if result:
+        print(f"태그 '{tag}'를 가진 파일 목록:")
+        for file in result:
+            print(f" - {file}")
+    else:
+        print(f"태그 '{tag}'를 가진 파일이 없습니다.")
+
+def list_tags(file_path):
+    tags = load_tags()
+    if file_path in tags:
+        print(f"'{file_path}'의 태그 목록:")
+        for tag in tags[file_path]:
+            print(f" - {tag}")
+    else:
+        print(f"'{file_path}'에 태그가 없습니다.")
+
+def tag_management():
+    while True:
+        print("\n태그 관리 시스템")
+        print("1. 태그 추가")
+        print("2. 태그 삭제")
+        print("3. 태그로 검색")
+        print("4. 태그 목록 출력")
+        print("5. 종료")
+        choice = input("원하는 기능을 선택하세요: ")
+
+        if choice == '1':
+            file_path = input("태그를 추가할 파일 경로를 입력하세요: ")
+            tag = input("추가할 태그를 입력하세요: ")
+            add_tag(file_path, tag)
+        elif choice == '2':
+            file_path = input("태그를 삭제할 파일 경로를 입력하세요: ")
+            tag = input("삭제할 태그를 입력하세요: ")
+            remove_tag(file_path, tag)
+        elif choice == '3':
+            tag = input("검색할 태그를 입력하세요: ")
+            search_by_tag(tag)
+        elif choice == '4':
+            file_path = input("태그 목록을 확인할 파일 경로를 입력하세요: ")
+            list_tags(file_path)
+        elif choice == '5':
+            break
+        else:
+            print("잘못된 입력입니다. 다시 시도해주세요.")
+            
 def move_to_trash(file_path):
     """
     파일을 휴지통으로 이동합니다.
@@ -863,7 +945,11 @@ while not b_is_exit:
     elif func == "중복관리":
         print("중복 관리 기능 실행")
         Duplicates.duplicates()
-
+        
+    elif func == "태그관리":
+        print("태그 관리 기능 실행")
+        tag_management()
+        
     elif func == "?":
         print("""
                 [도움말]
@@ -872,6 +958,7 @@ while not b_is_exit:
                 '파일관리' 입력시 파일을 관리할 수 있습니다.
                 '가독성'   입력시 파일의 단위를 읽기 좋게 볼 수 있습니다.
                 '중복관리' 입력시 중복 파일을 관리할 수 있습니다.
+                '태그관리' 입력시 파일에 태그를 추가, 삭제, 검색할 수 있습니다.
                 '종료'     입력시 프로그램을 종료합니다.
             """)
 
