@@ -9,10 +9,13 @@ from typing import List
 import hashlib
 from functools import lru_cache
 from pathlib import Path
-import winreg
 import ctypes
+import platform
 
+is_windows = platform.system() == 'Windows'
 
+if is_windows:
+    import winreg
 
 def file_control():
     finish = False
@@ -32,6 +35,11 @@ def file_control():
             print(" '부모 디렉토리 확인' 입력시 선택한 디렉토리의 부모 디렉토리 출력")
             print(" '파일복사'           입력시 파일 복사 및 붙여넣기")
             print(" '잘라내기'           입력시 파일 잘라내기 및 붙여넣기")
+            if is_windows:
+                print(" '숨김파일토글'       입력시 파일의 숨김 속성을 토글")
+                print(" '숨김파일표시토글'   입력시 파일 탐색기의 숨김 파일 표시 설정을 토글")
+            else:
+                print(" '숨김파일토글'       입력시 파일의 이름을 변경하여 숨김 속성 토글")
             print(" '종료'               입력시 프로그램을 종료할 수 있습니다.")
         elif select == '메타데이터 출력':
             manage_metadata()
@@ -60,6 +68,16 @@ def file_control():
         elif select == '잘라내기':
             cut_file()
 
+        elif select == '숨김파일토글':
+            file_path = input("숨김 속성을 토글할 파일 경로를 입력하세요: ")
+            if is_windows:
+                toggle_hidden_windows(file_path)
+            else:
+                toggle_hidden_unix(file_path)
+
+        elif select == '숨김파일표시토글' and is_windows:
+            toggle_show_hidden_files()
+            
         elif select == "종료":
             print("중복 관리를 종료합니다.")
             finish = True
@@ -85,69 +103,83 @@ def read_file(file_path):
     except Exception as e:
         raise Exception(f"An error occurred: {e}")
 
-def toggle_hidden(file_path):
-    """
-    파일 경로를 입력받아 해당 파일을 숨김, 해제 상태로 토글하는 코드
-    @Param
-        file_path : 숨김 설정을 토글할 파일 경로
-    @Return
-        오류 발생 시 False, 외에는 None
-    @Example
-        toggle_hidden(file_path)
-    """
-    try:
-        # 파일 속성 가져오기
-        attrs = ctypes.windll.kernel32.GetFileAttributesW(file_path)
-        if attrs == -1:
-            print("파일 속성을 가져오는 도중 오류가 발생했습니다.")
-            return False
+if is_windows:
+    def toggle_hidden_windows(file_path):
+        """
+        파일 경로를 입력받아 해당 파일을 숨김, 해제 상태로 토글하는 코드
+        @Param
+            file_path : 숨김 설정을 토글할 파일 경로
+        @Return
+            오류 발생 시 False, 외에는 None
+        @Example
+            toggle_hidden(file_path)
+        """
+        try:
+            # 파일 속성 가져오기
+            attrs = ctypes.windll.kernel32.GetFileAttributesW(file_path)
+            if attrs == -1:
+                print("파일 속성을 가져오는 도중 오류가 발생했습니다.")
+                return False
 
-        # 숨김 속성 토글
-        if attrs & 2:
-            new_attrs = attrs & ~2  # 속성에서 숨김 속성 제거
-        else:
-            new_attrs = attrs | 2  # 속성에 숨김 속성 추가
+            # 숨김 속성 토글
+            if attrs & 2:
+                new_attrs = attrs & ~2  # 속성에서 숨김 속성 제거
+            else:
+                new_attrs = attrs | 2  # 속성에 숨김 속성 추가
 
-        # 새로운 파일 속성 설정
-        if not ctypes.windll.kernel32.SetFileAttributesW(file_path, new_attrs):
-            raise ctypes.WinError()
+            # 새로운 파일 속성 설정
+            if not ctypes.windll.kernel32.SetFileAttributesW(file_path, new_attrs):
+                raise ctypes.WinError()
 
-        print(f"'{file_path}'의 숨김 상태가 토글되었습니다.")
-    except Exception as e:
-        print(f"'{file_path}'의 숨김 상태 토글 중 오류 발생: {e}")
+            print(f"'{file_path}'의 숨김 상태가 토글되었습니다.")
+        except Exception as e:
+            print(f"'{file_path}'의 숨김 상태 토글 중 오류 발생: {e}")
 
+    def toggle_show_hidden_files():
+        """
+        파일 탐색기의 숨김 폴더 또는 드라이브 표시 기능을 토글하는 함수
+        @Param
+            None
+        @Return
+            None
+        @Example
+            toggle_show_hidden_files()
+        """
+        try:
+            # 파일 탐색기 설정을 위한 레지스트리 키 열기
+            key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced", 0, winreg.KEY_ALL_ACCESS)
 
+            # 'Hidden' 키의 현재 값 가져오기
+            current_value, _ = winreg.QueryValueEx(key, "Hidden")
 
-def toggle_show_hidden_files():
-    """
-    파일 탐색기의 숨김 폴더 또는 드라이브 표시 기능을 토글하는 함수
-    @Param
-        None
-    @Return
-        None
-    @Example
-        toggle_show_hidden_files()
-    """
+            # 값 토글 (0에서 1로 또는 1에서 0으로)
+            new_value = int(not current_value)
 
+            # 'Hidden' 키에 새로운 값 설정
+            winreg.SetValueEx(key, "Hidden", 0, winreg.REG_DWORD, new_value)
 
-    try:
-        # 파일 탐색기 설정을 위한 레지스트리 키 열기
-        key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced", 0, winreg.KEY_ALL_ACCESS)
+            # 레지스트리 키 닫기
+            winreg.CloseKey(key)
+            print("숨김 파일 표시 설정이 토글되었습니다.")
+        except Exception as e:
+            print(f"숨김 파일 표시 설정 토글 중 오류 발생: {e}")
 
-        # 'Hidden' 키의 현재 값 가져오기
-        current_value, _ = winreg.QueryValueEx(key, "Hidden")
-
-        # 값 토글 (0에서 1로 또는 1에서 0으로)
-        new_value = int(not current_value)
-
-        # 'Hidden' 키에 새로운 값 설정
-        winreg.SetValueEx(key, "Hidden", 0, winreg.REG_DWORD, new_value)
-
-        # 레지스트리 키 닫기
-        winreg.CloseKey(key)
-        print("숨김 파일 표시 설정이 토글되었습니다.")
-    except Exception as e:
-        print(f"숨김 파일 표시 설정 토글 중 오류 발생: {e}")
+else:
+    def toggle_hidden_unix(file_path):
+        """
+        Unix 계열 OS에서 파일 이름을 변경하여 숨김 속성을 토글하는 함수
+        """
+        try:
+            dir_name, base_name = os.path.split(file_path)
+            if base_name.startswith('.'):
+                new_base_name = base_name[1:]
+            else:
+                new_base_name = '.' + base_name
+            new_file_path = os.path.join(dir_name, new_base_name)
+            os.rename(file_path, new_file_path)
+            print(f"'{file_path}'의 숨김 상태가 토글되었습니다.")
+        except Exception as e:
+            print(f"'{file_path}'의 숨김 상태 토글 중 오류 발생: {e}")
 
 def search_file(root_directory, target_filename):
     """
