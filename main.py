@@ -33,6 +33,7 @@ from Control import AutoFileManage
 import subprocess
 import ctypes
 import stat
+import filecmp
 
 
 def move_to_trash(file_path):
@@ -832,6 +833,35 @@ def create_file(filename):
     else:
         print("비밀번호가 틀렸습니다.")
 
+def compare_directories(dir1, dir2):
+    """
+    두 디렉토리의 구조와 파일 내용을 비교하는 함수
+    
+    :param dir1: 첫 번째 디렉토리 경로
+    :param dir2: 두 번째 디렉토리 경로
+    :return: 비교 결과를 출력
+    """
+    dcmp = filecmp.dircmp(dir1, dir2)
+    compare_results(dcmp)
+
+def compare_results(dcmp):
+    """
+    비교 결과를 출력하는 함수
+    
+    :param dcmp: dircmp 객체
+    """
+    if dcmp.left_only:
+        print(f"Only in {dcmp.left}: {dcmp.left_only}")
+    if dcmp.right_only:
+        print(f"Only in {dcmp.right}: {dcmp.right_only}")
+    if dcmp.diff_files:
+        print(f"Differing files: {dcmp.diff_files}")
+    if dcmp.funny_files:
+        print(f"Problematic files: {dcmp.funny_files}")
+    
+    for sub_dcmp in dcmp.subdirs.values():
+        compare_results(sub_dcmp)
+
 
 b_is_exit = False
 version = "1.0.0"
@@ -864,6 +894,15 @@ while not b_is_exit:
         print("중복 관리 기능 실행")
         Duplicates.duplicates()
 
+    elif func == "파일비교":
+            print("파일 비교 기능 실행")
+            dir1 = input("첫 번째 파일 경로를 입력하세요: ")
+            dir2 = input("두 번째 파일 경로를 입력하세요: ")
+            if not os.path.isdir(dir1) or not os.path.isdir(dir2):
+                print("유효한 파일 경로를 입력하세요.")
+            else:
+                compare_directories(dir1, dir2)
+
     elif func == "?":
         print("""
                 [도움말]
@@ -872,6 +911,7 @@ while not b_is_exit:
                 '파일관리' 입력시 파일을 관리할 수 있습니다.
                 '가독성'   입력시 파일의 단위를 읽기 좋게 볼 수 있습니다.
                 '중복관리' 입력시 중복 파일을 관리할 수 있습니다.
+                '파일비교' 입력시 두 파일의 내용을 비교할 수 있습니다.
                 '종료'     입력시 프로그램을 종료합니다.
             """)
 
