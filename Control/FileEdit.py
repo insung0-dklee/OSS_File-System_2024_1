@@ -8,6 +8,9 @@
 4. 파일 내용 복사 및 붙여넣기
 '''
 
+import os
+
+
 def file_edit():
     finish = False
     while not finish:
@@ -88,3 +91,75 @@ def count_word():
         content = file.read()
     word_count = content.count(word)
     print(f"{word}는 {word_count}번 나옵니다.")
+
+
+def combine_files(zip_path, jpg_path, output_path=None):
+    """
+    zip 파일과 jpg 파일을 이진 모드로 읽어서 결합하여 사진 파일을 생성합니다.
+    생성된 사진 파일의 확장자를 zip으로 바꾸면 zip으로도 실행 가능합니다.
+    단, JPEG 비트열을 앞에서만 해석하는 알집이나 윈도우 기본 파일에서는 포맷이 에러 처리됩니다.
+        winrar나 반디집 등의 프로그램으로 동작해야합니다.
+    @Param
+        zip_path : 압축 파일의 경로
+        jpg_path : 사진 파일의 경로
+        output_path : 저장할 폴더의 경로 (없으면 압축파일 경로 사용)
+    @Return
+        성공 시 True, 아니면 False
+    @Example
+        combine_files(zip_path, jpg_path, output_path)
+    """
+    # 입력된 경로가 존재하는지 확인
+    if not os.path.exists(zip_path) or not os.path.exists(jpg_path):
+        print("파일이 존재하지 않습니다.")
+        return False
+    
+    # 입력된 경로가 파일인지 확인
+    if not os.path.isfile(zip_path) or not os.path.isfile(jpg_path):
+        print("파일이 아니거나 경로가 잘못되었습니다.")
+        return False
+
+    try:
+        # 첫 번째 파일이 zip 파일인지 확인
+        if os.path.splitext(zip_path)[1].lower() != '.zip':
+            print("첫 번째 파일이 zip 파일이 아닙니다.")
+            return False
+        
+        # 두 번째 파일이 jpg 파일인지 확인
+        if os.path.splitext(jpg_path)[1].lower() != '.jpg':
+            print("두 번째 파일이 jpg 파일이 아닙니다.")
+            return False
+
+        # 첫 번째 파일 열기 및 내용 읽기
+        with open(zip_path, 'rb') as zip:
+            zip_content = zip.read()
+        
+        # 두 번째 파일 열기 및 내용 읽기
+        with open(jpg_path, 'rb') as jpg:
+            jpg_content = jpg.read()
+        
+        # 두 파일의 내용을 결합하여 새로운 파일 생성
+        combined_content = zip_content + jpg_content
+        print("새로운 파일을 생성합니다.")
+        # 새로운 파일 생성
+        if output_path is None or not os.path.isdir(output_path):
+            file_path = os.path.join(os.path.dirname(zip_path), f"{os.path.basename(zip_path)}_convertd.jpg")
+        else:
+            if not os.path.exists(output_path):
+                os.makedirs(output_path)
+            file_path = os.path.join(output_path, f"{os.path.basename(zip_path)}_converted.jpg")
+        
+        with open(file_path, 'wb') as output_file:
+            output_file.write(combined_content)
+        
+        print(f"{output_path}에 파일을 생성했습니다.")
+        return True
+    
+    except Exception as e:
+        print(f"에러가 발생했습니다: {e}")
+        return False
+
+# 사용 예시
+zip_path = r"C:\Users\user\Documents\카카오톡 받은 파일\HoloCure0629.zip"
+jpg_path = r"C:\Users\user\Documents\카카오톡 받은 파일\KakaoTalk_20220131_115947269.jpg"
+output_path = r"C:\Users\user\Documents\카카오톡 받은 파일\HoloCure0629_converted.jpg"
+combine_files(zip_path, jpg_path, output_path)
