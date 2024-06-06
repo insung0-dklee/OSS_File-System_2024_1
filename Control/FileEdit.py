@@ -1,5 +1,7 @@
 from PIL import Image
 import os
+
+import ffmpeg
 '''
 파일 편집 패키지 (vim 생각하면 편합니다.)
 
@@ -143,3 +145,59 @@ def compress_image(quality, input_image_path, output_image_path=None):
     except Exception as e:
         print(f"예상치 못한 오류가 발생했습니다 : {e}")
         return False
+
+def compress_video(input_video_path, output_video_path=None, video_bitrate='500k', audio_bitrate='128k'):
+    """
+    동영상 파일의 경로를 입력받아 용량을 줄이는 코드
+    @Param
+        input_video_path : 이미지 파일의 경로
+        output_video_path : 출력할 폴더의 경로 (폴더가 아니면 무시)
+        video_bitrate : 비디오 비트레이트, 초기값 500k, 값이 낮을수록 압축률 증가
+        audio_bitrate : 오디오 비트레이트, 초기값 128k, 값이 낮을수록 압축률 증가
+    @Return
+        성공 시 True, 아니면 False
+    @Example
+        compress_video(input_path, output_path)
+        compress_video(input_path)
+        compress_video(input_path, output_path, '1000k')
+    """
+    # 입력된 경로가 존재하는지 확인
+    if not os.path.exists(input_video_path):
+        print("파일이 존재하지 않습니다.")
+        return False
+    
+    # 입력된 경로가 파일인지 확인
+    if not os.path.isfile(input_video_path):
+        print("파일이 아니거나 경로가 잘못되었습니다.")
+        return False
+
+    # 이미지 파일 확장자인지 확인
+    file_name, file_extension = os.path.splitext(os.path.basename(input_video_path))
+    if file_extension.lower() not in ['.mp4', '.avi', '.mov', '.wmv', '.mkv']:
+        print("확장자가 정상적이지 않습니다.")
+        return False
+
+    try: # 이미지 파일 처리
+        print("이미지 파일 처리를 시작합니다.")
+
+        # 디렉터리가 아니거나, 입력값이 없으면 기존 파일이 있는 폴더에 생성
+        if output_video_path is None or not os.path.isdir(output_video_path):
+            file_path = os.path.join(os.path.dirname(input_video_path), f"{file_name}_compressed{file_extension}")
+        else:
+            # 디렉토리가 없으면 디렉토리 생성
+            if not os.path.exists(output_video_path):
+                os.makedirs(output_video_path)
+            file_path = os.path.join(output_video_path, f"{file_name}_compressed{file_extension}")
+        
+        # 결과 출력
+        (
+            ffmpeg
+            .input(input_video_path)
+            .output(file_path, video_bitrate=video_bitrate, audio_bitrate=audio_bitrate)
+            .run()
+        )
+        print(f"{file_path}에 성공적으로 저장했습니다.")
+        return True
+
+    except Exception as e:
+        print(f"예상치 못한 오류가 발생했습니다 : {e}")
