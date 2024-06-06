@@ -1,3 +1,5 @@
+from PIL import Image
+import os
 '''
 파일 편집 패키지 (vim 생각하면 편합니다.)
 
@@ -88,3 +90,56 @@ def count_word():
         content = file.read()
     word_count = content.count(word)
     print(f"{word}는 {word_count}번 나옵니다.")
+
+def compress_image(quality, input_image_path, output_image_path=None):
+    """
+    이미지 파일의 경로를 입력받아 용량을 줄이는 코드
+    @Param
+        quality : 0~100 사이의 값, 값이 낮을수록 압축률 증가
+        input_image_path : 이미지 파일의 경로
+        output_image_path : 출력할 폴더의 경로 (폴더가 아니면 무시)
+    @Return
+        성공 시 True, 아니면 False
+    @Example
+        compress_image(70, input_path, output_path)
+        compress_image(40, input_path)
+    """
+    # 입력된 경로가 존재하는지 확인
+    if not os.path.exists(input_image_path):
+        print("파일이 존재하지 않습니다.")
+        return False
+    
+    # 입력된 경로가 파일인지 확인
+    if not os.path.isfile(input_image_path):
+        print("파일이 아니거나 경로가 잘못되었습니다.")
+        return False
+
+    # 이미지 파일 확장자인지 확인
+    file_name, file_extension = os.path.splitext(os.path.basename(input_image_path))
+    if file_extension.lower() not in ['.jpg', '.jpeg', '.png', '.gif', '.bmp']:
+        print("확장자가 정상적이지 않습니다.")
+        return False
+
+    try: # 이미지 파일 처리
+        print("이미지 파일 처리를 시작합니다.")
+        image = Image.open(input_image_path)
+        
+        # JPEG 포맷으로 저장하면서 품질(quality) 설정
+        # 파일명의 확장자(file_extension)을 변경해서 확장자 설정
+        # 디렉터리가 아니거나, 입력값이 없으면 기존 파일이 있는 폴더에 생성
+        if output_image_path is None or not os.path.isdir(output_image_path):
+            file_path = os.path.join(os.path.dirname(input_image_path), f"{file_name}_compressed{file_extension}")
+        else:
+            # 디렉토리가 없으면 디렉토리 생성
+            if not os.path.exists(output_image_path):
+                os.makedirs(output_image_path)
+            file_path = os.path.join(output_image_path, f"{file_name}_compressed{file_extension}")
+        
+        # 결과 출력
+        image.save(file_path, 'JPEG', quality=quality)
+        print(f"{file_path}에 성공적으로 저장했습니다.")
+        return True
+
+    except Exception as e:
+        print(f"예상치 못한 오류가 발생했습니다 : {e}")
+        return False
