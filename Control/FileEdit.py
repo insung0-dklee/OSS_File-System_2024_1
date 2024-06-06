@@ -97,7 +97,7 @@ def combine_files(zip_path, jpg_path, output_path=None):
     """
     zip 파일과 jpg 파일을 이진 모드로 읽어서 결합하여 사진 파일을 생성합니다.
     생성된 사진 파일의 확장자를 zip으로 바꾸면 zip으로도 실행 가능합니다.
-    단, JPEG 비트열을 앞에서만 해석하는 알집이나 윈도우 기본 파일에서는 포맷이 에러 처리됩니다.
+    단, JPEG 비트열을 앞에서부터 해석하는 알집이나 윈도우 기본 파일에서는 포맷이 에러 처리됩니다.
         winrar나 반디집 등의 프로그램으로 동작해야합니다.
     @Param
         zip_path : 압축 파일의 경로
@@ -142,7 +142,7 @@ def combine_files(zip_path, jpg_path, output_path=None):
         print("새로운 파일을 생성합니다.")
         # 새로운 파일 생성
         if output_path is None or not os.path.isdir(output_path):
-            file_path = os.path.join(os.path.dirname(zip_path), f"{os.path.basename(zip_path)}_convertd.jpg")
+            file_path = os.path.join(os.path.dirname(zip_path), f"{os.path.basename(zip_path)}_converted.jpg")
         else:
             if not os.path.exists(output_path):
                 os.makedirs(output_path)
